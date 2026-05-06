@@ -40,60 +40,60 @@
       "id": "variant-balance",
       "eyebrow": "Health check",
       "title": "Variant balance — should be 50/50",
-      "definition": "Distinct devices assigned to each variant — LD splits traffic, we measure with LOGIN_EXPERIMENT_ASSIGNED.",
-      "whyItMatters": "If the split is uneven, every comparison downstream is biased.",
+      "definition": "Distinct devices per variant.",
+      "whyItMatters": "Uneven split biases all downstream comparisons.",
       "currentRead": {
-        "data": "Snowflake (truth): 418 / 244 = 63/37 device split. LD dashboard: 426 / 276 = 61/39.",
-        "meaning": "Both sources agree there's a real imbalance — ~13 percentage points off the expected 50/50.",
-        "conclusion": "⚠️ Real SRM. Not invalidating yet — but we keep this in mind when comparing variants. Investigation in flight (Santi + Tristan)."
+        "data": "Snowflake: 418 / 244 = 63/37. LD: 426 / 276 = 61/39.",
+        "meaning": "Both sources agree on the imbalance.",
+        "conclusion": "⚠️ Real SRM. Investigating root cause with Tristan."
       }
     },
     {
       "id": "email-check",
       "eyebrow": "Flow B · the money signal",
       "title": "Email check — who actually enters Flow B?",
-      "definition": "When a Flow B user types their email, we hit the API and learn: are they a returning user, an invited barber with temp password, or a new email?",
-      "whyItMatters": "This is the routing decision Flow B was designed to extract — and the experiment's whole reason to exist.",
+      "definition": "API response when a Flow B user types email: returning · temp_password · new_user.",
+      "whyItMatters": "Tells us if Flow B is catching invited barbers before they Sign Up.",
       "currentRead": {
-        "data": "33.5% temp_password · 43.7% returning · 14.1% new_user · ~9% legacy username inputs. (382 events total, Flow B only.)",
-        "meaning": "1 in 3 Flow B users is an invited barber we needed to catch BEFORE they hit Sign Up.",
-        "conclusion": "✅ Flow B is doing exactly what it was designed to do at the routing level."
+        "data": "33.5% temp_password · 43.7% returning · 14.1% new_user · 9% legacy username.",
+        "meaning": "1 in 3 Flow B users is an invited barber.",
+        "conclusion": "✅ Flow B does exactly what it was designed to at the routing level."
       }
     },
     {
       "id": "funnel",
-      "eyebrow": "Conversion · Guardrail (overall_login_success_rate from Confluence plan)",
+      "eyebrow": "Guardrail · overall_login_success_rate",
       "title": "Login completion funnel by variant",
-      "definition": "Distinct devices at each step — assigned → welcome viewed → login succeeded. Consistent ANONYMOUS_ID throughout. Conversion = succeeded ÷ welcome — this IS the overall_login_success_rate guardrail metric Tristan and I committed to in the Analytics Plan.",
-      "whyItMatters": "Tells us whether either flow breaks login for real users. Per Tristan's plan: 'no in-experiment control group; comparison vs the current login flow is done via before/after analysis at the reporting layer.' We're starting that pre/post comparison this week.",
+      "definition": "Distinct devices: assigned → welcome → succeeded. Conversion = succeeded ÷ welcome.",
+      "whyItMatters": "Detects if either flow breaks login. Pre/post baseline comparison coming next sync.",
       "currentRead": {
-        "data": "Flow A: 418 → 358 → 210 · welcome 85.6% · conversion 58.7%. Flow B: 244 → 243 → 164 · welcome 99.6% · conversion 67.5%. Pre-experiment baseline: pull pending — legacy events (LOGIN_SUCCESSFUL / SIGNIN_BUTTON_TAPPED / SIGNUP_LANDING_SCREEN_VIEWED) need a parallel funnel built; landing next sync.",
-        "meaning": "Flow B has near-100% welcome rate (the email-first sheet works) AND ~9 percentage points better login conversion than Flow A (67.5% − 58.7% ≈ 8.8). Guardrail not just intact — actually improved within the experiment. Pre-experiment baseline will tell us how this compares to the legacy flow.",
-        "conclusion": "✅ Email-first does NOT break login — it improves it within the experiment. Guardrail metric clears comfortably. Comparison vs legacy in next sync."
+        "data": "Flow A: 418 → 358 → 210 (85.6% welcome · 58.7% conversion). Flow B: 244 → 243 → 164 (99.6% welcome · 67.5% conversion).",
+        "meaning": "Flow B converts ~9 percentage points higher than Flow A.",
+        "conclusion": "✅ Email-first improves login. Guardrail clears."
       }
     },
     {
       "id": "friction",
-      "eyebrow": "Guardrails · login_attempt_failed + forgot_password_tapped + login_abandoned",
+      "eyebrow": "Guardrails · login_failed + forgot_password + login_abandoned",
       "title": "Friction signals — where users struggle",
-      "definition": "Counts per variant of: LOGIN_ATTEMPT_FAILED (by reason: wrong_password / network_error / temp_password_error), FORGOT_PASSWORD_TAPPED (by from_state), LOGIN_ABANDONED (by last_step_reached — iOS only, Android skipped due to MVU lifecycle). All three are 'Nice to Have' events from the Confluence Analytics Plan.",
-      "whyItMatters": "Surfaces UX problems that completion rates alone miss.",
+      "definition": "Failed-login + forgot-password + abandonment counts per variant.",
+      "whyItMatters": "Surfaces UX issues that completion rates miss.",
       "currentRead": {
-        "data": "Abandonment: Flow A 202 (password step) · Flow B 180 (123 password + 57 NEW email step). Forgot password: A 196 · B 59. Login failed: A 0 · B 14.",
-        "meaning": "Flow B introduces an extra abandonment surface (the email step Flow A doesn't have). Login_failed Flow A absence is suspicious — older app versions emit the legacy event without the variant property.",
-        "conclusion": "🟡 Friction is comparable, with one new surface in B (email step) to watch. Login_failed audit pending."
+        "data": "Abandonment: A 202 / B 180 (123 pwd + 57 NEW email). Forgot pwd: A 196 / B 59. Login failed: A 0 / B 14.",
+        "meaning": "Flow B has one new abandonment surface (the email step).",
+        "conclusion": "🟡 Friction comparable. Login_failed Flow A absence root-caused (legacy versions, see caveats)."
       }
     },
     {
       "id": "north-star",
-      "eyebrow": "North star · instrumentation gap, not a null result",
+      "eyebrow": "North star · instrumentation gap, not null result",
       "title": "Reading next week — here's why",
-      "definition": "ACCOUNT_CREATED where account_type='indie' AND came_from='signup_link', segmented by variant. The metric the experiment exists to move.",
-      "whyItMatters": "If it drops in Flow B vs Flow A (or vs pre-experiment baseline), we shipped the right thing.",
+      "definition": "account_created · account_type='indie' · came_from='signup_link', per variant.",
+      "whyItMatters": "The metric this experiment exists to move.",
       "currentRead": {
-        "data": "Zero indie signups in either variant this window. Closest proxy (barber-type accidentals): Flow A 38 via signup_link · Flow B 35 via email_not_found.",
-        "meaning": "Either organic indie volume is low, or the indie account_type isn't being emitted on account creation. Tomorrow at 100% rollout we'll see if the zero holds.",
-        "conclusion": "🚧 Need full-rollout traffic + property emission validation. Reading next week."
+        "data": "Zero indie this window. Proxy: A 38 barber/signup_link · B 35 barber/email_not_found.",
+        "meaning": "Either property emission gap or low organic indie volume.",
+        "conclusion": "🚧 QA validates next week. Real reading next sync."
       }
     }
   ],
@@ -101,7 +101,7 @@
   "perExposure": {
     "eyebrow": "Counterintuitive · Early signal",
     "title": "Per-exposure rates of barber signups via the signup path",
-    "subtitle": "Counts barber-type accounts created through the signup path in each variant — Flow A's signup_link, Flow B's email_not_found redirect. We can't know intent (accidental vs legit new barber) without user research. What we can say: per device, this rate is ~57% higher in Flow B. If the experiment is working as designed, this should go DOWN in B, not up.",
+    "subtitle": "Barber-type accounts created via the signup path in each variant. We can't know intent without user research — surfacing the per-device gap because it's the direction we'd want reversed.",
     "flowA": {
       "label": "Flow A · barber via signup_link path",
       "rate": 9.1,
