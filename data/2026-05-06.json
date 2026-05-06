@@ -100,25 +100,25 @@
 
   "perExposure": {
     "eyebrow": "Counterintuitive · Early signal",
-    "title": "Per-exposure rates tell a different story",
-    "subtitle": "Counts only barber-type signups (the original problem). We call them accidental because the population SHOULD be invited barbers logging in with credentials a shop owner already created — not creating fresh accounts. Per-exposure normalizes by total devices in each variant; Flow B's rate is ~57% higher.",
+    "title": "Per-exposure rates of barber signups via the signup path",
+    "subtitle": "Counts barber-type accounts created through the signup path in each variant — Flow A's signup_link, Flow B's email_not_found redirect. We can't know intent (accidental vs legit new barber) without user research. What we can say: per device, this rate is ~57% higher in Flow B. If the experiment is working as designed, this should go DOWN in B, not up.",
     "flowA": {
-      "label": "Flow A · accidental barber via signup_link",
+      "label": "Flow A · barber via signup_link path",
       "rate": 9.1,
-      "rateLabel": "of Flow A devices created an accidental barber-type account",
+      "rateLabel": "of Flow A devices created a barber account via signup",
       "numerator": 38,
       "denominator": 418,
-      "path": "User sees Sign Up button → taps it → signs up by mistake."
+      "path": "User sees Sign Up button → taps it → signup form."
     },
     "flowB": {
-      "label": "Flow B · accidental barber via email_not_found",
+      "label": "Flow B · barber via email_not_found path",
       "rate": 14.3,
-      "rateLabel": "of Flow B devices created an accidental barber-type account",
+      "rateLabel": "of Flow B devices created a barber account via signup",
       "numerator": 35,
       "denominator": 244,
-      "path": "User types email → API returns not-found → auto-redirects to signup."
+      "path": "User types email → API returns not-found → auto-redirect to signup."
     },
-    "honestTake": "Counts ONLY accidental barber-type signups (not total signups). Not declaring a winner — volume small, 7 days at ramp <50% most of it. Worth understanding before the experiment matures."
+    "honestTake": "We don't know intent — these could be legit new barbers OR existing barbers who didn't know they had an account. Surfacing this because per-device the rate is higher in Flow B; if the experiment is redirecting invited barbers to login, this number should drop in B, not rise. Worth understanding before declaring anything."
   },
 
   "variantBalance": {
@@ -286,7 +286,7 @@
     "highlights": [
       { "icon": "✅", "text": "Flow B catches its target — 33.5% of email checks are invited barbers" },
       { "icon": "✅", "text": "Flow B converts BETTER — 67.5% login completion vs 58.7% in Flow A" },
-      { "icon": "⚠️", "text": "Per-device accidental rate is higher in Flow B (14.3% vs 9.1%) — small sample at under 50% rollout, worth understanding" },
+      { "icon": "⚠️", "text": "Per-device, Flow B has more barber signups via the signup path (14.3% vs 9.1%) — direction we'd want reversed if the experiment is redirecting them to login" },
       { "icon": "🔧", "text": "Real Sample Ratio Mismatch (63/37 instead of 50/50) — root cause in flight" }
     ]
   }
