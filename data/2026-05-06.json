@@ -62,14 +62,14 @@
     },
     {
       "id": "funnel",
-      "eyebrow": "Conversion · Guardrail",
+      "eyebrow": "Conversion · Guardrail (overall_login_success_rate from Confluence plan)",
       "title": "Login completion funnel by variant",
-      "definition": "Distinct devices at each step — assigned → welcome viewed → login succeeded. Consistent ANONYMOUS_ID throughout.",
-      "whyItMatters": "Tells us whether either flow breaks login for real users.",
+      "definition": "Distinct devices at each step — assigned → welcome viewed → login succeeded. Consistent ANONYMOUS_ID throughout. Conversion = succeeded ÷ welcome — this IS the overall_login_success_rate guardrail metric Tristan and I committed to in the Analytics Plan.",
+      "whyItMatters": "Tells us whether either flow breaks login for real users. Guardrail violation if either variant drops materially vs the other.",
       "currentRead": {
         "data": "Flow A: 418 → 358 → 210 · welcome 85.6% · conversion 58.7%. Flow B: 244 → 243 → 164 · welcome 99.6% · conversion 67.5%.",
-        "meaning": "Flow B has near-100% welcome rate (the email-first sheet works) AND ~9pp better login conversion than Flow A.",
-        "conclusion": "✅ Email-first does NOT break login — it improves it. Strong guardrail signal."
+        "meaning": "Flow B has near-100% welcome rate (the email-first sheet works) AND ~9pp better login conversion than Flow A. Guardrail not just intact — actually improved.",
+        "conclusion": "✅ Email-first does NOT break login — it improves it. Guardrail metric clears comfortably."
       }
     },
     {
@@ -172,6 +172,11 @@
       "title": "Sample Ratio Mismatch (63/37 instead of 50/50) ⚠️",
       "detail": "LD assigns 50/50; Snowflake observes 63/37. Confirmed source-of-truth deviation. Doesn't invalidate the headline read but biases raw count comparisons.",
       "fix": "Tristan + Santi investigating this week. Suspects: bucketing logic, cached pre-experiment exposures, non-uniform LD evaluation."
+    },
+    {
+      "title": "Signup_link_tapped scope leak (3 Flow B devices) 🐛",
+      "detail": "Audit done: 5 stray events from 3 distinct iOS devices on app v3.23.0. Pattern is 'same device, 1-2 min apart' — Flow B's 'Join for free' button shares the firing site with Flow A's 'Sign up' link. No variant guard.",
+      "fix": "Quick code fix in the firing site: add a variant scope check or rename the Flow B event. iOS-only patch."
     }
   ],
 
