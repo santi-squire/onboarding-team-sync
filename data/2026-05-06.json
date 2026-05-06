@@ -159,19 +159,19 @@
 
   "caveats": [
     {
-      "title": "ID-space mixing on funnel",
-      "detail": "login_succeeded uses USER_ID; pre-login events use ANONYMOUS_ID. Funnel doesn't reconcile across steps until we use one ID throughout.",
-      "fix": "Re-pull funnel with ANONYMOUS_ID across all steps — query in flight."
+      "title": "Indie account_type may not be emitting 🚧",
+      "detail": "Both variants show zero indie signups this window. Either organic indie volume was low, or the indie property isn't being set when an Indie account is created.",
+      "fix": "QA validates the firing path next week. Until then we use barber/signup_link as a proxy."
     },
     {
-      "title": "Indie north-star = 0 in window",
-      "detail": "Both variants show zero ACCOUNT_CREATED with account_type='indie'. Likely an instrumentation gap: the indie property may not be emitted on creation. Volume too small to be a real null.",
-      "fix": "QA-validate property emission for the indie account creation path."
+      "title": "Login attempt failed: Flow A returns 0 events 🔍",
+      "detail": "Suspicious. Likely older app versions emit the legacy 'login_failed' event without the variant property, so they get filtered out. The renamed event 'Login attempt failed' hasn't fully ramped.",
+      "fix": "Audit which app versions emit which event. Cross-check LOGIN_ATTEMPT_FAILED next pull."
     },
     {
-      "title": "Login_failed asymmetry · Flow A absent",
-      "detail": "Flow A returns zero rows in LOGIN_FAILED with the variant filter. Likely older app versions emit the legacy event without the variant property; the renamed event ('Login attempt failed') hasn't fully ramped.",
-      "fix": "Cross-check LOGIN_ATTEMPT_FAILED next pull, audit which app versions emit which event."
+      "title": "Sample Ratio Mismatch (63/37 instead of 50/50) ⚠️",
+      "detail": "LD assigns 50/50; Snowflake observes 63/37. Confirmed source-of-truth deviation. Doesn't invalidate the headline read but biases raw count comparisons.",
+      "fix": "Tristan + Santi investigating this week. Suspects: bucketing logic, cached pre-experiment exposures, non-uniform LD evaluation."
     }
   ],
 

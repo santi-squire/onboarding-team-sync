@@ -3386,3 +3386,128 @@ body {
   color: var(--text);
 }
 
+
+/* ============================================================
+   Claude Design mini mockup (Courses slide right column)
+   ============================================================ */
+.cd-mini {
+  margin-top: 0.7rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  background: #1a1d2e;
+}
+
+.cd-mini-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.6rem;
+  background: #0c0f1d;
+  border-bottom: 1px solid var(--border);
+}
+
+.cd-mini-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff5f56;
+}
+
+.cd-mini-dot:nth-child(2) { background: #ffbd2e; }
+.cd-mini-dot:nth-child(3) { background: #27c93f; }
+
+.cd-mini-name {
+  margin-left: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.cd-mini-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 70px;
+}
+
+.cd-mini-chat {
+  background: #0d1124;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-right: 1px solid var(--border);
+}
+
+.cd-mini-bubble {
+  height: 8px;
+  border-radius: 3px;
+}
+
+.cd-mini-bubble-r {
+  background: rgba(96, 165, 250, 0.25);
+  width: 75%;
+  align-self: flex-end;
+}
+
+.cd-mini-bubble-l {
+  background: rgba(255, 255, 255, 0.08);
+  width: 65%;
+  align-self: flex-start;
+}
+
+.cd-mini-canvas {
+  background: #f5f5f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+.cd-mini-screen {
+  width: 56px;
+  height: 56px;
+  background: #fff;
+  border-radius: 9px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  padding: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+}
+
+.cd-mini-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f97316, #fb923c);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.cd-mini-line {
+  width: 30px;
+  height: 3px;
+  background: #e5e7eb;
+  border-radius: 2px;
+}
+
+.cd-mini-line-2 {
+  width: 20px;
+}
+
+.cd-mini-caption {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid var(--border);
+  font-style: italic;
+}
