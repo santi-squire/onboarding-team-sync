@@ -68,7 +68,7 @@
       "whyItMatters": "Tells us whether either flow breaks login for real users. Guardrail violation if either variant drops materially vs the other.",
       "currentRead": {
         "data": "Flow A: 418 → 358 → 210 · welcome 85.6% · conversion 58.7%. Flow B: 244 → 243 → 164 · welcome 99.6% · conversion 67.5%.",
-        "meaning": "Flow B has near-100% welcome rate (the email-first sheet works) AND ~9pp better login conversion than Flow A. Guardrail not just intact — actually improved.",
+        "meaning": "Flow B has near-100% welcome rate (the email-first sheet works) AND ~9 percentage points better login conversion than Flow A (67.5% − 58.7% ≈ 8.8). Guardrail not just intact — actually improved.",
         "conclusion": "✅ Email-first does NOT break login — it improves it. Guardrail metric clears comfortably."
       }
     },
@@ -255,8 +255,8 @@
 
   "commitmentFyi": [
     "Investigate SRM root cause with Tristan — Snowflake confirms 63/37 device split",
-    "Audit signup_link_tapped scope leak (3 stray Flow B events) and login_failed asymmetry",
-    "Identify privacy team owner for user_id property sign-off",
+    "Ship the signup_link scope-leak fix (audit done — iOS-only patch, missing variant guard)",
+    "QA-validate that account_type='indie' is emitting on creation",
     "Continue weekly analytics extraction — fresh data each Monday in this deck"
   ],
 
