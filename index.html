@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1200, initial-scale=1" />
+  <title>Email-First Login A/B — Weekly Analysis</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="deck-footer">
+    <strong>Email-First Login A/B</strong> · Weekly Analysis · <span id="footer-week">—</span>
+  </div>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- =========================================================
+           1. Cover
+           ========================================================= -->
+      <section class="cover">
+        <span class="cover-tag">SQR-6510 · Weekly</span>
+        <h1>Email-First Login<br/>A/B Test</h1>
+        <p class="slide-sub" style="font-size: 1.2rem; max-width: 50ch;">
+          Reducing accidental Indie account signups from invited barbers — an analysis of variant performance across iOS and Android.
+        </p>
+        <div class="cover-meta">
+          <span>
+            <strong>Week of</strong>
+            <span id="cover-week">—</span>
+          </span>
+          <span>
+            <strong>Deployed</strong>
+            <span id="cover-deploy">—</span>
+          </span>
+          <span>
+            <strong>Days running</strong>
+            <span id="cover-days">—</span>
+          </span>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           2. Status — where we are this week
+           ========================================================= -->
+      <section>
+        <span class="slide-eyebrow">Status</span>
+        <h2 class="slide-headline">Where we are this week</h2>
+        <p class="slide-sub" id="status-headline">—</p>
+
+        <div class="slide-grid-3" style="margin-top: 2rem;">
+          <div class="card card-stat">
+            <div class="card-eyebrow">Week</div>
+            <div class="stat-value" id="stat-week-num">—</div>
+            <div class="stat-label">Since experiment start</div>
+          </div>
+          <div class="card card-stat">
+            <div class="card-eyebrow">Days running</div>
+            <div class="stat-value" id="stat-days">—</div>
+            <div class="stat-label">Since prod deploy</div>
+          </div>
+          <div class="card card-stat">
+            <div class="card-eyebrow">Data source</div>
+            <div class="stat-value muted" style="font-size: 1.6rem;" id="stat-source">—</div>
+            <div class="stat-label">RudderStack via Snowflake</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           3. This week shipped
+           ========================================================= -->
+      <section>
+        <span class="slide-eyebrow">This week</span>
+        <h2 class="slide-headline">What shipped</h2>
+        <ul class="shipped-list" id="shipped-list"></ul>
+      </section>
+
+      <!-- =========================================================
+           4. Experiment refresher
+           ========================================================= -->
+      <section>
+        <span class="slide-eyebrow">Refresher</span>
+        <h2 class="slide-headline">What we're testing</h2>
+        <p class="slide-sub">
+          Two welcome screen variants randomly assigned 50/50 at first AuthFlow entry. North star: did accidental Indie signups from invited barbers go down?
+        </p>
+
+        <div class="flow-compare">
+          <div class="flow-card flow-a">
+            <div class="flow-tag">Flow A · Control</div>
+            <h3>Current login screen</h3>
+            <p>Separate "Sign In" and "Sign Up" entry points. The signup link sits alongside the login form.</p>
+          </div>
+          <div class="flow-card flow-b">
+            <div class="flow-tag">Flow B · Variant</div>
+            <h3>Email-first login</h3>
+            <p>Single email entry. The API checks if the email exists and routes returning users, temp-password barbers, and new users into the right path.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           5. The 9 events
+           ========================================================= -->
+      <section>
+        <span class="slide-eyebrow">Instrumentation</span>
+        <h2 class="slide-headline">The 9 events we track</h2>
+        <p class="slide-sub">All events emit identical names and property values across iOS and Android. Title Case wire format → snake_case Snowflake tables.</p>
+
+        <table id="events-table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Scope</th>
+              <th>Purpose</th>
+              <th>Tier</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- =========================================================
+           6. North star metric
+           ========================================================= -->
+      <section>
+        <span class="slide-eyebrow">North star</span>
+        <h2 class="slide-headline">The metric that decides this</h2>
+
+        <div class="callout">
+          <div class="callout-label">Question</div>
+          <p id="north-star-question">—</p>
+        </div>
+
+        <div class="card" style="margin-top: 1.5rem;">
+          <div class="card-eyebrow">Primary metric</div>
+          <p style="color: var(--text); font-size: 1rem; margin: 0; font-family: var(--font-mono);" id="primary-metric">—</p>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           7. Pre-commit threshold
+           ========================================================= -->
+      <section>
+        <span class="slide-eyebrow">Decision rule</span>
+        <h2 class="slide-headline">Pre-commit threshold</h2>
+        <p class="slide-sub">Defining the success bar before looking at data — protects against post-hoc rationalization.</p>
+
+        <div class="callout" style="margin-top: 2rem;">
+          <div class="callout-label">Proposed</div>
+          <p id="threshold">—</p>
+        </div>
+
+        <p class="slide-sub" style="margin-top: 1.5rem;">
+          Run length: until the React Native auth migration ships. Verify traffic volume is sufficient for statistical significance before calling a result.
+        </p>
+      </section>
+
+      <!-- =========================================================
+           8. Variant balance
+           ========================================================= -->
+      <section>
+        <span class="slide-eyebrow">Health check</span>
+        <h2 class="slide-headline">Variant balance</h2>
+        <p class="slide-sub">
+          Expecting ~50/50. LaunchDarkly currently shows a skew. RudderStack/Snowflake will be our source of truth — pending access.
+        </p>
+
+        <div class="slide-grid-2" style="margin-top: 1.5rem;">
+          <div>
+            <div class="card-eyebrow" style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.6rem;">
+              LaunchDarkly dashboard
+            </div>
+            <div class="chart-wrap" style="height: 320px;">
+              <canvas id="chart-variant-ld"></canvas>
+            </div>
+          </div>
+          <div>
+            <div class="card-eyebrow" style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.6rem;">
+              Snowflake (source of truth)
+            </div>
+            <div class="chart-wrap" style="height: 320px;" id="snowflake-variant-wrap"></div>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top: 1.5rem;" id="variant-balance-note">
+          <div class="callout-label">Read with caution</div>
+          <p id="variant-balance-note-text">—</p>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           9. Funnel by variant
+           ========================================================= -->
+      <section>
+        <span class="slide-eyebrow">Funnel</span>
+        <h2 class="slide-headline">Conversion by variant</h2>
+        <p class="slide-sub">login_succeeded ÷ welcome_screen_viewed per variant. Watching for drops that signal the new flow is breaking login for real users.</p>
+
+        <div class="chart-wrap tall" style="margin-top: 1.5rem;" id="funnel-wrap"></div>
+      </section>
+
+      <!-- =========================================================
+           10. North Star — Indie via signup link
+           ========================================================= -->
+      <section>
+        <span class="slide-eyebrow">North star</span>
+        <h2 class="slide-headline">Indie signups via signup link</h2>
+        <p class="slide-sub">
+          ACCOUNT_CREATED where account_type = "indie" AND came_from = "signup_link". Should be lower in Flow B if the experiment is working.
+        </p>
+
+        <div class="chart-wrap tall" style="margin-top: 1.5rem;" id="north-star-wrap"></div>
+      </section>
+
+      <!-- =========================================================
+           11. Sanity checks
+           ========================================================= -->
+      <section>
+        <span class="slide-eyebrow">Sanity</span>
+        <h2 class="slide-headline">Event scope sanity checks</h2>
+        <p class="slide-sub">Confirm flow-specific events fire only where they should — early signal that instrumentation matches design.</p>
+
+        <table id="sanity-table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Expected scope</th>
+              <th>Observed flow A</th>
+              <th>Observed flow B</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- =========================================================
+           12. Open issues
+           ========================================================= -->
+      <section>
+        <span class="slide-eyebrow">Blockers</span>
+        <h2 class="slide-headline">Open issues</h2>
+        <ul class="issue-list" id="issue-list"></ul>
+      </section>
+
+      <!-- =========================================================
+           13. Next week
+           ========================================================= -->
+      <section>
+        <span class="slide-eyebrow">Next</span>
+        <h2 class="slide-headline">What's next</h2>
+        <ul class="arrow-list" id="next-list"></ul>
+      </section>
+
+      <!-- =========================================================
+           14. Close
+           ========================================================= -->
+      <section class="cover">
+        <span class="cover-tag">Discussion</span>
+        <h1 style="font-size: 3.4rem;">Questions, calls,<br/>course corrections.</h1>
+        <p class="slide-sub" style="font-size: 1.1rem; max-width: 50ch; margin-top: 1rem;">
+          Feedback channels: weekly meeting, #squad-retention thread, or direct ping.
+        </p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>

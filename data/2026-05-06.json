@@ -1,0 +1,95 @@
+{
+  "weekOf": "2026-05-06",
+  "weekNumber": 1,
+  "experimentName": "Email-First Login A/B (SQR-6510)",
+  "deployedDate": "2026-04-30",
+  "daysSinceDeploy": 6,
+  "dataSource": "Pending — Snowflake access requested via Denis K",
+
+  "headline": "Code shipped 6 days ago. Awaiting analytics access to pull first weekly cut from RudderStack/Snowflake.",
+
+  "thisWeekShipped": [
+    {
+      "title": "iOS Title Case rename + collision fix",
+      "detail": "PR #4138 — renamed login_failed → 'Login attempt failed' to avoid legacy event collision. Merged to release-3.23.0, deployed to prod 2026-04-30."
+    },
+    {
+      "title": "Pre-deploy event firing validated",
+      "detail": "Artur ran a Snowflake check before deploy. All 9 new events were reaching RAW.RUDDER_EVENTS tables — instrumentation healthy at the wire level."
+    },
+    {
+      "title": "Analytics Plan finalized with Tristan",
+      "detail": "North star, must-have events, guardrail metrics, and pre-commit threshold suggestion documented in Confluence."
+    }
+  ],
+
+  "experimentMeta": {
+    "northStar": "Did the rate of barbers accidentally creating Indie accounts go down?",
+    "primaryMetric": "ACCOUNT_CREATED where account_type = 'indie' AND came_from = 'signup_link', segmented by variant",
+    "successThreshold": "Flow B wins if indie signups drop ≥30% without reducing login completion by more than 10%",
+    "flows": {
+      "flowA": "Current/control flow — separate Sign In and Sign Up entry points",
+      "flowB": "Email-first flow — single entry, email check decides path"
+    }
+  },
+
+  "events": [
+    { "name": "Login experiment assigned", "scope": "A + B", "purpose": "Confirms variant split", "tier": "must" },
+    { "name": "Welcome screen viewed", "scope": "A + B", "purpose": "Funnel denominator", "tier": "must" },
+    { "name": "Email check result", "scope": "B only", "purpose": "Decision point in flow B", "tier": "must" },
+    { "name": "Login succeeded", "scope": "A + B", "purpose": "Main conversion metric", "tier": "must" },
+    { "name": "Account created", "scope": "A + B", "purpose": "North star event", "tier": "must" },
+    { "name": "Login attempt failed", "scope": "A + B", "purpose": "Friction signal (renamed from login_failed)", "tier": "nice" },
+    { "name": "Forgot password tapped", "scope": "A + B", "purpose": "Friction signal", "tier": "nice" },
+    { "name": "Signup link tapped", "scope": "A only", "purpose": "Visual hierarchy check", "tier": "nice" },
+    { "name": "Login abandoned", "scope": "A + B (iOS only)", "purpose": "Drop-off step", "tier": "nice" }
+  ],
+
+  "variantBalance": {
+    "expected": { "flowA": 50, "flowB": 50 },
+    "launchDarkly": {
+      "flowA": 426,
+      "flowB": 276,
+      "note": "LaunchDarkly dashboard. Shows ~61/39 split — possible SRM. To be cross-checked against RudderStack as source of truth (per Yurii)."
+    },
+    "snowflake": null
+  },
+
+  "funnel": null,
+  "northStarData": null,
+  "sanityChecks": null,
+
+  "openIssues": [
+    {
+      "title": "Snowflake / Looker access pending",
+      "owner": "Denis K",
+      "status": "Slack message sent, awaiting response",
+      "blocking": "Daily/weekly self-serve queries"
+    },
+    {
+      "title": "Sample Ratio Mismatch in LaunchDarkly",
+      "owner": "Yurii + Santi",
+      "status": "Plan: cross-check with RudderStack/Snowflake once access lands",
+      "blocking": "Trustworthiness of variant comparison"
+    },
+    {
+      "title": "Privacy sign-off on user_id property",
+      "owner": "TBD — privacy team",
+      "status": "Flagged in PR descriptions, no owner identified yet",
+      "blocking": "Long-term: PostHog user_id property"
+    },
+    {
+      "title": "Android Title Case rename not pushed",
+      "owner": "Santi",
+      "status": "Holding pending alignment — iOS shipped first to validate naming",
+      "blocking": "Cross-platform parity for failure event"
+    }
+  ],
+
+  "nextWeek": [
+    "Pull first variant breakdown from Snowflake (LOGIN_EXPERIMENT_ASSIGNED, ACCOUNT_CREATED, LOGIN_SUCCEEDED) — last 7 days post-deploy",
+    "Cross-check LD's 426/276 against RudderStack counts — confirm or rule out true SRM",
+    "Push Android Title Case rename PR once iOS is stable",
+    "Identify privacy team owner for user_id sign-off"
+  ]
+}

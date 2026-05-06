@@ -1,0 +1,620 @@
+/* ============================================================
+   Email-First Login Analysis — slide theme
+   Custom override on top of reveal.js base.
+   ============================================================ */
+
+:root {
+  --bg-base: #0a0d1a;
+  --bg-surface: #131729;
+  --bg-elevated: #1d2238;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+
+  --accent: #f97316;
+  --accent-soft: rgba(249, 115, 22, 0.15);
+
+  --flow-a: #60a5fa;
+  --flow-b: #f97316;
+
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --info: #38bdf8;
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, monospace;
+}
+
+/* -------- Base reveal overrides -------- */
+.reveal {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.reveal-viewport,
+.reveal,
+body {
+  background: var(--bg-base);
+}
+
+.reveal .slides {
+  text-align: left;
+}
+
+.reveal .slides section {
+  padding: 0 4rem;
+  height: 100%;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4 {
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-transform: none;
+  margin: 0 0 1rem 0;
+  line-height: 1.1;
+}
+
+.reveal h1 { font-size: 3.6rem; }
+.reveal h2 { font-size: 2.6rem; }
+.reveal h3 { font-size: 1.6rem; }
+.reveal h4 { font-size: 1.2rem; color: var(--text-muted); font-weight: 500; }
+
+.reveal p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0 0 1rem 0;
+}
+
+.reveal a { color: var(--accent); text-decoration: none; }
+.reveal a:hover { text-decoration: underline; }
+
+.reveal ul,
+.reveal ol {
+  display: block;
+  margin: 0;
+  padding-left: 1.4rem;
+}
+
+.reveal li {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.reveal li strong { color: var(--text); font-weight: 600; }
+
+.reveal code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--bg-elevated);
+  color: var(--accent);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+/* -------- Slide layout primitives -------- */
+.slide-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.slide-headline {
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.slide-sub {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 60ch;
+  line-height: 1.6;
+}
+
+.slide-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.slide-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+/* -------- Cover slide -------- */
+.cover {
+  background:
+    radial-gradient(ellipse 80% 60% at 80% 30%, rgba(249, 115, 22, 0.18), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 20% 70%, rgba(96, 165, 250, 0.12), transparent 60%),
+    var(--bg-base);
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start !important;
+}
+
+.cover .cover-tag {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.cover h1 {
+  font-size: 4.2rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cover .cover-meta {
+  display: flex;
+  gap: 2rem;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-top: 2rem;
+}
+
+.cover .cover-meta span strong {
+  color: var(--text);
+  font-weight: 600;
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.3rem;
+}
+
+/* -------- Status pills -------- */
+.pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.pill.pill-success {
+  background: rgba(74, 222, 128, 0.12);
+  color: var(--success);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.pill.pill-warning {
+  background: rgba(251, 191, 36, 0.12);
+  color: var(--warning);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.pill.pill-danger {
+  background: rgba(248, 113, 113, 0.12);
+  color: var(--danger);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.pill.pill-info {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--info);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.pill.pill-accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+/* -------- Card primitive -------- */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.card.card-elevated {
+  background: var(--bg-elevated);
+}
+
+.card .card-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+
+.card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.card p {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.card-stat {
+  text-align: left;
+}
+
+.card-stat .stat-value {
+  font-family: var(--font-mono);
+  font-size: 2.6rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1;
+  margin: 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.card-stat .stat-value.muted {
+  color: var(--text-dim);
+}
+
+.card-stat .stat-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* -------- Tables -------- */
+.reveal table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+  background: var(--bg-surface);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.reveal table th {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-align: left;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-bottom: 1px solid var(--border);
+}
+
+.reveal table td {
+  padding: 0.7rem 1rem;
+  color: var(--text);
+  font-size: 0.92rem;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+}
+
+.reveal table tr:last-child td { border-bottom: none; }
+
+.reveal table tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+.reveal table td.mono { font-family: var(--font-mono); font-size: 0.85rem; }
+.reveal table td.muted { color: var(--text-muted); }
+
+/* -------- Chart container -------- */
+.chart-wrap {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  height: 360px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-wrap.tall { height: 420px; }
+
+.chart-empty {
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.chart-empty .chart-empty-icon {
+  font-family: var(--font-mono);
+  font-size: 2.4rem;
+  color: var(--text-dim);
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.05em;
+}
+
+.chart-empty h4 {
+  color: var(--text);
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+
+.chart-empty p {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0;
+  max-width: 32ch;
+  margin: 0 auto;
+}
+
+/* -------- Issue list -------- */
+.issue-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0 0;
+}
+
+.issue-list li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 0.6rem;
+}
+
+.issue-list li .issue-marker {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 8px;
+}
+
+.issue-list li .issue-marker.warn { background: var(--warning); }
+.issue-list li .issue-marker.danger { background: var(--danger); }
+
+.issue-list li .issue-body h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.2rem 0;
+}
+
+.issue-list li .issue-body p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.issue-list li .issue-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* -------- Shipped list -------- */
+.shipped-list {
+  display: grid;
+  gap: 0.8rem;
+  margin: 1rem 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shipped-list li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  background: var(--bg-surface);
+  border-left: 3px solid var(--success);
+  border-radius: 6px;
+}
+
+.shipped-list li::before {
+  content: "✓";
+  color: var(--success);
+  font-weight: 700;
+  font-size: 1.1rem;
+  font-family: var(--font-mono);
+}
+
+.shipped-list li > div h4 {
+  font-size: 1rem;
+  margin: 0 0 0.2rem 0;
+  color: var(--text);
+}
+
+.shipped-list li > div p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* -------- Next week / arrow list -------- */
+.arrow-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0 0;
+}
+
+.arrow-list li {
+  padding: 0.8rem 0 0.8rem 2rem;
+  position: relative;
+  font-size: 0.95rem;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+
+.arrow-list li:last-child { border-bottom: none; }
+
+.arrow-list li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+/* -------- Quote / callout -------- */
+.callout {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 1.2rem 1.4rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.2rem 0;
+}
+
+.callout .callout-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+
+.callout p {
+  font-size: 1.05rem;
+  color: var(--text);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* -------- Two-column experiment compare -------- */
+.flow-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.flow-card {
+  padding: 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  border-top: 3px solid;
+}
+
+.flow-card.flow-a { border-top-color: var(--flow-a); }
+.flow-card.flow-b { border-top-color: var(--flow-b); }
+
+.flow-card .flow-tag {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.flow-card.flow-a .flow-tag { color: var(--flow-a); }
+.flow-card.flow-b .flow-tag { color: var(--flow-b); }
+
+.flow-card h3 {
+  font-size: 1.4rem;
+  margin: 0.4rem 0 0.6rem 0;
+}
+
+.flow-card p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* -------- Footer / progress -------- */
+.reveal .slide-number {
+  background: transparent;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  right: 1.5rem;
+  bottom: 1rem;
+}
+
+.reveal .progress {
+  color: var(--accent);
+  height: 3px;
+}
+
+.reveal .controls {
+  color: var(--text-muted);
+}
+
+/* -------- Animations -------- */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.pulse { animation: pulse-soft 2.4s ease-in-out infinite; }
+
+/* -------- Footer signature -------- */
+.deck-footer {
+  position: fixed;
+  bottom: 1rem;
+  left: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  z-index: 30;
+}
+
+.deck-footer strong {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Print / PDF tweaks */
+@media print {
+  .deck-footer { display: none; }
+}
