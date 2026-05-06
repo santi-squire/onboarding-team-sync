@@ -40,60 +40,60 @@
       "id": "variant-balance",
       "eyebrow": "Health check",
       "title": "Variant balance — should be 50/50",
-      "definition": "Distinct devices per variant.",
-      "whyItMatters": "Uneven split biases all downstream comparisons.",
+      "definition": "How many distinct devices LaunchDarkly assigned to each variant. Measured via the LOGIN_EXPERIMENT_ASSIGNED event.",
+      "whyItMatters": "If the split is uneven, every downstream comparison between variants is biased.",
       "currentRead": {
-        "data": "Snowflake: 418 / 244 = 63/37. LD: 426 / 276 = 61/39.",
-        "meaning": "Both sources agree on the imbalance.",
-        "conclusion": "⚠️ Real SRM. Investigating root cause with Tristan."
+        "data": "Snowflake (truth): 418 Flow A vs 244 Flow B → 63 / 37 split.\nLaunchDarkly: 426 vs 276 → 61 / 39.",
+        "meaning": "Both sources agree on the imbalance — about 13 percentage points off the expected 50 / 50.",
+        "conclusion": "⚠️ The Sample Ratio Mismatch is real. It doesn't invalidate the qualitative findings, but it biases raw count comparisons. Tristan and I are investigating the root cause this week."
       }
     },
     {
       "id": "email-check",
-      "eyebrow": "Flow B · the money signal",
+      "eyebrow": "Flow B insight · the money signal",
       "title": "Email check — who actually enters Flow B?",
-      "definition": "API response when a Flow B user types email: returning · temp_password · new_user.",
-      "whyItMatters": "Tells us if Flow B is catching invited barbers before they Sign Up.",
+      "definition": "When a Flow B user types their email, the API responds with one of three results: returning user, invited barber with a temporary password, or a brand-new email. This slide shows the distribution.",
+      "whyItMatters": "This is the routing decision Flow B was built to make. A high temp_password share means we're catching invited barbers right before they would have hit Sign Up by mistake.",
       "currentRead": {
-        "data": "33.5% temp_password · 43.7% returning · 14.1% new_user · 9% legacy username.",
-        "meaning": "1 in 3 Flow B users is an invited barber.",
-        "conclusion": "✅ Flow B does exactly what it was designed to at the routing level."
+        "data": "33.5% temp_password (email)\n43.7% returning (email)\n14.1% new_user (email)\n~9% legacy username inputs",
+        "meaning": "One in three Flow B users is an invited barber whose shop owner already created their account. Without Flow B, that cohort would most likely have created duplicate accounts.",
+        "conclusion": "✅ Flow B is doing exactly what it was designed to do at the routing level. The 33.5% is the strongest positive signal in this week's data."
       }
     },
     {
       "id": "funnel",
       "eyebrow": "Guardrail · overall_login_success_rate",
       "title": "Login completion funnel by variant",
-      "definition": "Distinct devices: assigned → welcome → succeeded. Conversion = succeeded ÷ welcome.",
-      "whyItMatters": "Detects if either flow breaks login. Pre/post baseline comparison coming next sync.",
+      "definition": "How many distinct devices made it through each step of login: assigned → welcome viewed → login succeeded. Conversion rate is succeeded ÷ welcome.",
+      "whyItMatters": "Detects whether either flow breaks login for real users. This IS the overall_login_success_rate guardrail metric Tristan and I committed to in the Confluence Analytics Plan. Pre / post comparison vs the legacy flow lands next sync.",
       "currentRead": {
-        "data": "Flow A: 418 → 358 → 210 (85.6% welcome · 58.7% conversion). Flow B: 244 → 243 → 164 (99.6% welcome · 67.5% conversion).",
-        "meaning": "Flow B converts ~9 percentage points higher than Flow A.",
-        "conclusion": "✅ Email-first improves login. Guardrail clears."
+        "data": "Flow A: 418 assigned → 358 welcome → 210 succeeded. Welcome rate 85.6%, conversion 58.7%.\nFlow B: 244 assigned → 243 welcome → 164 succeeded. Welcome rate 99.6%, conversion 67.5%.",
+        "meaning": "Flow B's welcome rate is near 100% (the email-first sheet works), and login conversion is about 9 percentage points higher than Flow A (67.5% vs 58.7%).",
+        "conclusion": "✅ Email-first does NOT break login — it actually improves it within the experiment. The guardrail metric clears comfortably."
       }
     },
     {
       "id": "friction",
       "eyebrow": "Guardrails · login_failed + forgot_password + login_abandoned",
       "title": "Friction signals — where users struggle",
-      "definition": "Failed-login + forgot-password + abandonment counts per variant.",
-      "whyItMatters": "Surfaces UX issues that completion rates miss.",
+      "definition": "Counts of three friction events per variant: failed login attempts (by reason), forgot-password taps (by sheet state), and screen abandonment (iOS only — Android skipped due to MVU lifecycle).",
+      "whyItMatters": "Surfaces UX problems that completion rates alone would miss — for instance, a spike in forgot-password from temp-password users would mean the invite email copy needs work.",
       "currentRead": {
-        "data": "Abandonment: A 202 / B 180 (123 pwd + 57 NEW email). Forgot pwd: A 196 / B 59. Login failed: A 0 / B 14.",
-        "meaning": "Flow B has one new abandonment surface (the email step).",
-        "conclusion": "🟡 Friction comparable. Login_failed Flow A absence root-caused (legacy versions, see caveats)."
+        "data": "Login abandoned: Flow A 202 events (password step) · Flow B 180 events (123 password + 57 at the NEW email step).\nForgot password: Flow A 196 · Flow B 59.\nLogin failed: Flow A 0 · Flow B 14.",
+        "meaning": "Friction is broadly comparable across variants. Flow B introduces one new abandonment surface — the email step that doesn't exist in Flow A — and 57 events landed there. The Flow A absence in login_failed is a data quality issue, not a real zero (root-caused in caveats).",
+        "conclusion": "🟡 No major friction red flags. The new email step in Flow B is worth watching as volume grows. Login_failed asymmetry has a known root cause."
       }
     },
     {
       "id": "north-star",
       "eyebrow": "North star · instrumentation gap, not null result",
       "title": "Reading next week — here's why",
-      "definition": "account_created · account_type='indie' · came_from='signup_link', per variant.",
-      "whyItMatters": "The metric this experiment exists to move.",
+      "definition": "The primary metric the experiment exists to move: ACCOUNT_CREATED events filtered to account_type='indie' AND came_from='signup_link', segmented by variant.",
+      "whyItMatters": "If indie signups via signup_link drop in Flow B vs Flow A — and vs the pre-experiment baseline — we shipped the right thing.",
       "currentRead": {
-        "data": "Zero indie this window. Proxy: A 38 barber/signup_link · B 35 barber/email_not_found.",
-        "meaning": "Either property emission gap or low organic indie volume.",
-        "conclusion": "🚧 QA validates next week. Real reading next sync."
+        "data": "Zero indie signups in either variant this week.\nClosest proxy (barber-type signups via the signup path):\nFlow A: 38 via signup_link.\nFlow B: 35 via email_not_found.",
+        "meaning": "Either the indie property isn't emitting on account creation (instrumentation gap), or organic indie volume was just low during this 7-day low-rollout window. We can't tell yet — the account_created table only has post-deploy history.",
+        "conclusion": "🚧 Don't read this as failure. QA validates the indie firing path next week and we pull a pre-experiment baseline. Real reading lands next sync."
       }
     }
   ],

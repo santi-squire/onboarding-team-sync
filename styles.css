@@ -3511,3 +3511,8 @@ body {
   border-top: 1px solid var(--border);
   font-style: italic;
 }
+
+/* Preserve newlines in metric current-read paragraphs (data field uses \n for breaks) */
+.metric-current-row p {
+  white-space: pre-line;
+}
