@@ -413,6 +413,7 @@ function renderIssues(data) {
 
 function renderNextWeek(data) {
   const ul = document.getElementById("next-list");
+  if (!ul) return; // slide removed in favor of commitments
   ul.innerHTML = "";
   (data.nextWeek || []).forEach((item) => {
     const li = document.createElement("li");
