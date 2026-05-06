@@ -3318,3 +3318,71 @@ body {
   font-size: 0.95em;
 }
 
+
+/* ============================================================
+   Final-pass overrides from agent feedback
+   ============================================================ */
+
+/* Courses image: fix size + use contain (image is 1024×240 wide) */
+.courses-figma-image {
+  max-height: 320px !important;
+  object-fit: contain !important;
+  background: #fff;
+}
+
+.courses-figma-overlay {
+  padding: 1.5rem 1rem 0.8rem 1rem !important;
+}
+
+/* Tighter retro: 4 items now, but still want them airy */
+.retro-list li {
+  padding: 0.6rem 0.75rem !important;
+}
+
+/* Clickable commitment checkboxes */
+#commitment-decisions .commitment-decision {
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+#commitment-decisions .commitment-decision:hover .commitment-checkbox {
+  background: rgba(249, 115, 22, 0.12);
+}
+
+#commitment-decisions .commitment-decision.checked {
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.10), rgba(74, 222, 128, 0.02));
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+#commitment-decisions .commitment-decision.checked .commitment-checkbox {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+#commitment-decisions .commitment-decision.checked .commitment-checkbox::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: auto;
+  background: transparent;
+  transform: translate(-50%, -50%);
+  color: #0a0d1a;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+}
+
+#commitment-decisions .commitment-decision.checked .commitment-text {
+  text-decoration: line-through;
+  text-decoration-color: rgba(255,255,255,0.3);
+  opacity: 0.75;
+}
+
+/* TL;DR ⚠️ bullet softening — softer warning shade */
+.tldr-list li:has(.tldr-icon) .tldr-text {
+  color: var(--text);
+}
+

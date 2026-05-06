@@ -54,9 +54,17 @@
         </div>
       </section>
 
-      <!-- 2. HITO · Timeline + small-team context -->
+      <!-- 2. TL;DR — direct answer to Eric's question (FIRST) -->
+      <section id="tldr-slide">
+        <span class="slide-eyebrow" id="tldr-eyebrow">Eric's question · our answer this week</span>
+        <h2 class="slide-headline" id="tldr-kicker">Yes — we have results.</h2>
+        <ul class="tldr-list" id="tldr-list"></ul>
+        <p class="tldr-footer">Detail in the rest of this deck. <span class="tldr-arrow">→</span></p>
+      </section>
+
+      <!-- 3. HITO · Timeline + small-team context (after TL;DR for credibility) -->
       <section id="hito-slide">
-        <span class="slide-eyebrow">Where we are</span>
+        <span class="slide-eyebrow">How we got here</span>
         <h2 class="slide-headline">Shipped a cross-platform A/B in record time</h2>
 
         <div class="hito-context">
@@ -77,44 +85,16 @@
             <div class="hito-stat-sub">18 Mar → 7 May (tomorrow)</div>
           </div>
           <div class="hito-stat">
-            <div class="hito-stat-num-sm">2</div>
-            <div class="hito-stat-label">platforms · iOS + Android in parallel</div>
-            <div class="hito-stat-sub">9 events · byte-for-byte parity</div>
+            <div class="hito-stat-num-sm">2×9</div>
+            <div class="hito-stat-label">platforms × events · byte-for-byte parity</div>
+            <div class="hito-stat-sub">iOS + Android, single shared schema</div>
           </div>
         </div>
 
         <div class="hito-mini-timeline" id="hito-mini-timeline"></div>
       </section>
 
-      <!-- 3. TL;DR — direct answer to Eric's question -->
-      <section id="tldr-slide">
-        <span class="slide-eyebrow" id="tldr-eyebrow">Eric's question · our answer this week</span>
-        <h2 class="slide-headline" id="tldr-kicker">Yes — we have results.</h2>
-        <ul class="tldr-list" id="tldr-list"></ul>
-        <p class="tldr-footer">Detail in the rest of this deck. <span class="tldr-arrow">→</span></p>
-      </section>
-
-      <!-- 4. HEADLINE FINDING -->
-      <section class="headline-slide" id="headline-slide">
-        <div class="cover-glow" aria-hidden="true"></div>
-        <div class="headline-grid">
-          <div class="headline-left">
-            <span class="cover-tag" id="headline-kicker">Headline</span>
-            <h2 class="headline-kicker-line" id="headline-explanation-kicker">—</h2>
-            <p class="headline-explanation" id="headline-explanation">—</p>
-            <div class="headline-takeaway" id="headline-takeaway">—</div>
-          </div>
-          <div class="headline-right">
-            <div class="headline-stat-block">
-              <span class="headline-stat" id="headline-stat">0.0</span>
-              <span class="headline-stat-pct">%</span>
-              <div class="headline-stat-suffix" id="headline-stat-suffix">—</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 5. PER-EXPOSURE — counterintuitive (PROMOTED) -->
+      <!-- PER-EXPOSURE — counterintuitive (PROMOTED right after TL;DR/Hito) -->
       <section id="per-exposure-slide">
         <span class="slide-eyebrow" id="per-exposure-eyebrow">Counterintuitive · Early signal</span>
         <h2 class="slide-headline" id="per-exposure-title">—</h2>
@@ -155,30 +135,14 @@
         </div>
       </section>
 
-      <!-- 6. VARIANT BALANCE + SRM brief -->
-      <section data-metric-id="variant-balance">
+      <!-- FUNNEL — promoted: positive guardrail finding right after per-exposure -->
+      <section data-metric-id="funnel">
         <span class="slide-eyebrow metric-eyebrow">—</span>
         <h2 class="slide-headline metric-title">—</h2>
 
-        <div class="srm-explainer">
-          <div class="srm-explainer-label">SRM (Sample Ratio Mismatch)</div>
-          <p>When the actual variant split deviates significantly from the expected (50/50). Honestly: yes, we have one. Working to understand why.</p>
-        </div>
-
         <div class="metric-layout">
           <div class="metric-charts">
-            <div class="metric-chart-row">
-              <div>
-                <div class="chart-label">LaunchDarkly · 61/39</div>
-                <div class="chart-wrap chart-wrap-sm">
-                  <canvas id="chart-variant-ld"></canvas>
-                </div>
-              </div>
-              <div>
-                <div class="chart-label">Snowflake (truth) · 64/36</div>
-                <div class="chart-wrap chart-wrap-sm" id="snowflake-variant-wrap"></div>
-              </div>
-            </div>
+            <div class="chart-wrap" style="height: 340px;" id="funnel-wrap"></div>
           </div>
           <div class="metric-explainer">
             <div class="metric-card">
@@ -207,7 +171,7 @@
         </div>
       </section>
 
-      <!-- 7. EMAIL CHECK — the money signal -->
+      <!-- EMAIL CHECK — the money signal -->
       <section data-metric-id="email-check">
         <span class="slide-eyebrow metric-eyebrow">—</span>
         <h2 class="slide-headline metric-title">—</h2>
@@ -243,23 +207,53 @@
         </div>
       </section>
 
-      <!-- 8. FUNNEL — guardrail conversion -->
-      <section data-metric-id="funnel">
+      <!-- VARIANT BALANCE + SRM (demoted: comes after positive findings) -->
+      <section data-metric-id="variant-balance">
         <span class="slide-eyebrow metric-eyebrow">—</span>
         <h2 class="slide-headline metric-title">—</h2>
 
+        <div class="srm-explainer">
+          <div class="srm-explainer-label">SRM (Sample Ratio Mismatch)</div>
+          <p>When the actual variant split deviates significantly from the expected (50/50). Honestly: yes, we have one. Working to understand why.</p>
+        </div>
+
         <div class="metric-layout">
           <div class="metric-charts">
-            <div class="chart-wrap" style="height: 340px;" id="funnel-wrap"></div>
+            <div class="metric-chart-row">
+              <div>
+                <div class="chart-label">LaunchDarkly · 61/39</div>
+                <div class="chart-wrap chart-wrap-sm">
+                  <canvas id="chart-variant-ld"></canvas>
+                </div>
+              </div>
+              <div>
+                <div class="chart-label">Snowflake (truth) · 63/37</div>
+                <div class="chart-wrap chart-wrap-sm" id="snowflake-variant-wrap"></div>
+              </div>
+            </div>
           </div>
           <div class="metric-explainer">
             <div class="metric-card">
-              <h4>Definition</h4>
+              <h4>What it is</h4>
               <p class="metric-definition"></p>
             </div>
-            <div class="metric-card metric-card-current">
-              <h4>Current read</h4>
-              <p class="metric-current"></p>
+            <div class="metric-card">
+              <h4>Why it matters</h4>
+              <p class="metric-why"></p>
+            </div>
+            <div class="metric-current-block">
+              <div class="metric-current-row">
+                <span class="metric-current-label">Data</span>
+                <p class="metric-current-data"></p>
+              </div>
+              <div class="metric-current-row">
+                <span class="metric-current-label">Meaning</span>
+                <p class="metric-current-meaning"></p>
+              </div>
+              <div class="metric-current-row metric-current-conclusion">
+                <span class="metric-current-label">Conclusion</span>
+                <p class="metric-current-text"></p>
+              </div>
             </div>
           </div>
         </div>
@@ -276,18 +270,32 @@
           </div>
           <div class="metric-explainer">
             <div class="metric-card">
-              <h4>Definition</h4>
+              <h4>What it is</h4>
               <p class="metric-definition"></p>
             </div>
-            <div class="metric-card metric-card-current">
-              <h4>Current read</h4>
-              <p class="metric-current"></p>
+            <div class="metric-card">
+              <h4>Why it matters</h4>
+              <p class="metric-why"></p>
+            </div>
+            <div class="metric-current-block">
+              <div class="metric-current-row">
+                <span class="metric-current-label">Data</span>
+                <p class="metric-current-data"></p>
+              </div>
+              <div class="metric-current-row">
+                <span class="metric-current-label">Meaning</span>
+                <p class="metric-current-meaning"></p>
+              </div>
+              <div class="metric-current-row metric-current-conclusion">
+                <span class="metric-current-label">Conclusion</span>
+                <p class="metric-current-text"></p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- 10. NORTH STAR — single slide, honest -->
+      <!-- 10. NORTH STAR — instrumentation gap, not null result -->
       <section data-metric-id="north-star">
         <span class="slide-eyebrow metric-eyebrow">—</span>
         <h2 class="slide-headline metric-title">—</h2>
@@ -298,12 +306,26 @@
           </div>
           <div class="metric-explainer">
             <div class="metric-card">
-              <h4>Definition</h4>
+              <h4>What it is</h4>
               <p class="metric-definition"></p>
             </div>
-            <div class="metric-card metric-card-current">
-              <h4>Current read · honest</h4>
-              <p class="metric-current"></p>
+            <div class="metric-card">
+              <h4>Why it matters</h4>
+              <p class="metric-why"></p>
+            </div>
+            <div class="metric-current-block">
+              <div class="metric-current-row">
+                <span class="metric-current-label">Data</span>
+                <p class="metric-current-data"></p>
+              </div>
+              <div class="metric-current-row">
+                <span class="metric-current-label">Meaning</span>
+                <p class="metric-current-meaning"></p>
+              </div>
+              <div class="metric-current-row metric-current-conclusion">
+                <span class="metric-current-label">Conclusion</span>
+                <p class="metric-current-text"></p>
+              </div>
             </div>
           </div>
         </div>

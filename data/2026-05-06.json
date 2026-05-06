@@ -86,8 +86,8 @@
     },
     {
       "id": "north-star",
-      "eyebrow": "North star",
-      "title": "Indie accidental signups via signup_link",
+      "eyebrow": "North star · instrumentation gap, not a null result",
+      "title": "Reading next week — here's why",
       "definition": "ACCOUNT_CREATED where account_type='indie' AND came_from='signup_link', segmented by variant. The metric the experiment exists to move.",
       "whyItMatters": "If it drops in Flow B vs Flow A (or vs pre-experiment baseline), we shipped the right thing.",
       "currentRead": {
@@ -101,7 +101,7 @@
   "perExposure": {
     "eyebrow": "Counterintuitive · Early signal",
     "title": "Per-exposure rates tell a different story",
-    "subtitle": "Counts the same kind of accidental barber signup, normalized per device. Flow B's rate is ~60% higher.",
+    "subtitle": "Counts only barber-type signups (the original problem). We call them accidental because the population SHOULD be invited barbers logging in with credentials a shop owner already created — not creating fresh accounts. Per-exposure normalizes by total devices in each variant; Flow B's rate is ~57% higher.",
     "flowA": {
       "label": "Flow A · accidental barber via signup_link",
       "rate": 9.1,
@@ -112,9 +112,9 @@
     },
     "flowB": {
       "label": "Flow B · accidental barber via email_not_found",
-      "rate": 13.9,
+      "rate": 14.3,
       "rateLabel": "of Flow B devices created an accidental barber-type account",
-      "numerator": 34,
+      "numerator": 35,
       "denominator": 244,
       "path": "User types email → API returns not-found → auto-redirects to signup."
     },
@@ -209,28 +209,23 @@
     "slowedDown": [
       {
         "title": "Unknowns surfaced during QA, not before 🧪",
-        "detail": "Khem (QA) flagged that login needed to accept usernames. iOS auto sign-in flow wasn't tested → late fix.",
-        "learning": "Pre-QA spike to enumerate edge cases (legacy user types, auto-flows) before implementation locks in."
+        "detail": "Khem flagged username support; iOS auto sign-in wasn't tested → late fix.",
+        "learning": "Pre-QA spike to enumerate edge cases before implementation locks in."
       },
       {
         "title": "Concurrent feature-flag tooling migration 🔀",
-        "detail": "LD → PostHog → GrowthBook in motion at the same time. Wiring overhead + source-of-truth confusion.",
-        "learning": "Lock the analytics destination before instrumenting; treat tooling migration as a separate workstream."
+        "detail": "LD → PostHog → GrowthBook in motion at the same time. Source-of-truth confusion.",
+        "learning": "Lock the analytics destination before instrumenting."
       },
       {
-        "title": "Cross-platform context switching on unfamiliar code 📱",
-        "detail": "iOS + Android were both ramp-up territory. Ship work doubles when you're not the expert on either.",
-        "learning": "Mitigation in place — future onboarding work moves to React Native (familiar territory)."
-      },
-      {
-        "title": "Side project (Weekly Digest) — scope clarified 📊",
-        "detail": "Bugs from Reporting team were eating dev time on this experiment.",
-        "learning": "Resolved: 1 day/week allocated to Digest; new dev from Artur's team handles going forward."
+        "title": "Cross-platform context switching 📱",
+        "detail": "iOS + Android both ramp-up territory. Ship work doubles when you're not the expert on either.",
+        "learning": "Future onboarding work moves to React Native — familiar territory."
       },
       {
         "title": "Access provisioning not pre-staged 🔑",
-        "detail": "Snowflake + flag service accesses surfaced as bottlenecks AFTER ship, delaying the first analytics pull by days.",
-        "learning": "File access requests on day 1 of project, not when needed."
+        "detail": "Snowflake + flag service accesses surfaced AFTER ship, delaying the first analytics pull.",
+        "learning": "File access requests on day 1 of project."
       }
     ]
   },
@@ -238,18 +233,18 @@
   "commitmentDecisions": [
     {
       "id": "D1",
-      "text": "Phased Courses prototyping with Tristan — develop one course at a time, validate each, iterate with team",
-      "ask": "Aligning approach — stage-by-stage delivery starting next week"
+      "text": "Phased Courses prototyping with Tristan — one course at a time, iterate with team",
+      "ask": "Starting next week. Flag if this conflicts with anything."
     },
     {
       "id": "D2",
       "text": "Build login flows (A and B) in the new RN app in parallel with Appointments team",
-      "ask": "When the experiment winner is decided, RN implementation is ready"
+      "ask": "Starting in 2 weeks. When the winner is decided, RN is ready to ship."
     },
     {
       "id": "D3",
       "text": "Coordinate Courses delivery with the RN launch (29 May)",
-      "ask": "Confirming whether RN launches with full feature parity or onboarding-first"
+      "ask": "Need clarity from Eric/Yurii: full feature parity, or onboarding-only first?"
     }
   ],
 
@@ -286,7 +281,7 @@
     "highlights": [
       { "icon": "✅", "text": "Flow B catches its target — 33.5% of email checks are invited barbers" },
       { "icon": "✅", "text": "Flow B converts BETTER — 67.5% login completion vs 58.7% in Flow A" },
-      { "icon": "⚠️", "text": "Per-device accidental rate is higher in Flow B (13.9% vs 9.1%) — investigating before declaring a winner" },
+      { "icon": "⚠️", "text": "Per-device accidental rate is higher in Flow B (14.3% vs 9.1%) — small sample at &lt;50% rollout, worth understanding" },
       { "icon": "🔧", "text": "Real Sample Ratio Mismatch (63/37 instead of 50/50) — root cause in flight" }
     ]
   }

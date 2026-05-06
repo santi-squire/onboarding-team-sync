@@ -370,10 +370,25 @@
     tryInject();
   }
 
+  // ---------- Clickable commitment checkboxes ----------
+  function wireCheckboxClicks() {
+    const tryWire = (attempts = 0) => {
+      const items = document.querySelectorAll("#commitment-decisions .commitment-decision");
+      if (items.length === 0 && attempts < 30) {
+        return setTimeout(() => tryWire(attempts + 1), 80);
+      }
+      items.forEach((el) => {
+        el.addEventListener("click", () => el.classList.toggle("checked"));
+      });
+    };
+    tryWire();
+  }
+
   // ---------- Boot ----------
   async function init() {
     await populateNewSlides();
     injectTimelineShimmer();
+    wireCheckboxClicks();
     wireRevealHooks();
   }
 
