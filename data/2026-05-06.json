@@ -1,95 +1,189 @@
 {
   "weekOf": "2026-05-06",
   "weekNumber": 1,
-  "experimentName": "Email-First Login A/B (SQR-6510)",
-  "deployedDate": "2026-04-30",
-  "daysSinceDeploy": 6,
-  "dataSource": "Pending — Snowflake access requested via Denis K",
+  "presenter": "Santiago Anaya",
 
-  "headline": "Code shipped 6 days ago. Awaiting analytics access to pull first weekly cut from RudderStack/Snowflake.",
+  "deck": {
+    "title": "Onboarding Team Sync",
+    "tagline": "Weekly review · ship updates, experiment health, and what's next."
+  },
+
+  "agenda": [
+    "What shipped this week",
+    "Login A/B test — context & rollout",
+    "Metrics walkthrough — variant balance, funnel, north star",
+    "Open blockers",
+    "Next week"
+  ],
 
   "thisWeekShipped": [
     {
-      "title": "iOS Title Case rename + collision fix",
-      "detail": "PR #4138 — renamed login_failed → 'Login attempt failed' to avoid legacy event collision. Merged to release-3.23.0, deployed to prod 2026-04-30."
+      "title": "Email-First Login A/B test live in prod",
+      "detail": "iOS 3.23.0 + Android shipped to 2% on April 30. Phased rollout to 80% today, 100% tomorrow."
     },
     {
-      "title": "Pre-deploy event firing validated",
-      "detail": "Artur ran a Snowflake check before deploy. All 9 new events were reaching RAW.RUDDER_EVENTS tables — instrumentation healthy at the wire level."
+      "title": "iOS analytics naming collision fixed",
+      "detail": "PR #4138 — renamed 'login_failed' → 'Login attempt failed' to avoid clobbering legacy table. Merged into release-3.23.0."
     },
     {
       "title": "Analytics Plan finalized with Tristan",
-      "detail": "North star, must-have events, guardrail metrics, and pre-commit threshold suggestion documented in Confluence."
+      "detail": "9 events, north star, guardrail metrics, and pre-commit success threshold documented in Confluence."
     }
   ],
 
-  "experimentMeta": {
+  "experiment": {
+    "jiraKey": "SQR-6510",
+    "jiraUrl": "https://squire.atlassian.net/browse/SQR-6510",
+    "jiraTitle": "Implement onboarding login A/B test (Flow A & Flow B)",
+    "featureFlag": "onboarding-login-experiment",
+
+    "problem": "Barbers who are already registered in a shop download the app and accidentally create a new shop instead of logging into their existing account. They don't realize they already have credentials set up by their shop owner.",
+
+    "solution": "A/B test with two new login flow variants designed to guide existing barbers to log in instead of accidentally signing up.",
+
+    "flowA": {
+      "name": "Flow A — \"Welcome back to SQUIRE!\"",
+      "tagline": "Login-first, non-dismissible sheet",
+      "steps": [
+        "User opens the app and sees the landing screen with the barbershop background",
+        "A login sheet automatically appears with \"Welcome back to SQUIRE!\" — it cannot be dismissed",
+        "User enters their email and password, then taps \"Login\"",
+        "\"Forgot password\" takes the user to password recovery, then returns to the login sheet",
+        "\"Don't have an account? Sign up\" takes the user to the signup page, then returns to the login sheet"
+      ]
+    },
+
+    "flowB": {
+      "name": "Flow B — \"Email-first\"",
+      "tagline": "Single email entry routes the user to the right path",
+      "steps": [
+        "User sees a new landing: \"The essential app for every barber\" with \"Join for free\" and \"Login\" buttons",
+        "Both buttons open a sheet asking for the user's email: \"Let's get you started\"",
+        "Email not found → User redirected to the signup page",
+        "Email found, temporary password → \"Welcome to SQUIRE, {name}!\" — asks for the temporary password from invite email",
+        "Email found, existing user → \"Welcome back, {name}!\" — asks for their password",
+        "Temp-password users are asked to set a new password before continuing"
+      ]
+    },
+
+    "rollout": {
+      "deployedDate": "2026-04-30",
+      "phases": [
+        { "date": "2026-04-30", "percent": 2, "label": "Initial deploy" },
+        { "date": "2026-05-06", "percent": 80, "label": "Today" },
+        { "date": "2026-05-07", "percent": 100, "label": "Full rollout (planned)" }
+      ],
+      "interpretation": "Most volume hits Snowflake from May 7 onward. This week's numbers are an instrumentation health check, not a statistical read."
+    },
+
+    "methodologyNote": "There is no in-experiment control group. Comparison vs the current (pre-experiment) login flow is done via before/after analysis at the reporting layer — not within the A/B itself.",
+
     "northStar": "Did the rate of barbers accidentally creating Indie accounts go down?",
     "primaryMetric": "ACCOUNT_CREATED where account_type = 'indie' AND came_from = 'signup_link', segmented by variant",
-    "successThreshold": "Flow B wins if indie signups drop ≥30% without reducing login completion by more than 10%",
-    "flows": {
-      "flowA": "Current/control flow — separate Sign In and Sign Up entry points",
-      "flowB": "Email-first flow — single entry, email check decides path"
-    }
+    "successThreshold": "Flow B wins if indie signups drop ≥30% without reducing login completion by more than 10%."
   },
 
-  "events": [
-    { "name": "Login experiment assigned", "scope": "A + B", "purpose": "Confirms variant split", "tier": "must" },
-    { "name": "Welcome screen viewed", "scope": "A + B", "purpose": "Funnel denominator", "tier": "must" },
-    { "name": "Email check result", "scope": "B only", "purpose": "Decision point in flow B", "tier": "must" },
-    { "name": "Login succeeded", "scope": "A + B", "purpose": "Main conversion metric", "tier": "must" },
-    { "name": "Account created", "scope": "A + B", "purpose": "North star event", "tier": "must" },
-    { "name": "Login attempt failed", "scope": "A + B", "purpose": "Friction signal (renamed from login_failed)", "tier": "nice" },
-    { "name": "Forgot password tapped", "scope": "A + B", "purpose": "Friction signal", "tier": "nice" },
-    { "name": "Signup link tapped", "scope": "A only", "purpose": "Visual hierarchy check", "tier": "nice" },
-    { "name": "Login abandoned", "scope": "A + B (iOS only)", "purpose": "Drop-off step", "tier": "nice" }
+  "metrics": [
+    {
+      "id": "variant-balance",
+      "eyebrow": "Health check",
+      "title": "Variant balance — is the 50/50 split actually 50/50?",
+      "definition": "Distinct user count from LOGIN_EXPERIMENT_ASSIGNED grouped by the variant property (flowA vs flowB).",
+      "whyItMatters": "If the split is uneven, every downstream comparison is biased. LaunchDarkly currently shows ~61/39, but per Yurii, RudderStack/Snowflake is our source of truth — we cross-check there.",
+      "watchFor": "We expect 50/50 ± a few percent from random assignment noise. Anything outside ~45/55 is suspicious.",
+      "currentRead": "LD shows 426 vs 276 (~61/39). Snowflake cross-check pending data pull.",
+      "chartType": "doughnut-pair"
+    },
+    {
+      "id": "funnel",
+      "eyebrow": "Conversion",
+      "title": "Login completion funnel by variant",
+      "definition": "Distinct users at each step: assigned → welcome viewed → email entered (B only) → login succeeded. Conversion rate = login_succeeded ÷ welcome_screen_viewed.",
+      "whyItMatters": "Tells us whether either flow is breaking login for real users. A drop here in either variant is a guardrail violation — independent of the false-signup question.",
+      "watchFor": "Flow B should not lose more than 10% completion vs Flow A. Bigger gap means the email-first friction outweighs the benefit.",
+      "currentRead": "Awaiting Snowflake data. Volumes will be small this week given the 2%→80% rollout — read with caution.",
+      "chartType": "bar"
+    },
+    {
+      "id": "north-star",
+      "eyebrow": "North star",
+      "title": "Indie account signups via signup_link",
+      "definition": "ACCOUNT_CREATED filtered to account_type = 'indie' AND came_from = 'signup_link', segmented by variant.",
+      "whyItMatters": "This is the metric the experiment exists to move. If it drops in Flow B vs Flow A (and vs pre-experiment baseline), we shipped the right thing.",
+      "watchFor": "≥30% reduction in Flow B vs Flow A is the pre-committed success bar. Anything less is a non-decisive result.",
+      "currentRead": "1 row in ACCOUNT_CREATED at the pre-deploy snapshot. Real read needs full-rollout data — earliest meaningful look: next week's sync.",
+      "chartType": "line"
+    },
+    {
+      "id": "email-check",
+      "eyebrow": "Flow B insight",
+      "title": "Email check result distribution",
+      "definition": "EMAIL_CHECK_RESULT grouped by result: returning · temp_password · new_user. Flow B exclusive.",
+      "whyItMatters": "This is the signal the experiment was designed to extract — it tells us who is actually entering through the front door. High temp_password share means we're catching real invited barbers; high new_user share means accidental signups are still leaking through.",
+      "watchFor": "Want to see meaningful temp_password share. If new_user dominates, Flow B isn't catching the target population.",
+      "currentRead": "Awaiting Snowflake data.",
+      "chartType": "bar"
+    },
+    {
+      "id": "friction",
+      "eyebrow": "Guardrails",
+      "title": "Friction signals — where users struggle",
+      "definition": "Counts of LOGIN_ATTEMPT_FAILED (by reason), FORGOT_PASSWORD_TAPPED (by from_state), and LOGIN_ABANDONED (by last_step_reached, iOS only).",
+      "whyItMatters": "Surfaces UX problems we wouldn't see in completion rates alone. A spike in forgot-password from temp_password users in Flow B = invite email copy needs work.",
+      "watchFor": "Flow B should not have a higher forgot-password rate among temp_password users than Flow A users have overall. Login abandonment at the email step in Flow B is also a red flag.",
+      "currentRead": "Awaiting Snowflake data.",
+      "chartType": "table"
+    }
   ],
+
+  "sanityChecks": null,
 
   "variantBalance": {
     "expected": { "flowA": 50, "flowB": 50 },
     "launchDarkly": {
       "flowA": 426,
       "flowB": 276,
-      "note": "LaunchDarkly dashboard. Shows ~61/39 split — possible SRM. To be cross-checked against RudderStack as source of truth (per Yurii)."
+      "note": "LD dashboard. ~61/39 split — possible SRM. To be cross-checked against RudderStack."
     },
     "snowflake": null
   },
-
   "funnel": null,
   "northStarData": null,
-  "sanityChecks": null,
+  "emailCheck": null,
+  "friction": null,
 
   "openIssues": [
     {
-      "title": "Snowflake / Looker access pending",
-      "owner": "Denis K",
-      "status": "Slack message sent, awaiting response",
-      "blocking": "Daily/weekly self-serve queries"
+      "title": "Snowflake access just unblocked — first data pull pending",
+      "owner": "Santi",
+      "status": "Access granted today. Running first set of queries to populate week 1 baseline.",
+      "severity": "warn"
     },
     {
       "title": "Sample Ratio Mismatch in LaunchDarkly",
       "owner": "Yurii + Santi",
-      "status": "Plan: cross-check with RudderStack/Snowflake once access lands",
-      "blocking": "Trustworthiness of variant comparison"
+      "status": "Cross-check vs RudderStack now possible. Per Yurii: Snowflake is source of truth, deprioritize LD investigation.",
+      "severity": "warn"
     },
     {
       "title": "Privacy sign-off on user_id property",
       "owner": "TBD — privacy team",
-      "status": "Flagged in PR descriptions, no owner identified yet",
-      "blocking": "Long-term: PostHog user_id property"
+      "status": "Flagged in PR descriptions across iOS + Android rounds. No owner identified yet.",
+      "severity": "danger"
     },
     {
       "title": "Android Title Case rename not pushed",
       "owner": "Santi",
-      "status": "Holding pending alignment — iOS shipped first to validate naming",
-      "blocking": "Cross-platform parity for failure event"
+      "status": "Held back pending iOS validation. Will push once iOS is stable in prod.",
+      "severity": "info"
     }
   ],
 
   "nextWeek": [
-    "Pull first variant breakdown from Snowflake (LOGIN_EXPERIMENT_ASSIGNED, ACCOUNT_CREATED, LOGIN_SUCCEEDED) — last 7 days post-deploy",
-    "Cross-check LD's 426/276 against RudderStack counts — confirm or rule out true SRM",
-    "Push Android Title Case rename PR once iOS is stable",
-    "Identify privacy team owner for user_id sign-off"
+    "Run the four Snowflake queries → populate week 2 with real per-variant numbers",
+    "Cross-check LD's 426/276 split against Snowflake — confirm or rule out true SRM",
+    "Push Android Title Case rename PR",
+    "Identify privacy team owner for user_id sign-off",
+    "First read on north star metric with full rollout data"
   ]
 }

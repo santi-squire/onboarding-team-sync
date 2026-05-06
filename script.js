@@ -1,5 +1,5 @@
 /* ============================================================
-   Email-First Login Analysis — slide controller
+   Onboarding Team Sync — slide controller
    Loads weekly JSON data, populates DOM, renders Chart.js charts,
    initializes reveal.js. Update CURRENT_WEEK below to switch
    the week being shown.
@@ -16,6 +16,7 @@ const COLORS = {
   textDim: css.getPropertyValue("--text-dim").trim() || "#64748b",
   border: "rgba(255, 255, 255, 0.08)",
   surface: css.getPropertyValue("--bg-surface").trim() || "#131729",
+  accent: css.getPropertyValue("--accent").trim() || "#f97316",
   warning: css.getPropertyValue("--warning").trim() || "#fbbf24",
   success: css.getPropertyValue("--success").trim() || "#4ade80",
   danger: css.getPropertyValue("--danger").trim() || "#f87171",
@@ -31,6 +32,11 @@ function setText(id, value) {
   if (el) el.textContent = value ?? "—";
 }
 
+function setHTML(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = value ?? "—";
+}
+
 function emptyChartHtml(title, message) {
   return `
     <div class="chart-empty">
@@ -41,18 +47,6 @@ function emptyChartHtml(title, message) {
   `;
 }
 
-function pillFor(tier) {
-  if (tier === "must") return `<span class="pill pill-accent">Must</span>`;
-  return `<span class="pill pill-info">Nice</span>`;
-}
-
-function statusPill(label) {
-  if (label === "ok") return `<span class="pill pill-success">OK</span>`;
-  if (label === "pending") return `<span class="pill pill-warning">Pending</span>`;
-  if (label === "fail") return `<span class="pill pill-danger">Fail</span>`;
-  return `<span class="pill pill-info">${label}</span>`;
-}
-
 // ---------- Chart defaults ----------
 
 if (typeof Chart !== "undefined") {
@@ -61,7 +55,7 @@ if (typeof Chart !== "undefined") {
   Chart.defaults.font.size = 12;
   Chart.defaults.borderColor = COLORS.border;
   Chart.defaults.plugins.legend.labels.usePointStyle = true;
-  Chart.defaults.plugins.legend.labels.padding = 16;
+  Chart.defaults.plugins.legend.labels.padding = 14;
   Chart.defaults.plugins.tooltip.backgroundColor = COLORS.surface;
   Chart.defaults.plugins.tooltip.titleColor = COLORS.text;
   Chart.defaults.plugins.tooltip.bodyColor = COLORS.textMuted;
@@ -77,22 +71,24 @@ if (typeof Chart !== "undefined") {
 
 function renderCover(data) {
   setText("cover-week", data.weekOf);
-  setText("cover-deploy", data.deployedDate);
-  setText("cover-days", `${data.daysSinceDeploy}`);
+  setText("cover-presenter", data.presenter || "—");
   setText("footer-week", data.weekOf);
 }
 
-function renderStatus(data) {
-  setText("status-headline", data.headline);
-  setText("stat-week-num", `Week ${data.weekNumber}`);
-  setText("stat-days", data.daysSinceDeploy);
-  setText("stat-source", data.dataSource.startsWith("Pending") ? "Pending" : data.dataSource);
+function renderAgenda(data) {
+  const ol = document.getElementById("agenda-list");
+  ol.innerHTML = "";
+  (data.agenda || []).forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    ol.appendChild(li);
+  });
 }
 
 function renderShipped(data) {
   const ul = document.getElementById("shipped-list");
   ul.innerHTML = "";
-  data.thisWeekShipped.forEach((item) => {
+  (data.thisWeekShipped || []).forEach((item) => {
     const li = document.createElement("li");
     li.innerHTML = `
       <div>
@@ -104,42 +100,94 @@ function renderShipped(data) {
   });
 }
 
-function renderEvents(data) {
-  const tbody = document.querySelector("#events-table tbody");
-  tbody.innerHTML = "";
-  data.events.forEach((ev) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td class="mono">${ev.name}</td>
-      <td class="muted">${ev.scope}</td>
-      <td class="muted">${ev.purpose}</td>
-      <td>${pillFor(ev.tier)}</td>
+function renderExperimentContext(data) {
+  const e = data.experiment;
+  setText("experiment-jira", e.jiraKey);
+  setText("experiment-title", e.jiraTitle);
+  setText("experiment-problem", e.problem);
+  setText("experiment-solution", e.solution);
+
+  setText("flowA-name", e.flowA.name);
+  setText("flowA-name-2", e.flowA.name);
+  setText("flowA-tagline", e.flowA.tagline);
+  setText("flowB-name", e.flowB.name);
+  setText("flowB-name-2", e.flowB.name);
+  setText("flowB-tagline", e.flowB.tagline);
+
+  const stepsA = document.getElementById("flowA-steps");
+  stepsA.innerHTML = "";
+  e.flowA.steps.forEach((step) => {
+    const li = document.createElement("li");
+    li.textContent = step;
+    stepsA.appendChild(li);
+  });
+
+  const stepsB = document.getElementById("flowB-steps");
+  stepsB.innerHTML = "";
+  e.flowB.steps.forEach((step) => {
+    const li = document.createElement("li");
+    li.textContent = step;
+    stepsB.appendChild(li);
+  });
+
+  setText("methodology-note", e.methodologyNote);
+  setText("rollout-interpretation", e.rollout.interpretation);
+
+  // Timeline
+  const tl = document.getElementById("rollout-timeline");
+  tl.innerHTML = "";
+  const today = data.weekOf; // simplified — assume week-of is "today"
+  e.rollout.phases.forEach((phase) => {
+    const node = document.createElement("div");
+    let cls = "timeline-node";
+    if (phase.date === today) cls += " active";
+    else if (phase.date > today) cls += " future";
+    node.className = cls;
+    node.innerHTML = `
+      <div class="timeline-dot"></div>
+      <div class="timeline-percent">${phase.percent}%</div>
+      <div class="timeline-date">${phase.date}</div>
+      <div class="timeline-label">${phase.label}</div>
     `;
-    tbody.appendChild(tr);
+    tl.appendChild(node);
   });
 }
 
-function renderNorthStar(data) {
-  setText("north-star-question", data.experimentMeta.northStar);
-  setText("primary-metric", data.experimentMeta.primaryMetric);
+function renderNorthStarBlock(data) {
+  const e = data.experiment;
+  setText("north-star-question", e.northStar);
+  setText("primary-metric", e.primaryMetric);
+  setText("success-threshold", e.successThreshold);
 }
 
-function renderThreshold(data) {
-  setText("threshold", data.experimentMeta.successThreshold);
+function renderMetricExplainers(data) {
+  // For each metric, find its slide via [data-metric-id] and populate explainer cards
+  (data.metrics || []).forEach((metric) => {
+    const slide = document.querySelector(`[data-metric-id="${metric.id}"]`);
+    if (!slide) return;
+    slide.querySelector(".metric-eyebrow").textContent = metric.eyebrow;
+    slide.querySelector(".metric-title").textContent = metric.title;
+    slide.querySelector(".metric-definition").textContent = metric.definition;
+    slide.querySelector(".metric-why").textContent = metric.whyItMatters;
+    slide.querySelector(".metric-watch").textContent = metric.watchFor;
+    slide.querySelector(".metric-current").textContent = metric.currentRead;
+  });
 }
 
-function renderVariantBalance(data) {
-  // LaunchDarkly chart
+// ---------- Charts ----------
+
+function renderVariantBalanceCharts(data) {
+  // LD chart
   const ldCanvas = document.getElementById("chart-variant-ld");
   const ld = data.variantBalance.launchDarkly;
-  const total = ld.flowA + ld.flowB;
-  const flowAPct = ((ld.flowA / total) * 100).toFixed(1);
-  const flowBPct = ((ld.flowB / total) * 100).toFixed(1);
+  const ldTotal = ld.flowA + ld.flowB;
+  const ldA = ((ld.flowA / ldTotal) * 100).toFixed(1);
+  const ldB = ((ld.flowB / ldTotal) * 100).toFixed(1);
 
   new Chart(ldCanvas, {
     type: "doughnut",
     data: {
-      labels: [`Flow A · ${flowAPct}%`, `Flow B · ${flowBPct}%`],
+      labels: [`Flow A · ${ldA}%`, `Flow B · ${ldB}%`],
       datasets: [
         {
           data: [ld.flowA, ld.flowB],
@@ -152,19 +200,14 @@ function renderVariantBalance(data) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: "65%",
+      cutout: "62%",
       plugins: {
-        legend: { position: "bottom", labels: { color: COLORS.textMuted, font: { size: 11 } } },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => `${ctx.label.split(" · ")[0]}: ${ctx.parsed} exposures`,
-          },
-        },
+        legend: { position: "bottom", labels: { color: COLORS.textMuted, font: { size: 10 } } },
       },
     },
   });
 
-  // Snowflake placeholder
+  // Snowflake chart or pending state
   const sfWrap = document.getElementById("snowflake-variant-wrap");
   if (data.variantBalance.snowflake) {
     sfWrap.innerHTML = `<canvas id="chart-variant-sf"></canvas>`;
@@ -188,22 +231,18 @@ function renderVariantBalance(data) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: "65%",
+        cutout: "62%",
         plugins: {
-          legend: { position: "bottom", labels: { color: COLORS.textMuted, font: { size: 11 } } },
+          legend: { position: "bottom", labels: { color: COLORS.textMuted, font: { size: 10 } } },
         },
       },
     });
   } else {
     sfWrap.innerHTML = emptyChartHtml(
-      "Awaiting Snowflake access",
-      "Once Denis K provisions access we'll cross-check LD's split against the source-of-truth event stream.",
+      "Pending first pull",
+      "Snowflake access just unblocked — first cross-check coming this session.",
     );
   }
-
-  // Note
-  const noteText = ld.note || "";
-  setText("variant-balance-note-text", noteText);
 }
 
 function renderFunnel(data) {
@@ -211,47 +250,27 @@ function renderFunnel(data) {
   if (!data.funnel) {
     wrap.innerHTML = emptyChartHtml(
       "Funnel data pending",
-      "Will populate from LOGIN_EXPERIMENT_ASSIGNED, WELCOME_SCREEN_VIEWED, and LOGIN_SUCCEEDED tables once Snowflake access is live.",
+      "Will populate from LOGIN_EXPERIMENT_ASSIGNED, WELCOME_SCREEN_VIEWED, and LOGIN_SUCCEEDED segmented by variant.",
     );
     return;
   }
   wrap.innerHTML = `<canvas id="chart-funnel"></canvas>`;
-  const labels = data.funnel.steps;
   new Chart(document.getElementById("chart-funnel"), {
     type: "bar",
     data: {
-      labels,
+      labels: data.funnel.steps,
       datasets: [
-        {
-          label: "Flow A",
-          data: data.funnel.flowA,
-          backgroundColor: COLORS.flowA,
-          borderRadius: 6,
-        },
-        {
-          label: "Flow B",
-          data: data.funnel.flowB,
-          backgroundColor: COLORS.flowB,
-          borderRadius: 6,
-        },
+        { label: "Flow A", data: data.funnel.flowA, backgroundColor: COLORS.flowA, borderRadius: 6 },
+        { label: "Flow B", data: data.funnel.flowB, backgroundColor: COLORS.flowB, borderRadius: 6 },
       ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: { position: "top", labels: { color: COLORS.textMuted } },
-      },
+      plugins: { legend: { position: "top", labels: { color: COLORS.textMuted } } },
       scales: {
-        x: {
-          grid: { display: false },
-          ticks: { color: COLORS.textMuted },
-        },
-        y: {
-          grid: { color: COLORS.border },
-          ticks: { color: COLORS.textMuted },
-          beginAtZero: true,
-        },
+        x: { grid: { display: false }, ticks: { color: COLORS.textMuted } },
+        y: { grid: { color: COLORS.border }, ticks: { color: COLORS.textMuted }, beginAtZero: true },
       },
     },
   });
@@ -273,7 +292,7 @@ function renderNorthStarChart(data) {
       labels: data.northStarData.dates,
       datasets: [
         {
-          label: "Flow A — Indie via signup_link",
+          label: "Flow A",
           data: data.northStarData.flowA,
           borderColor: COLORS.flowA,
           backgroundColor: "rgba(96, 165, 250, 0.1)",
@@ -284,7 +303,7 @@ function renderNorthStarChart(data) {
           pointBackgroundColor: COLORS.flowA,
         },
         {
-          label: "Flow B — Indie via signup_link",
+          label: "Flow B",
           data: data.northStarData.flowB,
           borderColor: COLORS.flowB,
           backgroundColor: "rgba(249, 115, 22, 0.1)",
@@ -299,73 +318,92 @@ function renderNorthStarChart(data) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: { position: "top", labels: { color: COLORS.textMuted } },
-      },
+      plugins: { legend: { position: "top", labels: { color: COLORS.textMuted } } },
       scales: {
-        x: {
-          grid: { display: false },
-          ticks: { color: COLORS.textMuted },
-        },
-        y: {
-          grid: { color: COLORS.border },
-          ticks: { color: COLORS.textMuted },
-          beginAtZero: true,
-        },
+        x: { grid: { display: false }, ticks: { color: COLORS.textMuted } },
+        y: { grid: { color: COLORS.border }, ticks: { color: COLORS.textMuted }, beginAtZero: true },
       },
     },
   });
 }
 
-function renderSanityChecks(data) {
-  const tbody = document.querySelector("#sanity-table tbody");
-  tbody.innerHTML = "";
+function renderEmailCheckChart(data) {
+  const wrap = document.getElementById("email-check-wrap");
+  if (!data.emailCheck) {
+    wrap.innerHTML = emptyChartHtml(
+      "Email check data pending",
+      "Will populate from EMAIL_CHECK_RESULT grouped by result (returning · temp_password · new_user). Flow B exclusive.",
+    );
+    return;
+  }
+  wrap.innerHTML = `<canvas id="chart-email-check"></canvas>`;
+  new Chart(document.getElementById("chart-email-check"), {
+    type: "bar",
+    data: {
+      labels: ["returning", "temp_password", "new_user"],
+      datasets: [
+        {
+          label: "Flow B users",
+          data: [data.emailCheck.returning, data.emailCheck.temp_password, data.emailCheck.new_user],
+          backgroundColor: [COLORS.flowA, COLORS.success, COLORS.warning],
+          borderRadius: 6,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: COLORS.textMuted } },
+        y: { grid: { color: COLORS.border }, ticks: { color: COLORS.textMuted }, beginAtZero: true },
+      },
+    },
+  });
+}
 
-  const expectedRows = [
-    { event: "Email check result", expected: "Flow B only", flowAExpected: 0, flowBExpected: ">0" },
-    { event: "Signup link tapped", expected: "Flow A only", flowAExpected: ">0", flowBExpected: 0 },
-    { event: "Login experiment assigned", expected: "Both", flowAExpected: ">0", flowBExpected: ">0" },
-  ];
-
-  expectedRows.forEach((row) => {
-    const tr = document.createElement("tr");
-    if (data.sanityChecks && data.sanityChecks[row.event]) {
-      const observed = data.sanityChecks[row.event];
-      tr.innerHTML = `
-        <td class="mono">${row.event}</td>
-        <td class="muted">${row.expected}</td>
-        <td class="mono">${observed.flowA}</td>
-        <td class="mono">${observed.flowB}</td>
-        <td>${statusPill(observed.status)}</td>
-      `;
-    } else {
-      tr.innerHTML = `
-        <td class="mono">${row.event}</td>
-        <td class="muted">${row.expected}</td>
-        <td class="mono muted">—</td>
-        <td class="mono muted">—</td>
-        <td>${statusPill("pending")}</td>
-      `;
-    }
-    tbody.appendChild(tr);
+function renderFrictionChart(data) {
+  const wrap = document.getElementById("friction-wrap");
+  if (!data.friction) {
+    wrap.innerHTML = emptyChartHtml(
+      "Friction data pending",
+      "Will populate from LOGIN_ATTEMPT_FAILED, FORGOT_PASSWORD_TAPPED, and LOGIN_ABANDONED, broken down by variant + reason.",
+    );
+    return;
+  }
+  wrap.innerHTML = `<canvas id="chart-friction"></canvas>`;
+  new Chart(document.getElementById("chart-friction"), {
+    type: "bar",
+    data: {
+      labels: data.friction.events,
+      datasets: [
+        { label: "Flow A", data: data.friction.flowA, backgroundColor: COLORS.flowA, borderRadius: 6 },
+        { label: "Flow B", data: data.friction.flowB, backgroundColor: COLORS.flowB, borderRadius: 6 },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: "top", labels: { color: COLORS.textMuted } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: COLORS.textMuted } },
+        y: { grid: { color: COLORS.border }, ticks: { color: COLORS.textMuted }, beginAtZero: true },
+      },
+    },
   });
 }
 
 function renderIssues(data) {
   const ul = document.getElementById("issue-list");
   ul.innerHTML = "";
-  data.openIssues.forEach((issue) => {
+  (data.openIssues || []).forEach((issue) => {
     const li = document.createElement("li");
-    const markerClass = issue.blocking?.toLowerCase().includes("trustworthiness")
-      ? "danger"
-      : issue.blocking
-      ? "warn"
-      : "";
+    const markerClass = issue.severity || "";
     li.innerHTML = `
       <span class="issue-marker ${markerClass}"></span>
       <div class="issue-body">
         <h4>${issue.title}</h4>
-        <p>${issue.status}${issue.blocking ? ` · <strong style="color: var(--text-muted);">Blocks:</strong> ${issue.blocking}` : ""}</p>
+        <p>${issue.status}</p>
       </div>
       <span class="issue-meta">${issue.owner}</span>
     `;
@@ -376,7 +414,7 @@ function renderIssues(data) {
 function renderNextWeek(data) {
   const ul = document.getElementById("next-list");
   ul.innerHTML = "";
-  data.nextWeek.forEach((item) => {
+  (data.nextWeek || []).forEach((item) => {
     const li = document.createElement("li");
     li.textContent = item;
     ul.appendChild(li);
@@ -403,19 +441,21 @@ async function boot() {
   }
 
   renderCover(data);
-  renderStatus(data);
+  renderAgenda(data);
   renderShipped(data);
-  renderEvents(data);
-  renderNorthStar(data);
-  renderThreshold(data);
-  renderVariantBalance(data);
+  renderExperimentContext(data);
+  renderNorthStarBlock(data);
+  renderMetricExplainers(data);
+
+  renderVariantBalanceCharts(data);
   renderFunnel(data);
   renderNorthStarChart(data);
-  renderSanityChecks(data);
+  renderEmailCheckChart(data);
+  renderFrictionChart(data);
+
   renderIssues(data);
   renderNextWeek(data);
 
-  // Init reveal AFTER content is in the DOM so layout calculations are correct
   Reveal.initialize({
     hash: true,
     transition: "slide",

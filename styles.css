@@ -1,5 +1,5 @@
 /* ============================================================
-   Email-First Login Analysis — slide theme
+   Onboarding Team Sync — slide theme
    Custom override on top of reveal.js base.
    ============================================================ */
 
@@ -618,3 +618,293 @@ body {
 @media print {
   .deck-footer { display: none; }
 }
+
+/* ============================================================
+   Additions for Onboarding Team Sync deck
+   ============================================================ */
+
+/* -------- Section divider slides -------- */
+.section-divider {
+  background:
+    radial-gradient(ellipse 70% 60% at 70% 50%, rgba(249, 115, 22, 0.22), transparent 65%),
+    var(--bg-base);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+.section-divider-content {
+  max-width: 70ch;
+}
+
+.section-divider .section-num {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+}
+
+.section-divider h2 {
+  font-size: 5rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.04em !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.section-divider p {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  max-width: 50ch;
+  line-height: 1.5;
+}
+
+.section-divider .section-jira {
+  display: inline-block;
+  margin-top: 2rem;
+  padding: 0.4rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  border-radius: 999px;
+}
+
+/* -------- Agenda -------- */
+.agenda-list {
+  counter-reset: agenda;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0 0;
+}
+
+.agenda-list li {
+  counter-increment: agenda;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.4rem;
+  align-items: center;
+  padding: 1.1rem 1.4rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 0.7rem;
+  font-size: 1.1rem;
+  color: var(--text);
+  transition: border-color 0.2s ease;
+}
+
+.agenda-list li:hover { border-color: var(--border-strong); }
+
+.agenda-list li::before {
+  content: counter(agenda, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+
+/* -------- Flow steps -------- */
+.flow-steps {
+  counter-reset: step;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0 0;
+}
+
+.flow-steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.2rem;
+  align-items: start;
+  padding: 0.9rem 1.2rem;
+  background: var(--bg-surface);
+  border-left: 2px solid var(--border);
+  margin-bottom: 0.5rem;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+.flow-steps li::before {
+  content: counter(step);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.flow-a-eyebrow { color: var(--flow-a) !important; }
+.flow-b-eyebrow { color: var(--flow-b) !important; }
+
+/* -------- Timeline (rollout) -------- */
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0;
+  margin: 2rem 0 0 0;
+  position: relative;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 32px;
+  left: 5%;
+  right: 5%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--border) 0%, var(--accent) 50%, var(--border) 100%);
+  z-index: 0;
+}
+
+.timeline-node {
+  position: relative;
+  text-align: center;
+  z-index: 1;
+  padding: 0 0.5rem;
+}
+
+.timeline-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--bg-base);
+  border: 3px solid var(--border);
+  margin: 24px auto;
+  position: relative;
+}
+
+.timeline-node.active .timeline-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 6px var(--accent-soft);
+}
+
+.timeline-node.future .timeline-dot {
+  border-color: var(--accent);
+  background: var(--bg-base);
+}
+
+.timeline-percent {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.timeline-node.active .timeline-percent { color: var(--accent); }
+
+.timeline-date {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin: 0.25rem 0;
+}
+
+.timeline-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.timeline-node.active .timeline-label {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* -------- Callout variants -------- */
+.callout.danger-callout {
+  border-left-color: var(--danger);
+  background: rgba(248, 113, 113, 0.08);
+}
+.callout.danger-callout .callout-label { color: var(--danger); }
+
+.callout.warn-callout {
+  border-left-color: var(--warning);
+  background: rgba(251, 191, 36, 0.08);
+}
+.callout.warn-callout .callout-label { color: var(--warning); }
+
+/* -------- Metric slide layout -------- */
+.metric-layout {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+
+.metric-chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.chart-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.6rem;
+}
+
+.chart-wrap-sm { height: 280px; }
+
+.metric-explainer {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.metric-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+}
+
+.metric-card h4 {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 500;
+  margin: 0 0 0.4rem 0;
+}
+
+.metric-card p {
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.metric-card.metric-card-current {
+  background: var(--accent-soft);
+  border-color: rgba(249, 115, 22, 0.3);
+}
+
+.metric-card.metric-card-current h4 { color: var(--accent); }
+

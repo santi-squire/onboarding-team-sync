@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=1200, initial-scale=1" />
-  <title>Email-First Login A/B — Weekly Analysis</title>
+  <meta name="viewport" content="width=1280, initial-scale=1" />
+  <title>Onboarding Team Sync</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet"
   />
 
@@ -18,20 +18,20 @@
 </head>
 <body>
   <div class="deck-footer">
-    <strong>Email-First Login A/B</strong> · Weekly Analysis · <span id="footer-week">—</span>
+    <strong>Onboarding Team Sync</strong> · <span id="footer-week">—</span>
   </div>
 
   <div class="reveal">
     <div class="slides">
 
-      <!-- =========================================================
-           1. Cover
-           ========================================================= -->
+      <!-- ===================================
+           COVER
+           =================================== -->
       <section class="cover">
-        <span class="cover-tag">SQR-6510 · Weekly</span>
-        <h1>Email-First Login<br/>A/B Test</h1>
+        <span class="cover-tag">Weekly Sync</span>
+        <h1>Onboarding<br/>Team Sync</h1>
         <p class="slide-sub" style="font-size: 1.2rem; max-width: 50ch;">
-          Reducing accidental Indie account signups from invited barbers — an analysis of variant performance across iOS and Android.
+          Ship updates from the team, health of the login A/B test, and what's coming next.
         </p>
         <div class="cover-meta">
           <span>
@@ -39,238 +39,372 @@
             <span id="cover-week">—</span>
           </span>
           <span>
-            <strong>Deployed</strong>
-            <span id="cover-deploy">—</span>
-          </span>
-          <span>
-            <strong>Days running</strong>
-            <span id="cover-days">—</span>
+            <strong>Presenter</strong>
+            <span id="cover-presenter">—</span>
           </span>
         </div>
       </section>
 
-      <!-- =========================================================
-           2. Status — where we are this week
-           ========================================================= -->
+      <!-- ===================================
+           AGENDA
+           =================================== -->
       <section>
-        <span class="slide-eyebrow">Status</span>
-        <h2 class="slide-headline">Where we are this week</h2>
-        <p class="slide-sub" id="status-headline">—</p>
-
-        <div class="slide-grid-3" style="margin-top: 2rem;">
-          <div class="card card-stat">
-            <div class="card-eyebrow">Week</div>
-            <div class="stat-value" id="stat-week-num">—</div>
-            <div class="stat-label">Since experiment start</div>
-          </div>
-          <div class="card card-stat">
-            <div class="card-eyebrow">Days running</div>
-            <div class="stat-value" id="stat-days">—</div>
-            <div class="stat-label">Since prod deploy</div>
-          </div>
-          <div class="card card-stat">
-            <div class="card-eyebrow">Data source</div>
-            <div class="stat-value muted" style="font-size: 1.6rem;" id="stat-source">—</div>
-            <div class="stat-label">RudderStack via Snowflake</div>
-          </div>
-        </div>
+        <span class="slide-eyebrow">Today</span>
+        <h2 class="slide-headline">What we'll cover</h2>
+        <ol class="agenda-list" id="agenda-list"></ol>
       </section>
 
-      <!-- =========================================================
-           3. This week shipped
-           ========================================================= -->
+      <!-- ===================================
+           THIS WEEK SHIPPED
+           =================================== -->
       <section>
         <span class="slide-eyebrow">This week</span>
-        <h2 class="slide-headline">What shipped</h2>
+        <h2 class="slide-headline">What we shipped</h2>
         <ul class="shipped-list" id="shipped-list"></ul>
       </section>
 
-      <!-- =========================================================
-           4. Experiment refresher
-           ========================================================= -->
-      <section>
-        <span class="slide-eyebrow">Refresher</span>
-        <h2 class="slide-headline">What we're testing</h2>
-        <p class="slide-sub">
-          Two welcome screen variants randomly assigned 50/50 at first AuthFlow entry. North star: did accidental Indie signups from invited barbers go down?
-        </p>
-
-        <div class="flow-compare">
-          <div class="flow-card flow-a">
-            <div class="flow-tag">Flow A · Control</div>
-            <h3>Current login screen</h3>
-            <p>Separate "Sign In" and "Sign Up" entry points. The signup link sits alongside the login form.</p>
-          </div>
-          <div class="flow-card flow-b">
-            <div class="flow-tag">Flow B · Variant</div>
-            <h3>Email-first login</h3>
-            <p>Single email entry. The API checks if the email exists and routes returning users, temp-password barbers, and new users into the right path.</p>
-          </div>
+      <!-- ===================================
+           SECTION DIVIDER · Login A/B
+           =================================== -->
+      <section class="section-divider">
+        <div class="section-divider-content">
+          <span class="section-num">01</span>
+          <h2>Login A/B test</h2>
+          <p>Context, the two flows, and where rollout stands today.</p>
+          <span class="section-jira" id="experiment-jira">SQR-6510</span>
         </div>
       </section>
 
-      <!-- =========================================================
-           5. The 9 events
-           ========================================================= -->
+      <!-- ===================================
+           THE PROBLEM
+           =================================== -->
       <section>
-        <span class="slide-eyebrow">Instrumentation</span>
-        <h2 class="slide-headline">The 9 events we track</h2>
-        <p class="slide-sub">All events emit identical names and property values across iOS and Android. Title Case wire format → snake_case Snowflake tables.</p>
+        <span class="slide-eyebrow">The problem</span>
+        <h2 class="slide-headline" id="experiment-title">—</h2>
 
-        <table id="events-table">
-          <thead>
-            <tr>
-              <th>Event</th>
-              <th>Scope</th>
-              <th>Purpose</th>
-              <th>Tier</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </section>
-
-      <!-- =========================================================
-           6. North star metric
-           ========================================================= -->
-      <section>
-        <span class="slide-eyebrow">North star</span>
-        <h2 class="slide-headline">The metric that decides this</h2>
-
-        <div class="callout">
-          <div class="callout-label">Question</div>
-          <p id="north-star-question">—</p>
+        <div class="callout danger-callout" style="margin-top: 1.5rem;">
+          <div class="callout-label">From SQR-6510</div>
+          <p id="experiment-problem">—</p>
         </div>
 
         <div class="card" style="margin-top: 1.5rem;">
-          <div class="card-eyebrow">Primary metric</div>
-          <p style="color: var(--text); font-size: 1rem; margin: 0; font-family: var(--font-mono);" id="primary-metric">—</p>
+          <div class="card-eyebrow">Approach</div>
+          <p style="color: var(--text); font-size: 1rem; margin: 0;" id="experiment-solution">—</p>
         </div>
       </section>
 
-      <!-- =========================================================
-           7. Pre-commit threshold
-           ========================================================= -->
+      <!-- ===================================
+           THE TWO FLOWS — overview
+           =================================== -->
       <section>
-        <span class="slide-eyebrow">Decision rule</span>
-        <h2 class="slide-headline">Pre-commit threshold</h2>
-        <p class="slide-sub">Defining the success bar before looking at data — protects against post-hoc rationalization.</p>
+        <span class="slide-eyebrow">The two variants</span>
+        <h2 class="slide-headline">Flow A vs Flow B</h2>
+        <p class="slide-sub">Random 50/50 assignment at first AuthFlow entry. Feature flag <code>onboarding-login-experiment</code>.</p>
 
-        <div class="callout" style="margin-top: 2rem;">
-          <div class="callout-label">Proposed</div>
-          <p id="threshold">—</p>
+        <div class="flow-compare" style="margin-top: 1.5rem;">
+          <div class="flow-card flow-a">
+            <div class="flow-tag">Flow A · Control-leaning</div>
+            <h3 id="flowA-name">—</h3>
+            <p id="flowA-tagline">—</p>
+          </div>
+          <div class="flow-card flow-b">
+            <div class="flow-tag">Flow B · Variant under test</div>
+            <h3 id="flowB-name">—</h3>
+            <p id="flowB-tagline">—</p>
+          </div>
         </div>
-
-        <p class="slide-sub" style="margin-top: 1.5rem;">
-          Run length: until the React Native auth migration ships. Verify traffic volume is sufficient for statistical significance before calling a result.
-        </p>
       </section>
 
-      <!-- =========================================================
-           8. Variant balance
-           ========================================================= -->
+      <!-- ===================================
+           FLOW A STEPS
+           =================================== -->
       <section>
-        <span class="slide-eyebrow">Health check</span>
-        <h2 class="slide-headline">Variant balance</h2>
-        <p class="slide-sub">
-          Expecting ~50/50. LaunchDarkly currently shows a skew. RudderStack/Snowflake will be our source of truth — pending access.
-        </p>
+        <span class="slide-eyebrow flow-a-eyebrow">Flow A</span>
+        <h2 class="slide-headline" id="flowA-name-2">—</h2>
+        <ol class="flow-steps" id="flowA-steps"></ol>
+      </section>
+
+      <!-- ===================================
+           FLOW B STEPS
+           =================================== -->
+      <section>
+        <span class="slide-eyebrow flow-b-eyebrow">Flow B</span>
+        <h2 class="slide-headline" id="flowB-name-2">—</h2>
+        <ol class="flow-steps" id="flowB-steps"></ol>
+      </section>
+
+      <!-- ===================================
+           ROLLOUT TIMELINE
+           =================================== -->
+      <section>
+        <span class="slide-eyebrow">Rollout</span>
+        <h2 class="slide-headline">Phased ramp-up</h2>
+        <p class="slide-sub">Feature flag-controlled rollout — limits blast radius if anything regresses in prod.</p>
+
+        <div class="timeline" id="rollout-timeline"></div>
+
+        <div class="callout" style="margin-top: 1.5rem;">
+          <div class="callout-label">Read this week with caution</div>
+          <p id="rollout-interpretation">—</p>
+        </div>
+      </section>
+
+      <!-- ===================================
+           METHODOLOGY NOTE
+           =================================== -->
+      <section>
+        <span class="slide-eyebrow">Methodology</span>
+        <h2 class="slide-headline">No in-experiment control group</h2>
+
+        <div class="callout warn-callout" style="margin-top: 1.5rem;">
+          <div class="callout-label">Important for analysis</div>
+          <p id="methodology-note">—</p>
+        </div>
 
         <div class="slide-grid-2" style="margin-top: 1.5rem;">
-          <div>
-            <div class="card-eyebrow" style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.6rem;">
-              LaunchDarkly dashboard
-            </div>
-            <div class="chart-wrap" style="height: 320px;">
-              <canvas id="chart-variant-ld"></canvas>
-            </div>
+          <div class="card">
+            <div class="card-eyebrow">What this means</div>
+            <p style="color: var(--text); font-size: 0.95rem;">Every user in the experiment sees either Flow A or Flow B. Neither is the original pre-experiment login screen.</p>
           </div>
-          <div>
-            <div class="card-eyebrow" style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.6rem;">
-              Snowflake (source of truth)
-            </div>
-            <div class="chart-wrap" style="height: 320px;" id="snowflake-variant-wrap"></div>
+          <div class="card">
+            <div class="card-eyebrow">How we measure success</div>
+            <p style="color: var(--text); font-size: 0.95rem;">Compare each variant's metrics against the pre-experiment baseline (April data) AND against each other.</p>
           </div>
         </div>
+      </section>
 
-        <div class="callout" style="margin-top: 1.5rem;" id="variant-balance-note">
-          <div class="callout-label">Read with caution</div>
-          <p id="variant-balance-note-text">—</p>
+      <!-- ===================================
+           SECTION DIVIDER · Metrics
+           =================================== -->
+      <section class="section-divider">
+        <div class="section-divider-content">
+          <span class="section-num">02</span>
+          <h2>Metrics walkthrough</h2>
+          <p>Each metric: what it measures, why it matters, what to watch — and where we stand today.</p>
         </div>
       </section>
 
-      <!-- =========================================================
-           9. Funnel by variant
-           ========================================================= -->
+      <!-- ===================================
+           NORTH STAR + THRESHOLD
+           =================================== -->
       <section>
-        <span class="slide-eyebrow">Funnel</span>
-        <h2 class="slide-headline">Conversion by variant</h2>
-        <p class="slide-sub">login_succeeded ÷ welcome_screen_viewed per variant. Watching for drops that signal the new flow is breaking login for real users.</p>
+        <span class="slide-eyebrow">The north star</span>
+        <h2 class="slide-headline">The question this experiment answers</h2>
 
-        <div class="chart-wrap tall" style="margin-top: 1.5rem;" id="funnel-wrap"></div>
+        <div class="callout" style="margin-top: 1.5rem;">
+          <div class="callout-label">North star</div>
+          <p id="north-star-question">—</p>
+        </div>
+
+        <div class="slide-grid-2" style="margin-top: 1.2rem;">
+          <div class="card">
+            <div class="card-eyebrow">Primary metric</div>
+            <p style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text); line-height: 1.5;" id="primary-metric">—</p>
+          </div>
+          <div class="card" style="border-color: var(--accent);">
+            <div class="card-eyebrow" style="color: var(--accent);">Pre-commit threshold</div>
+            <p style="color: var(--text); font-size: 0.95rem; line-height: 1.5;" id="success-threshold">—</p>
+          </div>
+        </div>
       </section>
 
-      <!-- =========================================================
-           10. North Star — Indie via signup link
-           ========================================================= -->
-      <section>
-        <span class="slide-eyebrow">North star</span>
-        <h2 class="slide-headline">Indie signups via signup link</h2>
-        <p class="slide-sub">
-          ACCOUNT_CREATED where account_type = "indie" AND came_from = "signup_link". Should be lower in Flow B if the experiment is working.
-        </p>
+      <!-- ===================================
+           METRIC 1 — variant balance
+           =================================== -->
+      <section data-metric-id="variant-balance">
+        <span class="slide-eyebrow metric-eyebrow">—</span>
+        <h2 class="slide-headline metric-title">—</h2>
 
-        <div class="chart-wrap tall" style="margin-top: 1.5rem;" id="north-star-wrap"></div>
+        <div class="metric-layout">
+          <div class="metric-charts">
+            <div class="metric-chart-row">
+              <div>
+                <div class="chart-label">LaunchDarkly</div>
+                <div class="chart-wrap chart-wrap-sm">
+                  <canvas id="chart-variant-ld"></canvas>
+                </div>
+              </div>
+              <div>
+                <div class="chart-label">Snowflake (source of truth)</div>
+                <div class="chart-wrap chart-wrap-sm" id="snowflake-variant-wrap"></div>
+              </div>
+            </div>
+          </div>
+          <div class="metric-explainer">
+            <div class="metric-card">
+              <h4>Definition</h4>
+              <p class="metric-definition"></p>
+            </div>
+            <div class="metric-card">
+              <h4>Why it matters</h4>
+              <p class="metric-why"></p>
+            </div>
+            <div class="metric-card">
+              <h4>Watch for</h4>
+              <p class="metric-watch"></p>
+            </div>
+            <div class="metric-card metric-card-current">
+              <h4>Current read</h4>
+              <p class="metric-current"></p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <!-- =========================================================
-           11. Sanity checks
-           ========================================================= -->
-      <section>
-        <span class="slide-eyebrow">Sanity</span>
-        <h2 class="slide-headline">Event scope sanity checks</h2>
-        <p class="slide-sub">Confirm flow-specific events fire only where they should — early signal that instrumentation matches design.</p>
+      <!-- ===================================
+           METRIC 2 — funnel
+           =================================== -->
+      <section data-metric-id="funnel">
+        <span class="slide-eyebrow metric-eyebrow">—</span>
+        <h2 class="slide-headline metric-title">—</h2>
 
-        <table id="sanity-table">
-          <thead>
-            <tr>
-              <th>Event</th>
-              <th>Expected scope</th>
-              <th>Observed flow A</th>
-              <th>Observed flow B</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        <div class="metric-layout">
+          <div class="metric-charts">
+            <div class="chart-wrap" style="height: 340px;" id="funnel-wrap"></div>
+          </div>
+          <div class="metric-explainer">
+            <div class="metric-card">
+              <h4>Definition</h4>
+              <p class="metric-definition"></p>
+            </div>
+            <div class="metric-card">
+              <h4>Why it matters</h4>
+              <p class="metric-why"></p>
+            </div>
+            <div class="metric-card">
+              <h4>Watch for</h4>
+              <p class="metric-watch"></p>
+            </div>
+            <div class="metric-card metric-card-current">
+              <h4>Current read</h4>
+              <p class="metric-current"></p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <!-- =========================================================
-           12. Open issues
-           ========================================================= -->
+      <!-- ===================================
+           METRIC 3 — north star
+           =================================== -->
+      <section data-metric-id="north-star">
+        <span class="slide-eyebrow metric-eyebrow">—</span>
+        <h2 class="slide-headline metric-title">—</h2>
+
+        <div class="metric-layout">
+          <div class="metric-charts">
+            <div class="chart-wrap" style="height: 340px;" id="north-star-wrap"></div>
+          </div>
+          <div class="metric-explainer">
+            <div class="metric-card">
+              <h4>Definition</h4>
+              <p class="metric-definition"></p>
+            </div>
+            <div class="metric-card">
+              <h4>Why it matters</h4>
+              <p class="metric-why"></p>
+            </div>
+            <div class="metric-card">
+              <h4>Watch for</h4>
+              <p class="metric-watch"></p>
+            </div>
+            <div class="metric-card metric-card-current">
+              <h4>Current read</h4>
+              <p class="metric-current"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================
+           METRIC 4 — email check
+           =================================== -->
+      <section data-metric-id="email-check">
+        <span class="slide-eyebrow metric-eyebrow">—</span>
+        <h2 class="slide-headline metric-title">—</h2>
+
+        <div class="metric-layout">
+          <div class="metric-charts">
+            <div class="chart-wrap" style="height: 340px;" id="email-check-wrap"></div>
+          </div>
+          <div class="metric-explainer">
+            <div class="metric-card">
+              <h4>Definition</h4>
+              <p class="metric-definition"></p>
+            </div>
+            <div class="metric-card">
+              <h4>Why it matters</h4>
+              <p class="metric-why"></p>
+            </div>
+            <div class="metric-card">
+              <h4>Watch for</h4>
+              <p class="metric-watch"></p>
+            </div>
+            <div class="metric-card metric-card-current">
+              <h4>Current read</h4>
+              <p class="metric-current"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================
+           METRIC 5 — friction
+           =================================== -->
+      <section data-metric-id="friction">
+        <span class="slide-eyebrow metric-eyebrow">—</span>
+        <h2 class="slide-headline metric-title">—</h2>
+
+        <div class="metric-layout">
+          <div class="metric-charts">
+            <div class="chart-wrap" style="height: 340px;" id="friction-wrap"></div>
+          </div>
+          <div class="metric-explainer">
+            <div class="metric-card">
+              <h4>Definition</h4>
+              <p class="metric-definition"></p>
+            </div>
+            <div class="metric-card">
+              <h4>Why it matters</h4>
+              <p class="metric-why"></p>
+            </div>
+            <div class="metric-card">
+              <h4>Watch for</h4>
+              <p class="metric-watch"></p>
+            </div>
+            <div class="metric-card metric-card-current">
+              <h4>Current read</h4>
+              <p class="metric-current"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================
+           OPEN ISSUES
+           =================================== -->
       <section>
         <span class="slide-eyebrow">Blockers</span>
         <h2 class="slide-headline">Open issues</h2>
         <ul class="issue-list" id="issue-list"></ul>
       </section>
 
-      <!-- =========================================================
-           13. Next week
-           ========================================================= -->
+      <!-- ===================================
+           NEXT WEEK
+           =================================== -->
       <section>
-        <span class="slide-eyebrow">Next</span>
-        <h2 class="slide-headline">What's next</h2>
+        <span class="slide-eyebrow">Up next</span>
+        <h2 class="slide-headline">Plan for next sync</h2>
         <ul class="arrow-list" id="next-list"></ul>
       </section>
 
-      <!-- =========================================================
-           14. Close
-           ========================================================= -->
+      <!-- ===================================
+           CLOSE / DISCUSSION
+           =================================== -->
       <section class="cover">
-        <span class="cover-tag">Discussion</span>
-        <h1 style="font-size: 3.4rem;">Questions, calls,<br/>course corrections.</h1>
-        <p class="slide-sub" style="font-size: 1.1rem; max-width: 50ch; margin-top: 1rem;">
-          Feedback channels: weekly meeting, #squad-retention thread, or direct ping.
+        <span class="cover-tag">Open floor</span>
+        <h1 style="font-size: 3.4rem;">Discussion,<br/>questions, course<br/>corrections.</h1>
+        <p class="slide-sub" style="font-size: 1.05rem; max-width: 50ch; margin-top: 1rem;">
+          Channels: weekly sync, #squad-onboarding thread, or direct ping.
         </p>
       </section>
 
