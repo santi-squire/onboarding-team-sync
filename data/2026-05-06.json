@@ -281,7 +281,7 @@
     "highlights": [
       { "icon": "✅", "text": "Flow B catches its target — 33.5% of email checks are invited barbers" },
       { "icon": "✅", "text": "Flow B converts BETTER — 67.5% login completion vs 58.7% in Flow A" },
-      { "icon": "⚠️", "text": "Per-device accidental rate is higher in Flow B (14.3% vs 9.1%) — small sample at &lt;50% rollout, worth understanding" },
+      { "icon": "⚠️", "text": "Per-device accidental rate is higher in Flow B (14.3% vs 9.1%) — small sample at under 50% rollout, worth understanding" },
       { "icon": "🔧", "text": "Real Sample Ratio Mismatch (63/37 instead of 50/50) — root cause in flight" }
     ]
   }
