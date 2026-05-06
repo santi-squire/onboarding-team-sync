@@ -228,6 +228,11 @@
         "learning": "Future onboarding work moves to React Native — familiar territory."
       },
       {
+        "title": "Reporting team side project (Weekly Digest) 📊",
+        "detail": "Bugs from the Reporting team's Weekly Digest were eating dev time on this experiment.",
+        "learning": "Resolved: 1 day/week allocated to Digest; new dev from Artur's team handles new features going forward."
+      },
+      {
         "title": "Access provisioning not pre-staged 🔑",
         "detail": "Snowflake + flag service accesses surfaced AFTER ship, delaying the first analytics pull.",
         "learning": "File access requests on day 1 of project."

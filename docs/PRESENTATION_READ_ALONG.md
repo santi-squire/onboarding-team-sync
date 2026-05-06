@@ -118,10 +118,26 @@ LD assigns 50/50, but Snowflake observes 63/37. SRM = Sample Ratio Mismatch — 
 
 ## Slide 8 · Friction — guardrails
 
+**What this slide actually shows:**
+Three friction signals per variant — failed login attempts, forgot-password taps, and screen abandonment. Numbers are events (not distinct users).
+
+**The exact numbers on the slide:**
+- **Login attempt failed**: Flow A `0` events · Flow B `14` events (13 wrong_password + 1 network_error)
+- **Forgot password tapped**: Flow A `196` events · Flow B `59` events (42 returning + 15 temp_password + 2 stray)
+- **Login abandoned**: Flow A `202` events (all at password step) · Flow B `180` events (123 password + **57 at the NEW email step**)
+
 **Read:**
 > "Friction signals are comparable across variants. The new thing: Flow B has 57 abandonment events at the email step — a step Flow A doesn't have. It's expected; worth watching to see if it grows."
 
-> "Forgot password: similar magnitude. Login_failed only shows up in Flow B in these numbers — that's a data quality caveat covered in the next slide."
+> "Forgot password: Flow A 196 events vs Flow B 59. Flow A is higher because its sheet is non-dismissible — frustrated users tap 'Forgot' more — and because Flow A has more total volume thanks to the SRM."
+
+> "Login_failed: Flow A shows zero events, Flow B shows 14 events. The Flow A zero is NOT 'no failures' — it's a data quality issue: older app versions emit the legacy event without the variant property, so they get filtered out. Covered in the next slide."
+
+**If Eric asks "why is Flow A login_failed at zero?":**
+> "Versions 3.16.4 through 3.22.0 emit the legacy event without the variant property — they get filtered out of our query. Only 3.23.0 carries variant. Plus 100 events in 3.23.0 fire with variant null too — secondary issue we're auditing."
+
+**If Eric asks "is the 57 email-step abandonment a problem?":**
+> "Not yet. It's a new surface that Flow A doesn't have, so by definition it's a non-zero baseline. Worth comparing as volume grows. If it's still 57-or-similar at full rollout volume, that's good. If it scales aggressively, that's a friction signal worth investigating."
 
 ---
 

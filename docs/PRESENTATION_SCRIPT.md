@@ -29,9 +29,9 @@ Mention 2 platforms shipped in parallel + 9 events with byte-for-byte parity (pr
 
 ## Slide 4 · Per-exposure rates (1-2 min) **THE WRINKLE**
 
-> "First nuance. Normalized per device, Flow A has 9.1% accidental signups, Flow B has 14.3% — 57% higher. This is counterintuitive and worth understanding."
+> "First nuance. Normalized per device, Flow A has 9.1% barber signups via the signup path, Flow B has 14.3% — 57% higher. This is counterintuitive: if the experiment is redirecting invited barbers to login, this number should be lower in B, not higher."
 
-**Be ready to explain "accidental":** "We count barber-type accounts created through signup_link in Flow A or email_not_found in Flow B. The population SHOULD be invited barbers logging in with credentials a shop owner already created — anyone creating a NEW account is the original problem we're trying to solve."
+**Be ready to explain:** "We count barber-type accounts created via signup_link in Flow A or email_not_found in Flow B. We can't claim they're 'accidental' without user research — they could be legit new barbers OR existing barbers who didn't know they had an account. What's worth surfacing: the rate per device is higher in B, which is the direction we'd want reversed if the experiment is working."
 
 **Caveats to volunteer:** small sample, ramp at <50% most of the period, not declaring a winner.
 
