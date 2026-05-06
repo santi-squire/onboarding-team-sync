@@ -65,18 +65,18 @@
       "eyebrow": "Conversion · Guardrail (overall_login_success_rate from Confluence plan)",
       "title": "Login completion funnel by variant",
       "definition": "Distinct devices at each step — assigned → welcome viewed → login succeeded. Consistent ANONYMOUS_ID throughout. Conversion = succeeded ÷ welcome — this IS the overall_login_success_rate guardrail metric Tristan and I committed to in the Analytics Plan.",
-      "whyItMatters": "Tells us whether either flow breaks login for real users. Guardrail violation if either variant drops materially vs the other.",
+      "whyItMatters": "Tells us whether either flow breaks login for real users. Per Tristan's plan: 'no in-experiment control group; comparison vs the current login flow is done via before/after analysis at the reporting layer.' We're starting that pre/post comparison this week.",
       "currentRead": {
-        "data": "Flow A: 418 → 358 → 210 · welcome 85.6% · conversion 58.7%. Flow B: 244 → 243 → 164 · welcome 99.6% · conversion 67.5%.",
-        "meaning": "Flow B has near-100% welcome rate (the email-first sheet works) AND ~9 percentage points better login conversion than Flow A (67.5% − 58.7% ≈ 8.8). Guardrail not just intact — actually improved.",
-        "conclusion": "✅ Email-first does NOT break login — it improves it. Guardrail metric clears comfortably."
+        "data": "Flow A: 418 → 358 → 210 · welcome 85.6% · conversion 58.7%. Flow B: 244 → 243 → 164 · welcome 99.6% · conversion 67.5%. Pre-experiment baseline: pull pending — legacy events (LOGIN_SUCCESSFUL / SIGNIN_BUTTON_TAPPED / SIGNUP_LANDING_SCREEN_VIEWED) need a parallel funnel built; landing next sync.",
+        "meaning": "Flow B has near-100% welcome rate (the email-first sheet works) AND ~9 percentage points better login conversion than Flow A (67.5% − 58.7% ≈ 8.8). Guardrail not just intact — actually improved within the experiment. Pre-experiment baseline will tell us how this compares to the legacy flow.",
+        "conclusion": "✅ Email-first does NOT break login — it improves it within the experiment. Guardrail metric clears comfortably. Comparison vs legacy in next sync."
       }
     },
     {
       "id": "friction",
-      "eyebrow": "Guardrails",
+      "eyebrow": "Guardrails · login_attempt_failed + forgot_password_tapped + login_abandoned",
       "title": "Friction signals — where users struggle",
-      "definition": "Counts of failed login attempts, forgot-password taps, and screen abandonment — per variant.",
+      "definition": "Counts per variant of: LOGIN_ATTEMPT_FAILED (by reason: wrong_password / network_error / temp_password_error), FORGOT_PASSWORD_TAPPED (by from_state), LOGIN_ABANDONED (by last_step_reached — iOS only, Android skipped due to MVU lifecycle). All three are 'Nice to Have' events from the Confluence Analytics Plan.",
       "whyItMatters": "Surfaces UX problems that completion rates alone miss.",
       "currentRead": {
         "data": "Abandonment: Flow A 202 (password step) · Flow B 180 (123 password + 57 NEW email step). Forgot password: A 196 · B 59. Login failed: A 0 · B 14.",
@@ -159,14 +159,14 @@
 
   "caveats": [
     {
-      "title": "Indie account_type may not be emitting 🚧",
-      "detail": "Both variants show zero indie signups this window. Either organic indie volume was low, or the indie property isn't being set when an Indie account is created.",
-      "fix": "QA validates the firing path next week. Until then we use barber/signup_link as a proxy."
+      "title": "Indie account_type · 0 indie signups in 7 days 🚧",
+      "detail": "Diagnostic query ran. In post-deploy window: 73 barber + 2 shop + 0 indie account_created events. Account_created table has no pre-deploy history so we can't tell yet if 0 indie is a property-emission bug or genuine low organic volume. QA validation of the indie creation path next week settles this.",
+      "fix": "QA validates the firing path next week. Pull pre-experiment baseline to know the typical indie share."
     },
     {
-      "title": "Login attempt failed: Flow A returns 0 events 🔍",
-      "detail": "Suspicious. Likely older app versions emit the legacy 'login_failed' event without the variant property, so they get filtered out. The renamed event 'Login attempt failed' hasn't fully ramped.",
-      "fix": "Audit which app versions emit which event. Cross-check LOGIN_ATTEMPT_FAILED next pull."
+      "title": "Login_failed asymmetry · CONFIRMED root cause ✅",
+      "detail": "Diagnostic query ran. App versions 3.16.4 through 3.22.0 emit the LEGACY login_failed event without the variant property (so they're filtered out). Only 3.23.0 carries variant — and even there, 100 events fire with variant null (Flow A path may not be threading variant correctly). Two issues, both identified.",
+      "fix": "Issue 1 (legacy versions) self-resolves as users update to 3.23.0+. Issue 2 (variant null in 3.23.0) needs a code audit on the Flow A failure handler."
     },
     {
       "title": "Sample Ratio Mismatch (63/37 instead of 50/50) ⚠️",

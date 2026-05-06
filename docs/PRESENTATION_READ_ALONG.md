@@ -242,11 +242,24 @@ All 9 events + the derived guardrail are in the deck:
 
 ---
 
-## Pre-experiment baseline comparison — for next week
+## Updates from queries we ran today
+
+### Indie validation (Query A) — partial
+- 7 days post-deploy: 73 barber + 2 shop + **0 indie** account_created events
+- BUT the table has no pre-deploy history (event started tracking 04/30)
+- So we can't yet tell if the 0-indie is bug or genuinely-low organic volume
+- QA validates next week. Pre-experiment baseline pull will give the typical indie share.
+
+### login_failed asymmetry (Query B) — CONFIRMED
+- Versions 3.16.4 → 3.22.0 emit LEGACY login_failed event without variant property — get filtered out → that's where the Flow A absence comes from
+- Only 3.23.0 carries variant — and even there, 100 events fire with variant null (Flow A failures may not be threading variant correctly in 3.23.0 either)
+- Two issues confirmed: legacy versions (self-resolves with updates) + Flow A handler in 3.23.0 needs audit
+
+## Pre-experiment baseline comparison — partially in deck, more next sync
 
 **Tristan's plan**: "no in-experiment control group; comparison vs the current login flow is done via before/after analysis at the reporting layer."
 
-We haven't pulled this yet. Worth doing for next sync:
+The funnel slide now flags this. Full pull next sync — query draft:
 
 ```sql
 -- Pre-experiment baseline: legacy login funnel for the 7 days BEFORE the deploy
