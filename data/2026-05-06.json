@@ -39,42 +39,62 @@
     {
       "id": "variant-balance",
       "eyebrow": "Health check",
-      "title": "Variant balance — is the 50/50 split actually 50/50?",
-      "definition": "Distinct devices (anonymous_id) assigned to each variant via LOGIN_EXPERIMENT_ASSIGNED, post-deploy.",
-      "whyItMatters": "If the split is uneven, every downstream comparison is biased. We're working to understand the cause.",
-      "currentRead": "Honestly, there's a deviation: 63/37 device split (418 vs 244) instead of 50/50 — confirmed in Snowflake (source of truth). LD shows 61/39, directionally consistent. Investigation in flight (Santi + Tristan)."
+      "title": "Variant balance — should be 50/50",
+      "definition": "Distinct devices assigned to each variant — LD splits traffic, we measure with LOGIN_EXPERIMENT_ASSIGNED.",
+      "whyItMatters": "If the split is uneven, every comparison downstream is biased.",
+      "currentRead": {
+        "data": "Snowflake (truth): 418 / 244 = 63/37 device split. LD dashboard: 426 / 276 = 61/39.",
+        "meaning": "Both sources agree there's a real imbalance — ~13 percentage points off the expected 50/50.",
+        "conclusion": "⚠️ Real SRM. Not invalidating yet — but we keep this in mind when comparing variants. Investigation in flight (Santi + Tristan)."
+      }
     },
     {
       "id": "email-check",
-      "eyebrow": "Flow B insight · The money signal",
+      "eyebrow": "Flow B · the money signal",
       "title": "Email check — who actually enters Flow B?",
-      "definition": "EMAIL_CHECK_RESULT distribution by result type (returning · temp_password · new_user). Flow B exclusive.",
-      "whyItMatters": "This is the routing decision Flow B was designed to extract. High temp_password share = catching invited barbers before they accidentally sign up.",
-      "currentRead": "33.5% temp_password — Flow B is catching invited barbers as designed. 43.7% returning, 14.1% new_user, ~9% legacy username inputs. The 33.5% slice represents the target population the experiment exists to capture."
+      "definition": "When a Flow B user types their email, we hit the API and learn: are they a returning user, an invited barber with temp password, or a new email?",
+      "whyItMatters": "This is the routing decision Flow B was designed to extract — and the experiment's whole reason to exist.",
+      "currentRead": {
+        "data": "33.5% temp_password · 43.7% returning · 14.1% new_user · ~9% legacy username inputs. (382 events total, Flow B only.)",
+        "meaning": "1 in 3 Flow B users is an invited barber we needed to catch BEFORE they hit Sign Up.",
+        "conclusion": "✅ Flow B is doing exactly what it was designed to do at the routing level."
+      }
     },
     {
       "id": "funnel",
       "eyebrow": "Conversion · Guardrail",
       "title": "Login completion funnel by variant",
-      "definition": "Distinct devices at each step: assigned → welcome viewed → login succeeded. (Consistent ANONYMOUS_ID across all 3 steps — re-pull v3 done.)",
-      "whyItMatters": "Tells us whether either flow is breaking login. Conversion rate = succeeded ÷ welcome.",
-      "currentRead": "Flow B converts BETTER. Flow A: 418 → 358 → 210 (welcome 85.6%, conversion 58.7%). Flow B: 244 → 243 → 164 (welcome 99.6%, conversion 67.5%). Email-first doesn't break login — it improves it by ~9pp. Flow B's near-100% welcome rate confirms the design works as intended."
+      "definition": "Distinct devices at each step — assigned → welcome viewed → login succeeded. Consistent ANONYMOUS_ID throughout.",
+      "whyItMatters": "Tells us whether either flow breaks login for real users.",
+      "currentRead": {
+        "data": "Flow A: 418 → 358 → 210 · welcome 85.6% · conversion 58.7%. Flow B: 244 → 243 → 164 · welcome 99.6% · conversion 67.5%.",
+        "meaning": "Flow B has near-100% welcome rate (the email-first sheet works) AND ~9pp better login conversion than Flow A.",
+        "conclusion": "✅ Email-first does NOT break login — it improves it. Strong guardrail signal."
+      }
     },
     {
       "id": "friction",
       "eyebrow": "Guardrails",
       "title": "Friction signals — where users struggle",
-      "definition": "Counts of LOGIN_ATTEMPT_FAILED, FORGOT_PASSWORD_TAPPED, and LOGIN_ABANDONED — per variant.",
+      "definition": "Counts of failed login attempts, forgot-password taps, and screen abandonment — per variant.",
       "whyItMatters": "Surfaces UX problems that completion rates alone miss.",
-      "currentRead": "Flow B has 57 abandonment events at the NEW email_entry step (Flow A has no equivalent). Password-step abandonment: 202 events (Flow A) vs 123 (Flow B). Forgot password: 196 events (Flow A) vs 59 (Flow B). Login_failed: 14 events Flow B, 0 Flow A — likely older app versions emit the legacy event without the variant property; under investigation."
+      "currentRead": {
+        "data": "Abandonment: Flow A 202 (password step) · Flow B 180 (123 password + 57 NEW email step). Forgot password: A 196 · B 59. Login failed: A 0 · B 14.",
+        "meaning": "Flow B introduces an extra abandonment surface (the email step Flow A doesn't have). Login_failed Flow A absence is suspicious — older app versions emit the legacy event without the variant property.",
+        "conclusion": "🟡 Friction is comparable, with one new surface in B (email step) to watch. Login_failed audit pending."
+      }
     },
     {
       "id": "north-star",
       "eyebrow": "North star",
-      "title": "Accidental signups — Indie via signup_link",
-      "definition": "ACCOUNT_CREATED where account_type = 'indie' AND came_from = 'signup_link', segmented by variant.",
-      "whyItMatters": "The metric the experiment exists to move.",
-      "currentRead": "Zero indie signups in either variant this window — likely an instrumentation gap (the indie account_type may not be emitting on creation), not a null result. Closest proxy: Flow A — 38 barber/signup_link signups (original problem path). Flow B — 34 barber/email_not_found signups (redirected path). QA validation pending."
+      "title": "Indie accidental signups via signup_link",
+      "definition": "ACCOUNT_CREATED where account_type='indie' AND came_from='signup_link', segmented by variant. The metric the experiment exists to move.",
+      "whyItMatters": "If it drops in Flow B vs Flow A (or vs pre-experiment baseline), we shipped the right thing.",
+      "currentRead": {
+        "data": "Zero indie signups in either variant this window. Closest proxy (barber-type accidentals): Flow A 38 via signup_link · Flow B 35 via email_not_found.",
+        "meaning": "Either organic indie volume is low, or the indie account_type isn't being emitted on account creation. Tomorrow at 100% rollout we'll see if the zero holds.",
+        "conclusion": "🚧 Need full-rollout traffic + property emission validation. Reading next week."
+      }
     }
   ],
 
@@ -114,9 +134,9 @@
   },
 
   "northStarData": {
-    "categories": ["barber/signup_link", "barber/email_not_found", "shop/signup_link", "indie/signup_link"],
-    "flowA": [38, 0, 1, 0],
-    "flowB": [0, 34, 0, 0]
+    "categories": ["barber/signup_link", "barber/email_not_found", "shop/signup_link", "shop/email_not_found", "indie/signup_link"],
+    "flowA": [38, 0, 1, 0, 0],
+    "flowB": [0, 35, 0, 1, 0]
   },
 
   "emailCheck": {
@@ -218,36 +238,56 @@
   "commitmentDecisions": [
     {
       "id": "D1",
-      "text": "Coordinate with RN launch (29 May) — full feature parity, or onboarding-only first?",
-      "ask": "Confirm with Eric + Yurii in this meeting"
+      "text": "Phased Courses prototyping with Tristan — develop one course at a time, validate each, iterate with team",
+      "ask": "Aligning approach — stage-by-stage delivery starting next week"
     },
     {
       "id": "D2",
-      "text": "Phased Courses prototyping — stages with Tristan, or one big push?",
-      "ask": "Decide approach in this meeting"
+      "text": "Build login flows (A and B) in the new RN app in parallel with Appointments team",
+      "ask": "When the experiment winner is decided, RN implementation is ready"
     },
     {
       "id": "D3",
-      "text": "Build login flows (A and B) in the new RN app in parallel with Appointments team",
-      "ask": "Confirm scope and ownership"
+      "text": "Coordinate Courses delivery with the RN launch (29 May)",
+      "ask": "Confirming whether RN launches with full feature parity or onboarding-first"
     }
   ],
 
   "commitmentFyi": [
-    "Re-pull data with consistent ANONYMOUS_ID across all funnel steps (query drafted)",
-    "Investigate root cause of SRM with Tristan — Snowflake confirms 64/36",
-    "Audit signup_link_tapped scope leak (3 stray Flow B events) + login_failed asymmetry",
-    "iOS + Android stability monitoring during 100% rollout (push Android Title Case rename once stable)",
+    "Investigate SRM root cause with Tristan — Snowflake confirms 63/37 device split",
+    "Audit signup_link_tapped scope leak (3 stray Flow B events) and login_failed asymmetry",
     "Identify privacy team owner for user_id property sign-off",
-    "Continue weekly analytics extraction — this deck, fresh data each week"
+    "Continue weekly analytics extraction — fresh data each Monday in this deck"
   ],
 
   "courses": {
-    "title": "Courses · indie onboarding next chapter",
-    "context": "Indie onboarding restructured around course-based education. Already kicked off pre-experiment — paused during Tristan's vacation. Resuming now.",
+    "title": "Courses · the next chapter",
+    "context": "Indie onboarding restructured around course-based education. Already kicked off pre-experiment — paused during Tristan's vacation. Resuming this week.",
     "figma": {
       "name": "Soooooo Onboarding · Figma board",
       "url": "https://www.figma.com/board/wwEiY53MIasNSEA4AfPkx2/Soooooo-Onboarding?node-id=388-7062"
-    }
+    },
+    "tools": [
+      { "name": "Claude Design", "note": "Anthropic · 2-pane chat + live canvas. Reads Figma to extract design system." },
+      { "name": "DESIGN.md", "note": "Open-sourced spec by Stitch · brand rules consumed by every compatible agent." },
+      { "name": "OpenPencil", "note": "MIT · reads .fig natively, MCP server, design-to-code as JSX/Tailwind." }
+    ],
+    "ourPlan": [
+      "Take Tristan's existing Figma as the starting point",
+      "Drive prototypes through Claude Design + DESIGN.md spec for brand consistency",
+      "Iterate one course at a time — validate, refine, then move to code",
+      "Coordinate timing with the RN launch so it lands as a unit"
+    ]
+  },
+
+  "tldr": {
+    "eyebrow": "Eric's question · our answer this week",
+    "kicker": "Yes — we have results.",
+    "highlights": [
+      { "icon": "✅", "text": "Flow B catches its target — 33.5% of email checks are invited barbers" },
+      { "icon": "✅", "text": "Flow B converts BETTER — 67.5% login completion vs 58.7% in Flow A" },
+      { "icon": "⚠️", "text": "Per-device accidental rate is higher in Flow B (13.9% vs 9.1%) — investigating before declaring a winner" },
+      { "icon": "🔧", "text": "Real Sample Ratio Mismatch (63/37 instead of 50/50) — root cause in flight" }
+    ]
   }
 }

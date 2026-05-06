@@ -86,18 +86,12 @@
         <div class="hito-mini-timeline" id="hito-mini-timeline"></div>
       </section>
 
-      <!-- 3. ROLLOUT — 7-phase visual -->
-      <section id="rollout-slide">
-        <span class="slide-eyebrow">Rollout</span>
-        <h2 class="slide-headline">Phased ramp · safe and intentional</h2>
-        <p class="slide-sub">Feature flag-controlled rollout. Today at 50%, tomorrow at 100%.</p>
-
-        <div class="timeline" id="rollout-timeline"></div>
-
-        <div class="callout" style="margin-top: 1.5rem;">
-          <div class="callout-label">Read this week with caution</div>
-          <p id="rollout-interpretation">—</p>
-        </div>
+      <!-- 3. TL;DR — direct answer to Eric's question -->
+      <section id="tldr-slide">
+        <span class="slide-eyebrow" id="tldr-eyebrow">Eric's question · our answer this week</span>
+        <h2 class="slide-headline" id="tldr-kicker">Yes — we have results.</h2>
+        <ul class="tldr-list" id="tldr-list"></ul>
+        <p class="tldr-footer">Detail in the rest of this deck. <span class="tldr-arrow">→</span></p>
       </section>
 
       <!-- 4. HEADLINE FINDING -->
@@ -188,16 +182,26 @@
           </div>
           <div class="metric-explainer">
             <div class="metric-card">
-              <h4>Definition</h4>
+              <h4>What it is</h4>
               <p class="metric-definition"></p>
             </div>
             <div class="metric-card">
               <h4>Why it matters</h4>
               <p class="metric-why"></p>
             </div>
-            <div class="metric-card metric-card-current">
-              <h4>Current read</h4>
-              <p class="metric-current"></p>
+            <div class="metric-current-block">
+              <div class="metric-current-row">
+                <span class="metric-current-label">Data</span>
+                <p class="metric-current-data"></p>
+              </div>
+              <div class="metric-current-row">
+                <span class="metric-current-label">Meaning</span>
+                <p class="metric-current-meaning"></p>
+              </div>
+              <div class="metric-current-row metric-current-conclusion">
+                <span class="metric-current-label">Conclusion</span>
+                <p class="metric-current-text"></p>
+              </div>
             </div>
           </div>
         </div>
@@ -214,16 +218,26 @@
           </div>
           <div class="metric-explainer">
             <div class="metric-card">
-              <h4>Definition</h4>
+              <h4>What it is</h4>
               <p class="metric-definition"></p>
             </div>
             <div class="metric-card">
               <h4>Why it matters</h4>
               <p class="metric-why"></p>
             </div>
-            <div class="metric-card metric-card-current">
-              <h4>Current read</h4>
-              <p class="metric-current"></p>
+            <div class="metric-current-block">
+              <div class="metric-current-row">
+                <span class="metric-current-label">Data</span>
+                <p class="metric-current-data"></p>
+              </div>
+              <div class="metric-current-row">
+                <span class="metric-current-label">Meaning</span>
+                <p class="metric-current-meaning"></p>
+              </div>
+              <div class="metric-current-row metric-current-conclusion">
+                <span class="metric-current-label">Conclusion</span>
+                <p class="metric-current-text"></p>
+              </div>
             </div>
           </div>
         </div>
@@ -234,14 +248,9 @@
         <span class="slide-eyebrow metric-eyebrow">—</span>
         <h2 class="slide-headline metric-title">—</h2>
 
-        <div class="caveat-banner">
-          <span class="caveat-banner-icon">⚠</span>
-          <span><strong>Numbers don't reconcile cleanly</strong> — login_succeeded uses USER_ID, pre-login events use ANONYMOUS_ID. Re-pull pending. Directional only.</span>
-        </div>
-
         <div class="metric-layout">
           <div class="metric-charts">
-            <div class="chart-wrap" style="height: 320px;" id="funnel-wrap"></div>
+            <div class="chart-wrap" style="height: 340px;" id="funnel-wrap"></div>
           </div>
           <div class="metric-explainer">
             <div class="metric-card">
@@ -371,17 +380,13 @@
             <p class="courses-context" id="courses-context">—</p>
 
             <div class="courses-next-step">
-              <div class="courses-next-step-label">Next phase · prototyping</div>
-              <p>Pass Tristan's existing Figma into <strong>Claude Design</strong> + <code>DESIGN.md</code> spec. Iterate clickable prototypes per stage. Coordinate with the React Native launch.</p>
+              <div class="courses-next-step-label">Our plan · prototyping</div>
+              <ul class="courses-plan-list" id="courses-plan-list"></ul>
             </div>
 
-            <div class="courses-decisions">
-              <div class="courses-decisions-label">To decide today</div>
-              <ul>
-                <li>Stages: prototype → validate → code? Or all at once?</li>
-                <li>Coordinate with RN launch — May 29 = full feature parity, or onboarding-only first?</li>
-                <li>Who owns the prototyping pass with Tristan?</li>
-              </ul>
+            <div class="courses-tools">
+              <div class="courses-tools-label">Tooling we'll use</div>
+              <ul class="courses-tools-list" id="courses-tools-list"></ul>
             </div>
           </div>
         </div>

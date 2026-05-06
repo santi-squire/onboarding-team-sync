@@ -130,7 +130,30 @@ function renderMetricExplainers(data) {
     setIfExists(".metric-definition", metric.definition);
     setIfExists(".metric-why", metric.whyItMatters);
     setIfExists(".metric-watch", metric.watchFor);
-    setIfExists(".metric-current", metric.currentRead);
+
+    // currentRead can be a string OR an object {data, meaning, conclusion}
+    const cr = metric.currentRead;
+    if (typeof cr === "string") {
+      // Legacy — fold into conclusion only
+      setIfExists(".metric-current-text", cr);
+    } else if (cr && typeof cr === "object") {
+      setIfExists(".metric-current-data", cr.data);
+      setIfExists(".metric-current-meaning", cr.meaning);
+      setIfExists(".metric-current-text", cr.conclusion);
+    }
+  });
+}
+
+function renderTldr(data) {
+  const ul = document.getElementById("tldr-list");
+  if (!ul || !data.tldr) return;
+  setText("tldr-eyebrow", data.tldr.eyebrow);
+  setText("tldr-kicker", data.tldr.kicker);
+  ul.innerHTML = "";
+  (data.tldr.highlights || []).forEach((h) => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="tldr-icon">${h.icon}</span><span class="tldr-text">${(h.text || "").replace(/&/g, "&amp;").replace(/</g, "&lt;")}</span>`;
+    ul.appendChild(li);
   });
 }
 
@@ -342,6 +365,26 @@ function renderCourses(data) {
     const link = document.getElementById("figma-link");
     if (link && data.courses.figma.url) link.href = data.courses.figma.url;
   }
+
+  const planUl = document.getElementById("courses-plan-list");
+  if (planUl && Array.isArray(data.courses.ourPlan)) {
+    planUl.innerHTML = "";
+    data.courses.ourPlan.forEach((item) => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      planUl.appendChild(li);
+    });
+  }
+
+  const toolsUl = document.getElementById("courses-tools-list");
+  if (toolsUl && Array.isArray(data.courses.tools)) {
+    toolsUl.innerHTML = "";
+    data.courses.tools.forEach((t) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${t.name}</strong> <span class="course-tool-note">${t.note || ""}</span>`;
+      toolsUl.appendChild(li);
+    });
+  }
 }
 
 // ---------- Boot ----------
@@ -364,6 +407,7 @@ async function boot() {
   renderCover(data);
   renderRollout(data);
   renderHitoMiniTimeline(data);
+  renderTldr(data);
   renderMetricExplainers(data);
   renderVariantBalanceCharts(data);
   renderFunnel(data);

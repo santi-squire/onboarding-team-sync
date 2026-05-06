@@ -3038,3 +3038,283 @@ body {
   margin: 0.6rem 0 1rem 0;
 }
 
+
+/* ============================================================
+   TL;DR slide (slide 3)
+   ============================================================ */
+#tldr-slide {
+  position: relative;
+}
+
+#tldr-slide .slide-eyebrow {
+  font-size: 0.78rem;
+}
+
+#tldr-slide .slide-headline {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 4rem;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+}
+
+.tldr-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.tldr-list li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.9rem 1.2rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--text);
+  margin: 0;
+}
+
+.tldr-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.tldr-text {
+  flex: 1;
+}
+
+.tldr-footer {
+  margin-top: 1.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+
+.tldr-arrow {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ============================================================
+   Metric current-block restructured (data / meaning / conclusion)
+   ============================================================ */
+.metric-current-block {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: grid;
+}
+
+.metric-current-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 0.9rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+}
+
+.metric-current-row:last-child {
+  border-bottom: none;
+}
+
+.metric-current-label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 600;
+  padding-top: 3px;
+}
+
+.metric-current-row p {
+  font-size: 0.85rem;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.55;
+}
+
+.metric-current-row.metric-current-conclusion {
+  background: rgba(249, 115, 22, 0.08);
+  border-top: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.metric-current-row.metric-current-conclusion .metric-current-label {
+  color: var(--accent);
+}
+
+.metric-current-row.metric-current-conclusion p {
+  font-weight: 500;
+}
+
+/* ============================================================
+   Retrospective overflow fix — tighter spacing + scroll if needed
+   ============================================================ */
+#retrospective-slide {
+  overflow-y: auto;
+}
+
+.retro-stat-strip {
+  margin: 0.8rem 0 1.2rem 0 !important;
+}
+
+.retro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  align-items: start;
+}
+
+.retro-column {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+
+.retro-column-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.retro-column-head h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.retro-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.retro-list li {
+  padding: 0.55rem 0.7rem;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.retro-item-title {
+  font-size: 0.86rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.2rem !important;
+  line-height: 1.35 !important;
+}
+
+.retro-item-detail {
+  font-size: 0.74rem !important;
+  margin-bottom: 0.3rem !important;
+  line-height: 1.4 !important;
+}
+
+.retro-item-learning {
+  font-size: 0.7rem !important;
+  padding: 0.3rem 0.55rem !important;
+  line-height: 1.4 !important;
+}
+
+.retro-item-learning-label {
+  font-size: 0.55rem !important;
+}
+
+.retro-stat-cell {
+  padding: 0.7rem 0.9rem;
+}
+
+.retro-stat-value {
+  font-size: 1.8rem !important;
+}
+
+/* ============================================================
+   Courses — plan list + tools list
+   ============================================================ */
+.courses-plan-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.4rem 0 0 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.courses-plan-list li {
+  font-size: 0.84rem;
+  color: var(--text);
+  padding-left: 1.4rem;
+  position: relative;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.courses-plan-list li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.courses-tools {
+  background: rgba(96, 165, 250, 0.06);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 8px;
+  padding: 0.7rem 0.9rem;
+}
+
+.courses-tools-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--flow-a);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.courses-tools-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.courses-tools-list li {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.courses-tools-list strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.course-tool-note {
+  color: var(--text-dim);
+  font-size: 0.95em;
+}
+
