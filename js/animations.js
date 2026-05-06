@@ -56,10 +56,107 @@
     }
 
     populateHeadline(data);
+    populatePerExposure(data);
     populateCaveats(data);
     populateRetrospective(data);
     populateCommitments(data);
+    populateCourses(data);
     return data;
+  }
+
+  // ---------- Per-exposure slide ----------
+  function populatePerExposure(data) {
+    const p = data.perExposure;
+    if (!p) return;
+    setText("per-exposure-eyebrow", p.eyebrow);
+    setText("per-exposure-title", p.title);
+    setText("per-exposure-subtitle", p.subtitle);
+    setText("exposure-honest-take", p.honestTake);
+
+    if (p.flowA) {
+      setText("exposure-a-rate", p.flowA.rate?.toFixed ? p.flowA.rate.toFixed(1) : p.flowA.rate);
+      setText("exposure-a-rate-label", p.flowA.rateLabel || "");
+      setText("exposure-a-fraction", `${p.flowA.numerator} / ${p.flowA.denominator} devices`);
+      setText("exposure-a-path", p.flowA.path || "");
+    }
+    if (p.flowB) {
+      setText("exposure-b-rate", p.flowB.rate?.toFixed ? p.flowB.rate.toFixed(1) : p.flowB.rate);
+      setText("exposure-b-rate-label", p.flowB.rateLabel || "");
+      setText("exposure-b-fraction", `${p.flowB.numerator} / ${p.flowB.denominator} devices`);
+      setText("exposure-b-path", p.flowB.path || "");
+    }
+
+    // Delta callout
+    if (p.flowA?.rate && p.flowB?.rate) {
+      const delta = ((p.flowB.rate - p.flowA.rate) / p.flowA.rate) * 100;
+      const sign = delta >= 0 ? "+" : "";
+      setText("exposure-delta", `Flow B is ${sign}${delta.toFixed(0)}% relative to Flow A`);
+    }
+
+    const ul = document.getElementById("exposure-caveats");
+    if (ul && Array.isArray(p.caveats)) {
+      ul.innerHTML = "";
+      p.caveats.forEach((c) => {
+        const li = document.createElement("li");
+        li.textContent = c;
+        ul.appendChild(li);
+      });
+    }
+  }
+
+  // ---------- Courses slides ----------
+  function populateCourses(data) {
+    const c = data.courses;
+    if (!c) return;
+
+    setText("courses-title", c.title);
+    setText("courses-tagline", c.tagline);
+    setText("courses-context", c.context);
+
+    if (c.figma) {
+      setText("figma-name", c.figma.name);
+      setText("figma-subtitle", c.figma.subtitle);
+      const link = document.getElementById("figma-link");
+      if (link && c.figma.url) link.href = c.figma.url;
+
+      const ul = document.getElementById("figma-highlights");
+      if (ul && Array.isArray(c.figma.highlights)) {
+        ul.innerHTML = "";
+        c.figma.highlights.forEach((h) => {
+          const li = document.createElement("li");
+          li.textContent = h;
+          ul.appendChild(li);
+        });
+      }
+    }
+
+    if (c.claudeDesignFlow) {
+      const f = c.claudeDesignFlow;
+      setText("cflow-step1-title", f.step1?.title);
+      setText("cflow-step1-detail", f.step1?.detail);
+      setText("cflow-step2-title", f.step2?.title);
+      setText("cflow-step2-detail", f.step2?.detail);
+      setText("cflow-step3-title", f.step3?.title);
+      setText("cflow-step3-detail", f.step3?.detail);
+    }
+
+    const list = document.getElementById("tools-list");
+    if (list && Array.isArray(c.tools)) {
+      list.innerHTML = "";
+      c.tools.forEach((t) => {
+        const li = document.createElement("li");
+        li.className = "tool-card";
+        li.innerHTML = `
+          <div class="tool-head">
+            <span class="tool-name">${escapeHtml(t.name)}</span>
+            <span class="tool-license">${escapeHtml(t.license || "")}</span>
+          </div>
+          <div class="tool-meta">${escapeHtml(t.by || "")}${t.released ? ` · ${escapeHtml(t.released)}` : ""}</div>
+          <p class="tool-note">${escapeHtml(t.note || "")}</p>
+        `;
+        list.appendChild(li);
+      });
+    }
   }
 
   function populateHeadline(data) {
@@ -105,26 +202,29 @@
     const r = data.retrospective || {};
     const stats = r.stats || {};
 
-    // Stat strip
+    // Stat strip — prefer custom cells if provided
     const strip = document.getElementById("retro-stat-strip");
     if (strip) {
-      const cells = [
-        { value: stats.daysToShip ?? "—", label: "Days to ship" },
-        { value: stats.platforms ?? "—", label: "Platforms" },
-        { value: stats.eventsInstrumented ?? "—", label: "Events instrumented" },
-      ];
+      const cells = Array.isArray(stats.cells) && stats.cells.length > 0
+        ? stats.cells
+        : [
+            { value: stats.daysToShip ?? "—", label: "Days to ship" },
+            { value: stats.platforms ?? "—", label: "Platforms" },
+            { value: stats.eventsInstrumented ?? "—", label: "Events instrumented" },
+          ];
       strip.innerHTML = cells
         .map(
           (c) => `
         <div class="retro-stat-cell">
-          <div class="retro-stat-value">${c.value}</div>
-          <div class="retro-stat-label">${c.label}</div>
+          <div class="retro-stat-value">${escapeHtml(String(c.value))}</div>
+          <div class="retro-stat-label">${escapeHtml(c.label || "")}</div>
+          ${c.subtext ? `<div class="retro-stat-sub">${escapeHtml(c.subtext)}</div>` : ""}
         </div>`,
         )
         .join("");
     }
 
-    // Two columns
+    // Two columns — items can be strings OR { title, detail, learning }
     fillRetroColumn("retro-went-well", r.wentWell, "to be filled in live");
     fillRetroColumn("retro-slowed-down", r.slowedDown, "to be filled in live");
   }
@@ -136,11 +236,21 @@
     if (Array.isArray(items) && items.length > 0) {
       items.forEach((item) => {
         const li = document.createElement("li");
-        li.textContent = typeof item === "string" ? item : (item.title || JSON.stringify(item));
+        if (typeof item === "string") {
+          li.textContent = item;
+        } else {
+          const title = escapeHtml(item.title || "");
+          const detail = escapeHtml(item.detail || "");
+          const learning = escapeHtml(item.learning || "");
+          li.innerHTML = `
+            <div class="retro-item-title">${title}</div>
+            ${detail ? `<div class="retro-item-detail">${detail}</div>` : ""}
+            ${learning ? `<div class="retro-item-learning"><span class="retro-item-learning-label">Learning</span> ${learning}</div>` : ""}
+          `;
+        }
         ul.appendChild(li);
       });
     } else {
-      // 3 placeholder slots
       for (let i = 0; i < 3; i++) {
         const li = document.createElement("li");
         li.className = "retro-placeholder";
@@ -170,10 +280,19 @@
       const num = String(i + 1).padStart(2, "0");
       const text = typeof c === "string" ? c : (c.text || c.title || "");
       const owner = (typeof c === "object" && c.owner) ? c.owner : "";
+      const scope = (typeof c === "object" && c.scope) ? c.scope : "";
+      const note = (typeof c === "object" && c.note) ? c.note : "";
       li.innerHTML = `
         <span class="commitment-num">${num}</span>
-        <span class="commitment-text">${escapeHtml(text)}</span>
-        <span class="commitment-meta">${escapeHtml(owner)}</span>
+        <span class="commitment-check" aria-hidden="true"></span>
+        <div class="commitment-body">
+          <div class="commitment-text">${escapeHtml(text)}</div>
+          ${note ? `<div class="commitment-note">${escapeHtml(note)}</div>` : ""}
+        </div>
+        <div class="commitment-meta-stack">
+          ${owner ? `<span class="commitment-meta">${escapeHtml(owner)}</span>` : ""}
+          ${scope ? `<span class="commitment-scope">${escapeHtml(scope)}</span>` : ""}
+        </div>
       `;
       ul.appendChild(li);
     });

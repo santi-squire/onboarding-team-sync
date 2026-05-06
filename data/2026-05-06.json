@@ -13,9 +13,11 @@
     "What we shipped",
     "Login A/B test — context, flows, and rollout state",
     "Metrics walkthrough — every number explained",
+    "Per-exposure rates — counterintuitive early signal",
     "Data quality caveats",
     "Retrospective — what went well, what slowed us down",
-    "Commitments for next week"
+    "Commitments for next week",
+    "Next major project · Courses"
   ],
 
   "headlineFinding": {
@@ -108,7 +110,7 @@
       "definition": "Distinct devices (anonymous_id) assigned to each variant via LOGIN_EXPERIMENT_ASSIGNED, post-deploy.",
       "whyItMatters": "If the split is uneven, every downstream comparison is biased — a 60/40 imbalance can flip a tie into either side's win.",
       "watchFor": "Expect 50/50 ± a few percent. Outside ~45/55 is a Sample Ratio Mismatch worth investigating before trusting downstream metrics.",
-      "currentRead": "Confirmed imbalance: 64% / 36% at the device level (390 Flow A vs 220 Flow B). 14 percentage points off 50/50 — consistent with LD's signal. SRM is real, root cause needs investigation (bucketing logic, cached pre-experiment exposures, or non-uniform LD evaluation)."
+      "currentRead": "Confirmed imbalance: 64% / 36% at the device level (390 Flow A vs 220 Flow B). 14 percentage points off 50/50 — consistent with LD's signal. SRM is real, root cause investigation in flight (separate from this deck)."
     },
     {
       "id": "funnel",
@@ -117,7 +119,7 @@
       "definition": "Distinct actors at each step: assigned → welcome viewed → login succeeded. Conversion rate = succeeded ÷ welcome.",
       "whyItMatters": "Tells us whether either flow is breaking login for real users. A drop in either variant is a guardrail violation, regardless of north-star outcome.",
       "watchFor": "Flow B should not lose more than 10% completion vs Flow A.",
-      "currentRead": "Flow A: 185 assigned → 28 welcome viewed → 67 succeeded. Flow B: 17 assigned → 16 welcome → 18 succeeded. Numbers don't reconcile cleanly because login_succeeded uses USER_ID while pre-login events use ANONYMOUS_ID — different keyspaces. Directionally: Flow B's near-1:1 assigned/welcome ratio (16/17) is a positive signal that users in Flow B reach the welcome screen reliably. Reconciliation pending consistent-ID re-pull."
+      "currentRead": "Flow A: 185 assigned → 28 welcome viewed → 67 succeeded. Flow B: 17 assigned → 16 welcome → 18 succeeded. Numbers don't reconcile cleanly because login_succeeded uses USER_ID while pre-login events use ANONYMOUS_ID. Directionally: Flow B's near-1:1 assigned/welcome ratio (16/17) is a positive signal that users in Flow B reach the welcome screen reliably."
     },
     {
       "id": "north-star",
@@ -126,7 +128,7 @@
       "definition": "ACCOUNT_CREATED where account_type = 'indie' AND came_from = 'signup_link', segmented by variant.",
       "whyItMatters": "The metric the experiment exists to move. If it drops in Flow B vs Flow A, we shipped the right thing.",
       "watchFor": "≥30% reduction in Flow B vs Flow A is the pre-committed success bar.",
-      "currentRead": "Zero Indie signups via signup_link in either variant during this 7-day window. Either organic indie volume is low this period, or the indie account_type isn't being emitted (QA validation needed). Closest proxy: Flow A — 38 barber/signup_link signups (the original problem path). Flow B — 34 barber/email_not_found signups (the redirected path). Similar magnitude, different routing — too thin to call a winner."
+      "currentRead": "Zero Indie signups via signup_link in either variant during this 7-day window. Either organic indie volume is low this period, or the indie account_type isn't being emitted (QA validation needed). Closest proxy: Flow A — 38 barber/signup_link signups (the original problem path). Flow B — 34 barber/email_not_found signups (the redirected path)."
     },
     {
       "id": "email-check",
@@ -135,18 +137,47 @@
       "definition": "EMAIL_CHECK_RESULT distribution across result (returning · temp_password · new_user) and input_type (email · username). Flow B exclusive.",
       "whyItMatters": "This is the signal Flow B was designed to extract. Email check is the routing decision — high temp_password share means Flow B is catching its target population (invited barbers) before they accidentally sign up.",
       "watchFor": "Meaningful temp_password share (>20% suggests strong target capture). High new_user share would mean accidental signups are still leaking.",
-      "currentRead": "33.5% temp_password (email) — Flow B is catching invited barbers as designed. 43.7% returning (email) — healthy returning login traffic. 14.1% new_user (email) — genuine new users. Username inputs ~9% — legacy edge. Distinct user counts per row (4-7) look anomalously low — suspect anonymous_id rotation across sessions or heavy retry; flagged for investigation but doesn't change the percentage shape."
+      "currentRead": "33.5% temp_password (email) — Flow B is catching invited barbers as designed. 43.7% returning (email) — healthy returning login traffic. 14.1% new_user (email) — genuine new users. Username inputs ~9% — legacy edge."
     },
     {
       "id": "friction",
       "eyebrow": "Guardrails",
       "title": "Friction signals — where users struggle",
       "definition": "Counts of LOGIN_ATTEMPT_FAILED (by reason), FORGOT_PASSWORD_TAPPED (by from_state), and LOGIN_ABANDONED (by last_step_reached, iOS only). Per variant.",
-      "whyItMatters": "Surfaces UX problems we wouldn't see in completion rates alone. A spike in forgot-password from temp_password users in Flow B would mean the invite email copy needs work. Abandonment at the new email step in Flow B would mean the friction outweighs the benefit.",
-      "watchFor": "Flow B should not have a higher forgot-password rate among temp_password users than Flow A overall. Abandonment at email_entry in Flow B is a red flag if it dominates.",
-      "currentRead": "Flow B introduces 57 abandonment events at the NEW email_entry step (Flow A has no equivalent). Password-step abandonment: 202 events (Flow A) vs 123 (Flow B). Forgot password — Flow A: 8 users via flow_a_sheet. Flow B: 2 users returning + 1 temp + 2 strays in flow_a_sheet (known PostHog/LD pinning race). Login_failed asymmetry: only Flow B rows present (8 users, 14 events) — Flow A failures likely landing in legacy table or older app versions without variant. Login_abandoned distinct device counts (1-2) are anomalously low for the event totals — investigate over-firing pattern."
+      "whyItMatters": "Surfaces UX problems we wouldn't see in completion rates alone.",
+      "watchFor": "Flow B should not have a higher forgot-password rate among temp_password users. Abandonment at email_entry in Flow B is a red flag if it dominates.",
+      "currentRead": "Flow B introduces 57 abandonment events at the NEW email_entry step (Flow A has no equivalent). Password-step abandonment: 202 events (Flow A) vs 123 (Flow B). Forgot password — Flow A: 8 users via flow_a_sheet. Flow B: 2 returning + 1 temp + 2 strays in flow_a_sheet (known PostHog/LD pinning race). Login_failed asymmetry: only Flow B rows present (8 users, 14 events) — under investigation."
     }
   ],
+
+  "perExposure": {
+    "eyebrow": "Counterintuitive · Early signal",
+    "title": "Per-exposure rates tell a different story",
+    "subtitle": "Raw counts hide the SRM. Normalized, Flow B's accidental-barber rate is ~60% higher per device.",
+    "flowA": {
+      "label": "Flow A · accidental barber via signup_link",
+      "rate": 9.7,
+      "rateLabel": "% of Flow A devices",
+      "numerator": 38,
+      "denominator": 390,
+      "path": "User sees Sign Up button → taps it → signs up by mistake."
+    },
+    "flowB": {
+      "label": "Flow B · accidental barber via email_not_found",
+      "rate": 15.5,
+      "rateLabel": "% of Flow B devices",
+      "numerator": 34,
+      "denominator": 220,
+      "path": "User types email → API returns not-found → auto-redirect to signup."
+    },
+    "honestTake": "Not declaring a winner. This is an early signal worth understanding before the experiment matures.",
+    "caveats": [
+      "Small volume — 7 days, most of which were at <50% rollout",
+      "Different routing — Flow A is intent click; Flow B is auto-redirect after email_not_found",
+      "ID-space mixing on funnel data not yet resolved",
+      "SRM root cause still under investigation"
+    ]
+  },
 
   "variantBalance": {
     "expected": { "flowA": 50, "flowB": 50 },
@@ -197,7 +228,7 @@
     "details": [
       "Login_failed only appears for Flow B (13 wrong_password + 1 network_error). Flow A absence suggests older app versions emit the legacy event without the variant property.",
       "Forgot password — Flow A: 196 events from flow_a_sheet. Flow B: 42 returning + 15 temp + 2 stray flow_a_sheet (known race condition).",
-      "Abandonment — Flow A: 202 at password_entry. Flow B: 57 at email_entry (new step) + 123 at password_entry. Distinct device counts on abandonment are anomalously low (1-2), suggesting over-firing on screen redrive."
+      "Abandonment — Flow A: 202 at password_entry. Flow B: 57 at email_entry (new step) + 123 at password_entry."
     ]
   },
 
@@ -209,7 +240,7 @@
     },
     {
       "title": "Anomalous repeat events on login_abandoned",
-      "detail": "1-2 distinct devices firing 100+ abandonment events each. Suggests over-firing on screen redrive (auth flow re-instantiating during the same session).",
+      "detail": "1-2 distinct devices firing 100+ abandonment events each. Suggests over-firing on screen redrive.",
       "fix": "Audit iOS presenter deinit logic for spurious dismissals."
     },
     {
@@ -220,7 +251,7 @@
     {
       "title": "signup_link_tapped scope leak",
       "detail": "3 events appeared in Flow B (should be Flow A only). 2 distinct devices.",
-      "fix": "Audit firing site — likely a scope guard missing on Android or a flag-flip race."
+      "fix": "Audit firing site — likely a scope guard missing or a flag-flip race."
     },
     {
       "title": "Login_failed asymmetry — only Flow B rows",
@@ -229,25 +260,192 @@
     },
     {
       "title": "Indie signups = 0 in window",
-      "detail": "Both variants show zero ACCOUNT_CREATED with account_type='indie'. Either organic indie volume is low this period, or the property isn't being set at indie creation time.",
+      "detail": "Both variants show zero ACCOUNT_CREATED with account_type='indie'. Either organic indie volume is low this period, or the property isn't being set.",
       "fix": "QA-validate property emission for indie account creation flow."
     }
   ],
 
   "retrospective": {
     "stats": {
-      "kickoffDate": "2026-04-13",
+      "kickoffDate": "2026-03-25",
       "deployDate": "2026-04-30",
-      "daysToShip": 17,
+      "fullRolloutDate": "2026-05-07",
+      "daysToShip": 50,
       "platforms": 2,
       "eventsInstrumented": 9,
-      "rolloutDays": 7
+      "cells": [
+        { "value": "50", "label": "Days · team formed → 100% rollout", "subtext": "18 Mar → 7 May" },
+        { "value": "2", "label": "Platforms · iOS + Android shipped in parallel", "subtext": "single shared event schema" },
+        { "value": "9", "label": "Events · byte-for-byte cross-platform parity", "subtext": "0 incidents during phased rollout" }
+      ]
     },
-    "wentWell": [],
-    "slowedDown": []
+    "timeline": [
+      { "date": "2026-03-18", "label": "Onboarding team formed",        "delta": "" },
+      { "date": "2026-03-25", "label": "Kickoff with Tristan's plan",   "delta": "+7d" },
+      { "date": "2026-04-01", "label": "Implementation start",           "delta": "+7d" },
+      { "date": "2026-04-13", "label": "SQR-6510 ticket created",        "delta": "+12d" },
+      { "date": "2026-04-30", "label": "First production ship · 1%",    "delta": "+17d" },
+      { "date": "2026-05-07", "label": "100% rollout · full traffic",   "delta": "+7d" }
+    ],
+    "wentWell": [
+      {
+        "title": "Cross-platform parity at the wire level",
+        "detail": "iOS and Android emit identical event names + property values byte-for-byte. One Snowflake query covers both platforms."
+      },
+      {
+        "title": "Phased rollout managed risk",
+        "detail": "1% → 2% → 5% → 10% → 20% → 50% → 100% over 7 days. No production incidents during the ramp."
+      },
+      {
+        "title": "Analytics plan locked before code shipped",
+        "detail": "Alignment with Tristan on north star + 9 events + threshold + caveats — guards against rationalizing post-hoc."
+      },
+      {
+        "title": "Snowflake unblock → actionable data same day",
+        "detail": "Went from 'waiting for access' to 'first headline finding in deck' within a single working session. Two query iterations same day."
+      }
+    ],
+    "slowedDown": [
+      {
+        "title": "Unknowns surfaced during QA, not before",
+        "detail": "Khem (QA) flagged that login needed to accept usernames, not just emails. iOS had an auto sign-in flow that wasn't tested → required late fix and delayed deploy.",
+        "learning": "Pre-QA spike to enumerate edge cases (legacy user types, auto-flows already in place) before implementation locks in."
+      },
+      {
+        "title": "Concurrent feature-flag tooling migration",
+        "detail": "LaunchDarkly → PostHog → GrowthBook in motion at the same time. Wiring overhead, decisions about which to use, source-of-truth confusion.",
+        "learning": "Lock the analytics destination before instrumenting; treat tooling migration as a separate workstream."
+      },
+      {
+        "title": "Cross-platform context switching on unfamiliar code",
+        "detail": "Both iOS and Android were ramp-up territory. Ship work doubles when you're not the expert on either.",
+        "learning": "Mitigation in place: future onboarding work moves to React Native — familiar territory, better predictability for timelines."
+      },
+      {
+        "title": "Side project (Weekly Digest) pulled focus",
+        "detail": "Bugs from Reporting team kept being assigned, eating dev time on this experiment.",
+        "learning": "Solution applied: 1 day/week allocated to the Digest project; new dev from Artur's team to handle going forward."
+      },
+      {
+        "title": "Access provisioning not pre-staged",
+        "detail": "Snowflake + flag service accesses surfaced as bottlenecks AFTER the experiment shipped, delaying the first analytics pull by days.",
+        "learning": "File access requests on day 1 of project, not when needed."
+      }
+    ]
   },
 
-  "commitments": [],
+  "commitments": [
+    {
+      "id": 1,
+      "text": "Re-pull data with consistent ANONYMOUS_ID across all funnel steps",
+      "owner": "Santi",
+      "scope": "this week"
+    },
+    {
+      "id": 2,
+      "text": "Investigate root cause of SRM (64/36 device split confirmed in Snowflake)",
+      "owner": "Santi + Yurii",
+      "scope": "this week",
+      "note": "Snowflake = source of truth, per Yurii. LD verdict ('flowB best') based on misconfigured primary metric — irrelevant."
+    },
+    {
+      "id": 3,
+      "text": "Investigate bugs surfaced this session — signup_link scope leak, login_abandoned over-firing, login_failed asymmetry",
+      "owner": "Santi",
+      "scope": "this week"
+    },
+    {
+      "id": 4,
+      "text": "iOS + Android bug-fixing for 3.23.0 (general triage)",
+      "owner": "Santi",
+      "scope": "ongoing"
+    },
+    {
+      "id": 5,
+      "text": "Build login flows (A and B) in the new RN app — collaborate with Appointments team",
+      "owner": "Santi + Appointments",
+      "scope": "next 2 weeks",
+      "note": "When we decide a winner, RN implementation is ready to ship."
+    },
+    {
+      "id": 6,
+      "text": "Iterate Courses project with Tristan — prototype using Claude Design / OSS alternative on existing Figma",
+      "owner": "Santi + Tristan",
+      "scope": "next 2 weeks"
+    },
+    {
+      "id": 7,
+      "text": "Roadmap doc in Confluence for Courses (analog to the Analytics Plan we wrote for login)",
+      "owner": "Santi + Tristan",
+      "scope": "next week"
+    },
+    {
+      "id": 8,
+      "text": "Continue weekly analytics extraction (this deck) with fresh data",
+      "owner": "Santi",
+      "scope": "weekly"
+    },
+    {
+      "id": 9,
+      "text": "Align on RN app dates — May 29: full feature parity? Onboarding-only first? — confirm with Eric / Yurii",
+      "owner": "Santi → Eric + Yurii",
+      "scope": "this week"
+    }
+  ],
+
+  "courses": {
+    "title": "Courses · indie onboarding next chapter",
+    "tagline": "Tristan's plan #2: indie onboarding restructured around course-based education.",
+    "context": "Per Tristan's strategic plan from team kickoff, the next big project after Login is restructuring indie onboarding around courses. Already kicked off pre-experiment; on hold during Tristan's vacation. Now resuming.",
+    "figma": {
+      "name": "Soooooo Onboarding",
+      "subtitle": "Indie course-based education board",
+      "url": "https://www.figma.com/board/wwEiY53MIasNSEA4AfPkx2/Soooooo-Onboarding?node-id=388-7062",
+      "highlights": [
+        "Course-based user education flow",
+        "Celebration / progress sections",
+        "Detail screens for indie barber path"
+      ]
+    },
+    "plan": [
+      "Take Tristan's existing Figma as input",
+      "Feed into Claude Design / OSS alternative — auto-extracts design system, generates live HTML",
+      "Iterate prototype rapidly with stakeholders (Eric, Yurii, Tristan)",
+      "Once validated, code into the RN auth shell when it lands"
+    ],
+    "tools": [
+      {
+        "name": "Claude Design",
+        "by": "Anthropic",
+        "license": "Proprietary",
+        "released": "2026-04-17",
+        "note": "Two-pane interface: chat on the left, live HTML canvas on the right. Reads Figma + codebases to extract design systems. Powered by Claude Opus 4.7."
+      },
+      {
+        "name": "Open CoDesign",
+        "by": "OpenCoworkAI",
+        "license": "MIT",
+        "note": "Local-first, BYOK. Imports Claude Code API key. Multi-model: Claude / GPT / Gemini / Kimi / Ollama."
+      },
+      {
+        "name": "OpenPencil",
+        "by": "open-pencil",
+        "license": "MIT",
+        "note": "Reads .fig natively. Headless CLI + MCP server for AI agents. Best fit for our Figma → code workflow."
+      },
+      {
+        "name": "DESIGN.md",
+        "by": "Google Stitch (open-sourced)",
+        "license": "Apache 2.0",
+        "note": "Markdown spec for brand consistency across agents. Drop in repo root → every compatible agent reads it."
+      }
+    ],
+    "claudeDesignFlow": {
+      "step1": { "title": "Figma board", "detail": "Tristan's existing 'Soooooo Onboarding' Figma — already structured around courses, indie path, celebration moments." },
+      "step2": { "title": "Claude Design / OpenPencil", "detail": "Two-pane interface: prompt + live canvas. Reads Figma to extract design system. We refine via inline comments and prompts." },
+      "step3": { "title": "Live HTML prototype", "detail": "Clickable, testable prototype to share with stakeholders. Once validated, we move to code in the RN auth shell." }
+    }
+  },
 
   "openIssues": [
     {
@@ -259,7 +457,7 @@
     {
       "title": "Sample Ratio Mismatch confirmed at device level",
       "owner": "Yurii + Santi",
-      "status": "Snowflake confirms 64/36 device split. Investigation: bucketing logic, cached pre-experiment exposures, or non-uniform LD evaluation.",
+      "status": "Snowflake confirms 64/36 device split. Investigation in flight.",
       "severity": "warn"
     },
     {
@@ -277,7 +475,7 @@
     {
       "title": "Android Title Case rename",
       "owner": "Santi",
-      "status": "Held back pending iOS validation in prod. Will push once 100% rollout is stable.",
+      "status": "Held back pending iOS validation in prod.",
       "severity": "info"
     }
   ],
