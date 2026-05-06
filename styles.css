@@ -3516,3 +3516,61 @@ body {
 .metric-current-row p {
   white-space: pre-line;
 }
+
+/* ============================================================
+   Responsive fix · prevent grid item overflow on small viewports
+   CSS Grid items default to min-width: auto which prevents them from
+   shrinking below content width. This breaks 1fr columns when content
+   is long. Force min-width: 0 so columns respect their fr ratios.
+   ============================================================ */
+.metric-layout,
+.metric-charts,
+.metric-explainer,
+.metric-current-block,
+.metric-current-row,
+.metric-current-row p,
+.metric-card,
+.metric-card p {
+  min-width: 0;
+}
+
+.metric-current-row p,
+.metric-card p,
+.metric-card h4 {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Slightly tighter chart column so right column has more room when narrow */
+@media (max-width: 1280px) {
+  .metric-layout {
+    grid-template-columns: 1.15fr 1fr !important;
+  }
+}
+
+/* Also fix the variant balance double-doughnut row */
+.metric-chart-row {
+  min-width: 0;
+}
+
+.metric-chart-row > div {
+  min-width: 0;
+}
+
+/* Per-exposure grid + cards */
+.exposure-grid,
+.exposure-card,
+.exposure-stat-label,
+.exposure-fraction,
+.exposure-path {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* Headline grid */
+.headline-grid,
+.headline-left,
+.headline-right {
+  min-width: 0;
+}
+
