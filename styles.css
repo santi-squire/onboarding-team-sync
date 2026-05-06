@@ -3574,3 +3574,94 @@ body {
   min-width: 0;
 }
 
+
+/* ============================================================
+   Aggressive overflow containment — slide content NEVER exceeds bounds
+   ============================================================ */
+
+/* Force every slide section to be a strict overflow boundary */
+.reveal .slides section {
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Reduce horizontal padding so right column has more room */
+.reveal .slides section {
+  padding: 0 3rem !important;
+}
+
+/* All grid containers must respect their parent width */
+.metric-layout,
+.metric-explainer,
+.metric-current-block,
+.metric-current-row,
+.metric-card,
+.metric-chart-row,
+.exposure-grid,
+.exposure-card,
+.headline-grid,
+.tldr-list,
+.flow-compare,
+.flow-card,
+.tools-grid,
+.tools-list,
+.tool-card,
+.courses-layout,
+.courses-content,
+.commitments-decisions,
+.commitments-fyi,
+#commitment-decisions,
+#commitment-fyi,
+.commitment-decision,
+.hito-stats,
+.hito-stat,
+.retro-grid,
+.retro-column,
+.retro-list,
+.retro-list li {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Card padding inside grid items is the usual culprit for overflow.
+   Box-sizing border-box ensures padding is included in width calculation. */
+.metric-card,
+.metric-current-block,
+.exposure-card,
+.tool-card,
+.tldr-list li,
+.commitment-decision,
+.retro-list li,
+.hito-stat,
+.flow-card {
+  box-sizing: border-box !important;
+}
+
+/* Long text fields must wrap, not extend */
+.metric-current-row p,
+.metric-card p,
+.metric-card h4,
+.exposure-stat-label,
+.exposure-fraction,
+.exposure-path,
+.tldr-text,
+.commitment-text,
+.commitment-note,
+.retro-item-title,
+.retro-item-detail,
+.retro-item-learning,
+.tool-note {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* Charts must respect their canvas wrap, not break out */
+.chart-wrap,
+.chart-wrap-sm,
+canvas {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
