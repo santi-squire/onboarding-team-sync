@@ -104,60 +104,8 @@
     }
   }
 
-  // ---------- Courses slides ----------
-  function populateCourses(data) {
-    const c = data.courses;
-    if (!c) return;
-
-    setText("courses-title", c.title);
-    setText("courses-tagline", c.tagline);
-    setText("courses-context", c.context);
-
-    if (c.figma) {
-      setText("figma-name", c.figma.name);
-      setText("figma-subtitle", c.figma.subtitle);
-      const link = document.getElementById("figma-link");
-      if (link && c.figma.url) link.href = c.figma.url;
-
-      const ul = document.getElementById("figma-highlights");
-      if (ul && Array.isArray(c.figma.highlights)) {
-        ul.innerHTML = "";
-        c.figma.highlights.forEach((h) => {
-          const li = document.createElement("li");
-          li.textContent = h;
-          ul.appendChild(li);
-        });
-      }
-    }
-
-    if (c.claudeDesignFlow) {
-      const f = c.claudeDesignFlow;
-      setText("cflow-step1-title", f.step1?.title);
-      setText("cflow-step1-detail", f.step1?.detail);
-      setText("cflow-step2-title", f.step2?.title);
-      setText("cflow-step2-detail", f.step2?.detail);
-      setText("cflow-step3-title", f.step3?.title);
-      setText("cflow-step3-detail", f.step3?.detail);
-    }
-
-    const list = document.getElementById("tools-list");
-    if (list && Array.isArray(c.tools)) {
-      list.innerHTML = "";
-      c.tools.forEach((t) => {
-        const li = document.createElement("li");
-        li.className = "tool-card";
-        li.innerHTML = `
-          <div class="tool-head">
-            <span class="tool-name">${escapeHtml(t.name)}</span>
-            <span class="tool-license">${escapeHtml(t.license || "")}</span>
-          </div>
-          <div class="tool-meta">${escapeHtml(t.by || "")}${t.released ? ` · ${escapeHtml(t.released)}` : ""}</div>
-          <p class="tool-note">${escapeHtml(t.note || "")}</p>
-        `;
-        list.appendChild(li);
-      });
-    }
-  }
+  // ---------- Courses (handled by script.js too — kept here as no-op fallback) ----------
+  function populateCourses(_data) { /* simpler version handled in script.js renderCourses */ }
 
   function populateHeadline(data) {
     const h = data.headlineFinding;
@@ -261,41 +209,48 @@
   }
 
   function populateCommitments(data) {
-    const ul = document.getElementById("commitment-list");
-    if (!ul) return;
-    ul.innerHTML = "";
-
-    const items = Array.isArray(data.commitments) ? data.commitments : [];
-
-    if (items.length === 0) {
-      const li = document.createElement("li");
-      li.className = "commitment-placeholder";
-      li.textContent = "Commitments will be agreed in this session — added live.";
-      ul.appendChild(li);
-      return;
+    // New structure: data.commitmentDecisions (array of {id, text, ask}) +
+    // data.commitmentFyi (array of strings).
+    const decUl = document.getElementById("commitment-decisions");
+    if (decUl) {
+      decUl.innerHTML = "";
+      const decs = Array.isArray(data.commitmentDecisions) ? data.commitmentDecisions : [];
+      if (decs.length === 0) {
+        const li = document.createElement("li");
+        li.className = "commitment-placeholder";
+        li.textContent = "Decisions to be agreed in this session.";
+        decUl.appendChild(li);
+      } else {
+        decs.forEach((c) => {
+          const li = document.createElement("li");
+          li.className = "commitment-decision";
+          li.innerHTML = `
+            <span class="commitment-checkbox" aria-hidden="true"></span>
+            <div class="commitment-body">
+              <div class="commitment-text">${escapeHtml(c.text || "")}</div>
+              ${c.ask ? `<div class="commitment-ask">${escapeHtml(c.ask)}</div>` : ""}
+            </div>
+            <span class="commitment-id">${escapeHtml(c.id || "")}</span>
+          `;
+          decUl.appendChild(li);
+        });
+      }
     }
 
-    items.forEach((c, i) => {
-      const li = document.createElement("li");
-      const num = String(i + 1).padStart(2, "0");
-      const text = typeof c === "string" ? c : (c.text || c.title || "");
-      const owner = (typeof c === "object" && c.owner) ? c.owner : "";
-      const scope = (typeof c === "object" && c.scope) ? c.scope : "";
-      const note = (typeof c === "object" && c.note) ? c.note : "";
-      li.innerHTML = `
-        <span class="commitment-num">${num}</span>
-        <span class="commitment-check" aria-hidden="true"></span>
-        <div class="commitment-body">
-          <div class="commitment-text">${escapeHtml(text)}</div>
-          ${note ? `<div class="commitment-note">${escapeHtml(note)}</div>` : ""}
-        </div>
-        <div class="commitment-meta-stack">
-          ${owner ? `<span class="commitment-meta">${escapeHtml(owner)}</span>` : ""}
-          ${scope ? `<span class="commitment-scope">${escapeHtml(scope)}</span>` : ""}
-        </div>
-      `;
-      ul.appendChild(li);
-    });
+    const fyiUl = document.getElementById("commitment-fyi");
+    if (fyiUl) {
+      fyiUl.innerHTML = "";
+      const fyi = Array.isArray(data.commitmentFyi) ? data.commitmentFyi : [];
+      fyi.forEach((c) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<span class="fyi-bullet">·</span> ${escapeHtml(typeof c === "string" ? c : (c.text || ""))}`;
+        fyiUl.appendChild(li);
+      });
+    }
+
+    // Backward-compat: old #commitment-list path (no-op if removed)
+    const legacyUl = document.getElementById("commitment-list");
+    if (legacyUl) legacyUl.innerHTML = "";
   }
 
   function escapeHtml(s) {
