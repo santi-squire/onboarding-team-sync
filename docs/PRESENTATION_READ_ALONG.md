@@ -1,47 +1,47 @@
 # Read-Along Script · Weekly Sync 2026-05-06
 
-Texto detallado para leer / parafrasear durante la presentación. Cada sección incluye **lo que decís** y **lo que significa cada análisis** en plain English. ~13 min total.
+Detailed text to read or paraphrase during the presentation. Each section includes **what to say** and **what each analysis means** in plain English. ~13 min total.
 
 ---
 
 ## Slide 1 · Cover
 
 **Read:**
-> "Buenas. Onboarding Team Sync, semana del 6 de mayo. Yo lo guío hoy. La idea es darles results del experimento de login que shippeamos hace una semana y alinearnos en los próximos pasos."
+> "Hey team. Onboarding Team Sync, week of May 6. I'll walk us through. The plan: share results from the login experiment we shipped a week ago and align on what comes next."
 
 ---
 
 ## Slide 2 · TL;DR
 
 **Read:**
-> "Eric, vos preguntaste hace dos días si teníamos resultados. La respuesta es sí. Cuatro findings, en este orden:"
+> "Eric, you asked two days ago if we had results. The answer is yes. Four findings, in this order:"
 
 **Then read each highlight aloud:**
 
-> "Uno — Flow B catchea su target population. 33.5% de los usuarios que tipean su email en Flow B tienen una cuenta de barbero invitada (temp_password). Sin Flow B, esos usuarios probablemente habrían creado cuentas duplicadas."
+> "One — Flow B is catching its target population. 33.5% of users who type their email in Flow B have an invited-barber account (temp_password). Without Flow B, those users would most likely have created duplicate accounts."
 
-> "Dos — Flow B convierte mejor que Flow A. Login completion 67.5% vs 58.7%. El email-first no rompe login — lo mejora."
+> "Two — Flow B converts better than Flow A. Login completion 67.5% vs 58.7%. Email-first does NOT break login — it improves it."
 
-> "Tres — Per device, Flow B tiene MÁS signups por la ruta de signup que Flow A. 14.3% vs 9.1%. Si el experimento estuviera redirigiendo barberos invitados al login como queremos, este número debería bajar en B, no subir. Lo seguimos investigando."
+> "Three — Per device, Flow B has MORE signups via the signup path than Flow A. 14.3% vs 9.1%. If the experiment were redirecting invited barbers to login as designed, this number should go down in B, not up. We're investigating."
 
-> "Cuatro — hay un Sample Ratio Mismatch real. Esperábamos 50/50, observamos 63/37. No invalida el findings de arriba pero limita cuánto podemos comparar absolute counts."
+> "Four — There is a real Sample Ratio Mismatch. We expected 50/50, we observe 63/37. Doesn't invalidate the findings above but limits how strongly we can compare absolute counts."
 
-> "El resto del deck es el detalle."
+> "The rest of the deck is the detail."
 
-**Internal note**: si Eric quiere ir directo a discussion, podés saltarte la mitad del deck y volver a Commitments / Courses. El TL;DR carga la presentación.
+**Internal note**: if Eric wants to skip to discussion, you can drop most of the deck and jump to Commitments / Courses. The TL;DR carries the presentation.
 
 ---
 
 ## Slide 3 · Hito (context)
 
 **Read:**
-> "Antes de meternos en data, contexto. La squad de Onboarding se formó hace 50 días. Empezamos a desarrollar este experimento hace 30 días. Hoy estamos en 50% de rollout, mañana 100%. Esto es un experimento dentro de Squire de cómo se comporta una squad chica con foco. Este primer ship es la prueba de concepto del modelo de equipo."
+> "Before we get into data, context. The Onboarding squad formed 50 days ago. We started building this experiment 30 days ago. Today we're at 50% rollout, 100% tomorrow. This is an experiment within Squire of how a small focused squad performs. This first ship is the team-model proof point."
 
-> "Para que sirva como benchmark: shippeamos a 2 plataformas en paralelo, con 9 events idénticos byte-for-byte entre iOS y Android. Una sola query de Snowflake cubre los dos."
+> "As a benchmark: we shipped to 2 platforms in parallel, with 9 events that are byte-for-byte identical between iOS and Android. A single Snowflake query covers both."
 
 ---
 
-## Slide 4 · Per-exposure — el wrinkle
+## Slide 4 · Per-exposure — the wrinkle
 
 **What this slide actually shows:**
 Counts barber-type accounts created via the signup path in each variant:
@@ -51,14 +51,14 @@ Counts barber-type accounts created via the signup path in each variant:
 Then we normalize by total devices in each variant (per-exposure rate).
 
 **Read:**
-> "Acá está el primer matiz. Si miramos counts crudos — 38 en Flow A, 35 en Flow B — parecen similares. Pero por device, Flow A tiene 9.1%, Flow B tiene 14.3%. Eso es un 57% más alto en Flow B."
+> "Here's the first nuance. Looking at raw counts — 38 in Flow A, 35 in Flow B — they look similar. But per device, Flow A is 9.1%, Flow B is 14.3%. That's 57% higher in Flow B."
 
-> "**Importante**: no podemos afirmar que sean accidentales sin user research. Podrían ser barberos legit que no tienen cuenta, o podrían ser barberos invitados que se equivocaron. Lo que sí podemos decir: si el experimento está funcionando como esperamos — sea, redirigiendo barberos invitados al login — este número debería BAJAR en Flow B, no subir."
+> "**Important**: we can't claim these are accidental without user research. They could be legit barbers who don't have an account, or invited barbers who tapped through by mistake. What we can say: if the experiment is working as expected — that is, redirecting invited barbers to login — this number should go DOWN in Flow B, not up."
 
-> "Lo presentamos para no esconder algo que va en dirección contraria a la hipótesis. Caveats: muestra chica, ramp por debajo del 50% la mayoría del período. No estamos declarando un winner."
+> "We're surfacing this so we don't hide something that runs counter to the hypothesis. Caveats: small sample, ramp under 50% for most of the period. We're not declaring a winner."
 
-**If Eric asks "how do you know they were accidental?"**:
-> "No lo sabemos con certeza. Lo único que medimos es: usuarios que llegaron al signup form. Cualquiera de ellos pudo haber tenido la intención de crear cuenta nueva (= legit) o no haber sabido que tenía cuenta (= accidental). El experimento se diseñó asumiendo que la mayoría de barbers en Squire son invited, no nuevos. Si esa suposición es válida, este number debería bajar con flow B. Si no baja, o no hay tantos accidentales como creíamos, o flow B no está catcheando el problema mejor que A."
+**If Eric asks "how do you know they were accidental?":**
+> "We don't know with certainty. All we measure is: users who reached the signup form. Any of them might have intended to create a new account (= legit) or not realized they had one (= accidental). The experiment was designed assuming most barbers in Squire are invited, not new. If that assumption holds, this number should drop with Flow B. If it doesn't drop, either we have fewer accidental signups than we believed, or Flow B isn't catching the problem better than A."
 
 ---
 
@@ -67,147 +67,147 @@ Then we normalize by total devices in each variant (per-exposure rate).
 **What this slide actually shows:**
 The login funnel: how many distinct devices made it through each step (assigned → welcome viewed → login succeeded). Conversion rate at the end.
 
-This IS the **`overall_login_success_rate` guardrail** Tristan and yo committeamos en el Confluence Analytics Plan — y vino limpio.
+This IS the **`overall_login_success_rate` guardrail** Tristan and I committed to in the Confluence Analytics Plan — and it came in clean.
 
 **Read:**
-> "Otra cara. Flow B tiene welcome rate del 99.6%, vs 85.6% en Flow A. Eso significa que casi todos los usuarios asignados a Flow B llegaron al welcome screen — el sheet de email-first funciona. En Flow A, el 14% de usuarios asignados al variant nunca vieron el welcome — algún drop pre-pantalla."
+> "The other side of the story. Flow B has a welcome rate of 99.6%, vs 85.6% in Flow A. Almost every user assigned to Flow B reached the welcome screen — the email-first sheet works. In Flow A, 14% of assigned users never saw the welcome — some pre-screen drop."
 
-> "Conversion rate (succeeded ÷ welcome): 67.5% en Flow B, 58.7% en Flow A. Diferencia de 9 percentage points. El email-first no rompe login — lo mejora."
+> "Conversion rate (succeeded ÷ welcome): 67.5% in Flow B, 58.7% in Flow A. A 9-percentage-point gap. Email-first does not break login — it improves it."
 
-> "Esta métrica derivada es exactamente el guardrail de `overall_login_success_rate` que Tristan y yo definimos en el Confluence plan. Estaba pensada para detectar si una de las flows rompía login para usuarios reales. Resultado: ninguna lo rompe; B lo mejora."
+> "This derived metric is exactly the `overall_login_success_rate` guardrail Tristan and I defined in the Confluence plan. It was built to detect if either flow broke login for real users. Result: neither breaks it; B improves it."
 
-**If Eric asks "why is welcome rate higher in B?"**:
-> "El sheet de Flow B aparece automáticamente después del landing screen — no hay paso de 'tap to login' como en Flow A. Menos fricción → más usuarios que llegan."
+**If Eric asks "why is welcome rate higher in B?":**
+> "Flow B's sheet appears automatically after the landing screen — there's no 'tap to login' step like in Flow A. Less friction → more users get there."
 
 ---
 
 ## Slide 6 · Email check — the money signal
 
 **What this slide actually shows:**
-Cuando un usuario tipea su email en Flow B, la API responde una de tres cosas:
-- `returning`: ya tiene cuenta y password (login normal)
-- `temp_password`: tiene cuenta creada por shop owner, sin password aún (= invited barber, lo que queremos catchear)
-- `new_user`: no existe el email (genuine signup intent)
+When a user types their email in Flow B, the API responds with one of three results:
+- `returning`: account exists with a password (normal login)
+- `temp_password`: account created by a shop owner, password not yet set (= invited barber, our target)
+- `new_user`: email doesn't exist (genuine signup intent)
 
-Esta slide muestra la distribución.
+This slide shows the distribution.
 
 **Read:**
-> "Y acá está el por qué de Flow B. De los usuarios que entran un email en Flow B, 33.5% son temp_password — barberos invitados que tienen cuenta creada por su shop owner pero todavía no setearon password."
+> "And this is why Flow B works conceptually. Of users who enter an email in Flow B, 33.5% are temp_password — invited barbers whose accounts were created by their shop owner but who haven't set a password yet."
 
-> "Esa es exactamente la población que el experimento existe para catchear. Sin Flow B, ese 33.5% probablemente habría tocado 'Sign up' por equivocación y creado cuenta duplicada. En Flow A no podemos detectar esto a este nivel — el flow no expone el routing decision."
+> "That's exactly the population the experiment exists to catch. Without Flow B, that 33.5% would most likely have tapped 'Sign up' by mistake and created a duplicate account. Flow A can't detect this at this resolution — it doesn't expose the routing decision."
 
-> "El resto: 43.7% returning (login normal), 14.1% new_user (genuine signup), 9% legacy username inputs (barbers viejos sin email)."
+> "The rest: 43.7% returning (normal login), 14.1% new_user (genuine signup), 9% legacy username inputs (older barbers without email)."
 
-**Para vos (interno):** este es el slide más quotable. Es la razón por la que Flow B tiene sentido conceptualmente.
+**For yourself (internal):** this is the most quotable slide. It's the reason Flow B makes conceptual sense.
 
 ---
 
-## Slide 7 · Variant balance — la honestidad
+## Slide 7 · Variant balance — the honesty
 
 **What this slide actually shows:**
-LD assigns 50/50, but Snowflake observes 63/37. SRM = Sample Ratio Mismatch — when actual deviates from expected. Explainer card en el slide define el término.
+LD assigns 50/50, but Snowflake observes 63/37. SRM = Sample Ratio Mismatch — when actual deviates from expected. The explainer card on the slide defines the term.
 
 **Read:**
-> "Honestidad: hay un Sample Ratio Mismatch real. LD nos asigna 50/50, pero en Snowflake — la fuente de verdad según Yurii — vemos 63/37. 13 percentage points off."
+> "Honesty: there is a real Sample Ratio Mismatch. LD assigns us 50/50, but in Snowflake — our source of truth per Yurii — we see 63/37. 13 percentage points off."
 
-> "Por qué importa: las comparaciones absolutas (counts crudos) están sesgadas. Por eso miramos rates per-device en lugar de totals. Las conclusiones cualitativas (Flow B converts better, Flow B catches temp_password) no se invalidan, pero nos atajamos."
+> "Why it matters: absolute comparisons (raw counts) are biased. That's why we look at per-device rates instead of totals. The qualitative conclusions (Flow B converts better, Flow B catches temp_password) don't get invalidated, but we hedge."
 
-> "Investigación en flight con Tristan. Sospechosos: bucketing logic en LD, exposures cacheados de pre-experiment, evaluación no-uniforme."
+> "Investigation in flight with Tristan. Suspects: bucketing logic in LD, cached pre-experiment exposures, non-uniform evaluation."
 
 ---
 
 ## Slide 8 · Friction — guardrails
 
 **Read:**
-> "Friction signals son comparables entre variants. Lo nuevo: Flow B tiene 57 events de abandono en el step de email — un step que Flow A no tiene. Es esperable; vale la pena watch para ver si crece."
+> "Friction signals are comparable across variants. The new thing: Flow B has 57 abandonment events at the email step — a step Flow A doesn't have. It's expected; worth watching to see if it grows."
 
-> "Forgot password: similar magnitude. Login_failed solo aparece en Flow B en estos numbers — eso es un caveat de data quality que está en la próxima slide."
+> "Forgot password: similar magnitude. Login_failed only shows up in Flow B in these numbers — that's a data quality caveat covered in the next slide."
 
 ---
 
 ## Slide 9 · North star — instrumentation gap, NOT null result
 
 **What this slide actually shows:**
-North star = `account_created` con `account_type='indie'` AND `came_from='signup_link'`, segmentado por variant. Esto es lo que Tristan y yo committeamos como métrica primaria. **Resultado: 0 en ambos variants en 7 días.**
+North star = `account_created` with `account_type='indie'` AND `came_from='signup_link'`, segmented by variant. This is what Tristan and I committed to as the primary metric. **Result: 0 in both variants over 7 days.**
 
-Pero el cero NO significa "el experimento falló" — significa que la métrica no se puede leer todavía.
+But the zero does NOT mean "the experiment failed" — it means the metric isn't readable yet.
 
 **Read:**
-> "El north star primario — indie signups via signup_link — está en cero en ambos variants. **Esto NO es un null result.** Es un instrumentation gap probable: el property `account_type='indie'` puede no estar emitiendo correctamente en el momento de creación de cuenta indie. QA validates next week."
+> "The primary north star — indie signups via signup_link — is at zero in both variants. **This is NOT a null result.** It's likely an instrumentation gap: the property `account_type='indie'` may not be emitting correctly at indie account creation time. QA validates next week."
 
-> "Mientras tanto usamos como proxy 'barber-type signups' que vimos antes. La distribución por path es: Flow A — 38 via signup_link. Flow B — 35 via email_not_found. Misma magnitud, paths distintos. Volumen muy chico para callar el norte star real."
+> "Meanwhile we use 'barber-type signups' as a proxy as we saw earlier. By path: Flow A — 38 via signup_link. Flow B — 35 via email_not_found. Same magnitude, different paths. Volume is too small to read the real north star."
 
-**If Eric asks "is the query wrong, or are barbers missing?"**:
-> "La query es correcta. El cero significa que CERO eventos `account_created` en estos 7 días tienen `account_type='indie'`. Tres causas posibles, que vamos a desambiguar con una query esta semana:
-> - Bug de instrumentación (más probable): la property no se prende en la creation path de indie
-> - Volumen real bajo durante el ramp (posible, raro)
-> - El filtro de variant excluye indie signups (poco probable pero verificable)"
+**If Eric asks "is the query wrong, or are barbers missing?":**
+> "The query is correct. Zero means: zero `account_created` events in these 7 days have `account_type='indie'`. Three possible causes that we'll disambiguate this week:
+> - Instrumentation bug (most likely): the property isn't being set on the indie creation path
+> - Genuinely low organic volume during the ramp (possible but rare)
+> - The variant filter excludes indie signups (unlikely but verifiable)"
 
 ---
 
 ## Slide 10 · Caveats
 
 **Read:**
-> "Cuatro caveats que estamos triajando esta semana. Las leo rápido."
+> "Four caveats we're triaging this week. I'll go through them quickly."
 
-> "Uno — la property `account_type='indie'` puede no estar emitiendo. Por eso el north star está en cero. QA validates next week."
+> "One — the `account_type='indie'` property may not be emitting. That's why the north star is at zero. QA validates next week."
 
-> "Dos — login_attempt_failed muestra cero rows en Flow A. Sospechoso. Probablemente versiones viejas de la app emiten el event legacy 'login_failed' sin la property variant, así que se filtran. Cross-check next pull."
+> "Two — login_attempt_failed shows zero rows for Flow A. Suspicious. Older app versions probably emit the legacy 'login_failed' event without the variant property, so they get filtered out. Cross-check next pull."
 
-> "Tres — el SRM de 63/37. Investigación con Tristan."
+> "Three — the 63/37 SRM. Investigation with Tristan."
 
-> "Cuatro — hubo un scope leak en signup_link_tapped: 5 events de 3 devices iOS aparecieron en Flow B cuando deberían ser solo Flow A. Patrón: mismo device, 1-2 minutos apart. El botón 'Join for free' de Flow B comparte firing site con el 'Sign up' de Flow A. Falta variant guard — fix de código iOS-only, ya identified."
+> "Four — there was a scope leak in signup_link_tapped: 5 events from 3 iOS devices appeared in Flow B when they should be Flow A only. Pattern: same device, 1-2 minutes apart. Flow B's 'Join for free' button shares a firing site with Flow A's 'Sign up' link. Missing variant guard — iOS-only code fix, already identified."
 
 ---
 
 ## Slide 11 · Retrospective
 
 **Read:**
-> "Cómo se sintió shippear este experimento. 30 días desde decision-to-ship. 50 días desde que se formó el equipo. 2 plataformas, 9 events con parity total."
+> "How shipping this experiment felt. 30 days from go-decision to first ship. 50 days since the team formed. 2 platforms, 9 events with full parity."
 
 **For "What went well", read each title + 1 line of detail.**
 
 **For "What slowed us down", DON'T read it as a list of complaints — frame each one with its Learning. Each slowdown teaches us something for the next project. Read the LEARNING line out loud.**
 
-> "Por ejemplo: la migración concurrente de feature flags (LD → PostHog → GrowthBook) generó overhead de wiring. Learning: lockear el destino de analytics antes de instrumentar."
+> "For example: the concurrent feature-flag tooling migration (LD → PostHog → GrowthBook) generated wiring overhead. Learning: lock the analytics destination before instrumenting."
 
 ---
 
 ## Slide 12 · Courses — next chapter
 
 **What this slide is about:**
-Courses es el next major project que el squad va a atacar. Tristan ya lo kickeó pre-experiment, está en el Figma de "Soooooo Onboarding". El plan: prototypear con Claude Design + DESIGN.md spec, iterar uno a uno, coordinar con el RN launch.
+Courses is the next major project the squad will tackle. Tristan kicked it off pre-experiment; it lives in the "Soooooo Onboarding" Figma. The plan: prototype with Claude Design + DESIGN.md spec, iterate one at a time, coordinate with the RN launch.
 
 **Read:**
-> "El próximo capítulo. Courses: el segundo de los 6 buckets que Tristan trazó para Onboarding cuando se formó la squad. Ya kickeado pre-experiment, paused durante las vacaciones de Tristan, resuming esta semana."
+> "Next chapter. Courses: the second of six buckets Tristan mapped out for Onboarding when the squad formed. Already kicked off pre-experiment, paused during Tristan's vacation, resuming this week."
 
-> "El plan: tomar el Figma que Tristan ya tiene, pasarlo por Claude Design + DESIGN.md spec — herramientas que Anthropic y la comunidad open source publicaron en abril. Iteramos un curso a la vez, validamos con el equipo, codeamos. Coordinamos timing con el launch del RN app."
+> "The plan: take the existing Figma Tristan has, run it through Claude Design + the DESIGN.md spec — tools Anthropic and the open-source community published in April. We iterate one course at a time, validate with the team, then code. We coordinate timing with the RN app launch."
 
-> "Esto es lo que viene en commitments en el próximo slide."
+> "This is what the commitments on the next slide cover."
 
 ---
 
 ## Slide 13 · Commitments
 
 **Read:**
-> "Tres decisiones que estamos tomando — chequeables si están de acuerdo, o pueden pushback. El resto está in flight."
+> "Three decisions we're making — checkable if you agree, or push back. The rest is in flight."
 
 **For each decision, read the text and click the checkbox visually.**
 
-> "Una — phased Courses prototyping con Tristan. Empezamos próxima semana. Si hay algo que conflictua, es el momento."
+> "One — phased Courses prototyping with Tristan. Starting next week. If anything conflicts, now's the time to flag it."
 
-> "Dos — buildear los flows A y B de login en la nueva RN app, en paralelo con el equipo de Appointments. Empezamos en 2 semanas. Cuando decidamos un winner del experimento, RN ya está listo para shipping."
+> "Two — build the A and B login flows in the new RN app, in parallel with the Appointments team. Starting in 2 weeks. When we pick a winner from the experiment, RN is ready to ship."
 
-> "Tres — esto sí necesito clarity de Eric/Yurii: el RN launch es el 29 de mayo. ¿Es full feature parity o onboarding-only first? Eso afecta el alcance de los Courses para esa fecha."
+> "Three — this one I do need clarity from Eric/Yurii on: the RN launch is May 29. Is it full feature parity, or onboarding-only first? That affects the scope of Courses for that date."
 
-> "Los 4 items en flight son status — investigación SRM con Tristan, ship del fix del scope leak, validation de QA del indie property, weekly analytics extraction."
+> "The 4 in-flight items are status — SRM investigation with Tristan, ship the scope-leak fix, QA validation of the indie property, weekly analytics extraction."
 
 ---
 
 ## Slide 14 · Close
 
 **Read:**
-> "Eso es todo. Discusión, preguntas, o pushback?"
+> "That's it. Discussion, questions, or pushback?"
 
 ---
 
@@ -246,14 +246,14 @@ All 9 events + the derived guardrail are in the deck:
 
 ### Indie validation (Query A) — partial
 - 7 days post-deploy: 73 barber + 2 shop + **0 indie** account_created events
-- BUT the table has no pre-deploy history (event started tracking 04/30)
-- So we can't yet tell if the 0-indie is bug or genuinely-low organic volume
-- QA validates next week. Pre-experiment baseline pull will give the typical indie share.
+- BUT the table has no pre-deploy history (the event started tracking on 04/30)
+- So we can't yet tell if the 0-indie is a bug or genuinely-low organic volume
+- QA validates next week. Pre-experiment baseline pull will give us the typical indie share.
 
 ### login_failed asymmetry (Query B) — CONFIRMED
-- Versions 3.16.4 → 3.22.0 emit LEGACY login_failed event without variant property — get filtered out → that's where the Flow A absence comes from
+- Versions 3.16.4 → 3.22.0 emit the LEGACY login_failed event without the variant property — they get filtered out → that's where the Flow A absence comes from
 - Only 3.23.0 carries variant — and even there, 100 events fire with variant null (Flow A failures may not be threading variant correctly in 3.23.0 either)
-- Two issues confirmed: legacy versions (self-resolves with updates) + Flow A handler in 3.23.0 needs audit
+- Two issues confirmed: legacy versions (self-resolves with updates) + Flow A handler in 3.23.0 needs an audit
 
 ## Pre-experiment baseline comparison — partially in deck, more next sync
 
