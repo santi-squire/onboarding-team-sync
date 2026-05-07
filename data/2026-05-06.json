@@ -9,7 +9,7 @@
   },
 
   "headlineFinding": {
-    "eyebrow": "Headline · Week 1",
+    "eyebrow": "Headline · First week post-deploy",
     "kicker": "Flow B is catching its target population",
     "stat": "33.5%",
     "statSuffix": "of Flow B email checks",
@@ -21,17 +21,17 @@
     "rollout": {
       "startDate": "2026-04-30",
       "completeDate": "2026-05-07",
-      "today": "2026-05-06",
+      "today": "2026-05-07",
       "phases": [
         { "day": 1, "date": "2026-04-30", "percent": 1,   "label": "Release started" },
         { "day": 2, "date": "2026-05-01", "percent": 2,   "label": "" },
         { "day": 3, "date": "2026-05-02", "percent": 5,   "label": "" },
         { "day": 4, "date": "2026-05-03", "percent": 10,  "label": "" },
         { "day": 5, "date": "2026-05-04", "percent": 20,  "label": "" },
-        { "day": 6, "date": "2026-05-06", "percent": 50,  "label": "Today" },
-        { "day": 7, "date": "2026-05-07", "percent": 100, "label": "Tomorrow · full traffic" }
+        { "day": 6, "date": "2026-05-06", "percent": 50,  "label": "" },
+        { "day": 7, "date": "2026-05-07", "percent": 100, "label": "Today · full traffic" }
       ],
-      "interpretation": "First 6 days were at ≤20% rollout. Today is the first day at 50% — meaningful statistical reads start accumulating from tomorrow forward."
+      "interpretation": "Reached 100% rollout today. The data shown reflects the ramp window (April 30 → May 6) when most users were at ≤50% exposure. Statistical signal will strengthen over the coming days at full traffic."
     }
   },
 
@@ -286,7 +286,7 @@
   },
 
   "tldr": {
-    "eyebrow": "Eric's question · our answer this week",
+    "eyebrow": "First week post-deploy · key findings",
     "kicker": "Yes — we have results.",
     "highlights": [
       { "icon": "✅", "text": "Flow B catches its target — 33.5% of email checks are invited barbers" },
