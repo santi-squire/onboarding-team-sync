@@ -2,6 +2,10 @@
 
 Live, browser-based weekly deck for the Onboarding squad. Covers ship updates, the email-first login A/B test (SQR-6510), and what's coming next. Designed to be re-run every week — edit one JSON file, refresh the browser, present in Meet.
 
+**Live**: https://santi-squire.github.io/onboarding-team-sync/
+
+> For a stable, external-shareable version of just the A/B experiment results, see the sibling repo: https://github.com/santi-squire/email-first-login-report
+
 ---
 
 ## Run it locally
