@@ -711,20 +711,20 @@
   },
 
   "historicalComparison": {
-    "headline": "Comparing pre-experiment baseline vs the experiment window — what Eric asked for. Strongest signal: indie signups dropped ~43% during the experiment weeks.",
+    "headline": "Comparing pre-experiment baseline vs the experiment window — what Eric asked for. Indie signup volume dropped ~43% during the experiment weeks, but the cause (Flow B preventing accidental signups vs organic decline) is not yet established.",
     "status": "partial",
-    "statusNote": "IDENTIFIES table has 90+ days of history, so we can compare pre vs post for: indie signup volume, new barber breakdown by user_type, and duplicate-account-per-email rate. The funnel + email-check events were instrumented at deploy (Apr 30) so no historical baseline exists for those. CS support ticket volume needs to come from CS team.",
+    "statusNote": "IDENTIFIES table has 90+ days of history. We can show: indie signup volume, new barber breakdown by user_type, duplicate-account-per-email rate. CAVEAT: total indie signups ≠ accidental indie signups. A drop in total volume could mean Flow B is preventing duplicates, OR organic decline (which was already happening pre-experiment). The cleaner measure needs: (a) CS data on actual accidental signups [pending Tristan] OR (b) a Snowflake query for indies whose email matches a shop-employed barber [TODO next session]. The funnel + email-check events were instrumented at deploy so no historical baseline exists for those.",
     "blocks": [
       {
         "title": "New indie signups · weekly",
-        "subtitle": "Indies (final user_type stayed NULL) first appearing in IDENTIFIES, weekly. Pre-experiment avg ~14/week (Apr 6-20), experiment weeks 8/week → ~43% drop.",
+        "subtitle": "Indies (final user_type stayed NULL) first appearing in IDENTIFIES, weekly. Drop observed during experiment weeks but the inference 'this is Flow B preventing accidental signups' is NOT yet established — could be organic.",
         "status": "ready",
         "comparison": {
           "preBaseline": { "label": "Pre-experiment (Apr 6-20)", "value": "14/wk avg", "weeks": [12, 15, 15] },
           "experiment": { "label": "Experiment (Apr 27 - May 4)", "value": "8/wk avg", "weeks": [8, 8] },
           "deltaPct": -43,
-          "winner": "flowB",
-          "verdict": "Real drop · most direct signal Flow B is reducing accidental indie signups"
+          "winner": "tied",
+          "verdict": "Drop observed (~43% absolute, ~25% trend-adjusted) but cause is ambiguous. Indie signup volume was already trending down pre-experiment (~5/wk decline). Could be Flow B preventing accidental signups, organic decline, or a mix. CS data on accidental signups specifically (pending Tristan) is the cleaner measure."
         },
         "weeks": [
           { "week": "2026-02-16", "new_barbers": 1276, "indies": 31, "share_pct": 2.4 },
@@ -772,14 +772,14 @@
       },
       {
         "title": "New barber breakdown · Rental / Commission / Indie weekly",
-        "subtitle": "Total new barbers per week segmented by final user_type. Lets us see whether the experiment shifted the mix away from indie toward shop-employed.",
+        "subtitle": "Total new barbers per week segmented by final user_type. The mix shifted slightly toward shop-employed during experiment weeks.",
         "status": "ready",
         "comparison": {
           "preBaseline": { "label": "Pre-experiment indie share (Apr 6-20)", "value": "2.9% avg" },
           "experiment": { "label": "Experiment indie share (Apr 27 - May 4)", "value": "1.9% avg" },
           "deltaPct": -34,
-          "winner": "flowB",
-          "verdict": "Indie share of new barbers dropped from ~2.9% to ~1.9% during the experiment. Shop-employed share grew correspondingly."
+          "winner": "tied",
+          "verdict": "Indie share dropped from ~2.9% to ~1.9% — directional support for Flow B's effect, but same caveat as the indie-volume block above: could be organic. Cleanest read needs the 'accidental indie' refinement (indies whose email also belongs to a shop-employed barber) which we can pull next session."
         },
         "weeks": [
           { "week": "2026-02-23", "rental": 535, "commission": 360, "indies": 20 },
@@ -806,6 +806,7 @@
   },
 
   "actionItems": [
+    "Add a sharper 'accidental indie' metric: query Snowflake for indies whose email also belongs to a Rental/Commission barber account — that subset is the actual target of Flow B (vs total indies which mixes legit and accidental). Will make the historical comparison much cleaner without waiting for CS.",
     "Redefine the experiment's success metric. Current 'indie/signup_link reduction' is unmeasurable. Candidates: (a) total per-device login completion rate, already a positive guardrail, (b) reduction in barber-via-signup-path rate (currently flowA 6.6% / flowB 11.5% — direction is wrong if Flow B should reduce it), (c) instrument indie_self_onboarding entry to measure cross-channel.",
     "Decide whether to act on the SRM. New devices post-100% split 59/41 — still mildly skewed but close. If we want clean 50/50, options: re-bucket all devices via a new flag/seed, or restrict analysis to post-100% NEW devices only.",
     "Ship PR #4143 (signup_link_tapped scope leak) so it stops contaminating the data.",
