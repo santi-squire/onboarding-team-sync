@@ -600,8 +600,14 @@
       // === 0. Indie classification — answers Tristan's question ===
       if (week2.indieClassification) sections.push(renderIndieClassification(week2.indieClassification));
 
+      // === 0.5 Resolved this session — what we cleared up ===
+      if (week2.resolvedThisSession) sections.push(renderResolvedSection(week2.resolvedThisSession));
+
       // === 1. Variant balance ===
       sections.push(renderVariantBalance(week1, cum, post, week2.deltas.vsWeek1Snapshot.notes[0]));
+
+      // === 1.5 SRM investigation deep-dive ===
+      if (week2.srmInvestigation) sections.push(renderSrmInvestigation(week2.srmInvestigation));
 
       // === 2. Funnel ===
       sections.push(renderFunnel(week1, cum, post, week2.deltas.vsWeek1Snapshot.notes[1]));
@@ -609,21 +615,21 @@
       // === 3. Email check ===
       sections.push(renderEmailCheck(week1, cum, post, week2.deltas.vsWeek1Snapshot.notes[2]));
 
-      // === 4. North star ===
-      sections.push(renderNorthStar(week1, cum, post, week2.deltas.vsWeek1Snapshot.notes[7]));
+      // === 3.5 temp_password drop investigation ===
+      if (week2.tempPasswordInvestigation) sections.push(renderTempPasswordInvestigation(week2.tempPasswordInvestigation));
 
-      // === 5. Per-exposure ===
+      // === 4. Per-exposure ===
       sections.push(renderPerExposure(week1, cum, post, week2.deltas.vsWeek1Snapshot.notes[3]));
 
-      // === 6. Friction ===
+      // === 5. Friction ===
       sections.push(renderFriction(week1, cum, post,
         week2.deltas.vsWeek1Snapshot.notes[4],
         week2.deltas.vsWeek1Snapshot.notes[5]));
 
-      // === 7. Scope leak ===
+      // === 6. Scope leak ===
       sections.push(renderScopeLeak(cum, post, week2.deltas.vsWeek1Snapshot.notes[6]));
 
-      // === 8. Open questions ===
+      // === 7. Open questions ===
       sections.push(renderOpenQuestions(week2.openQuestions));
 
       const content = document.getElementById('content');
@@ -933,6 +939,117 @@
           <ul class="questions-list">
             ${qs.map(q => `<li>${q}</li>`).join('')}
           </ul>
+        </section>
+      `;
+    }
+
+    function renderResolvedSection(items) {
+      return `
+        <section class="metric-section">
+          <div class="section-header">
+            <div class="section-eyebrow" style="color: var(--success);">✓ Resolved this session · cleared off</div>
+            <h2 class="section-title">Things we figured out</h2>
+            <p class="section-sub">Questions from Week 1 we now have answers for. Removed from open questions to keep the tracker current.</p>
+          </div>
+          <ul class="questions-list" style="margin: 0;">
+            ${items.map(t => `<li style="padding-left: 2.6rem;"><span style="position: absolute; left: 1rem; top: 1rem; width: 22px; height: 22px; border-radius: 50%; background: var(--success); color: var(--bg-deep); font-weight: 700; font-size: 0.82rem; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono);">✓</span><span style="display: block; padding-left: 0;">${t}</span></li>`).join('')}
+          </ul>
+        </section>
+      `;
+    }
+
+    function renderSrmInvestigation(srm) {
+      const byDay = srm.byDay.rows.map(r => `
+        <tr><td>${r.day}</td><td>${fmtInt(r.flowA_devices)}</td><td>${fmtInt(r.flowB_devices)}</td><td>${r.split}</td></tr>
+      `).join('');
+      const byVer = srm.byAppVersion.rows.map(r => `
+        <tr><td>${r.variant}</td><td>${r.version}</td><td>${fmtInt(r.devices)}</td><td>${fmtInt(r.events)}</td></tr>
+      `).join('');
+      const lr = srm.loginRate.rows.map(r => `
+        <tr><td style="color: var(--${r.variant === 'flowA' ? 'flow-a' : 'flow-b'});">${r.variant}</td><td>${fmtInt(r.devices)}</td><td>${fmtInt(r.logged_in_users)}</td><td>${fmtInt(r.actors)}</td><td><strong>${r.login_rate_pct}%</strong></td></tr>
+      `).join('');
+      return `
+        <section class="metric-section">
+          <div class="section-header">
+            <div class="section-eyebrow">⚙ SRM investigation · May 8</div>
+            <h2 class="section-title">Why is the split 73/27 in post-100%?</h2>
+            <p class="section-sub">${srm.headline}</p>
+          </div>
+          <div class="comparison-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+            <div class="compare-cell">
+              <div class="compare-cell-label">Stability · by day</div>
+              <table class="compare-table" style="margin-top: 0.4rem;">
+                <thead><tr><th>Day</th><th class="flowA">Flow A</th><th class="flowB">Flow B</th><th>Split</th></tr></thead>
+                <tbody>${byDay}</tbody>
+              </table>
+              <p class="compare-cell-detail" style="margin-top: 0.7rem;">${srm.byDay.takeaway}</p>
+            </div>
+            <div class="compare-cell">
+              <div class="compare-cell-label">App version distribution</div>
+              <table class="compare-table" style="margin-top: 0.4rem;">
+                <thead><tr><th>Variant</th><th>Version</th><th>Devices</th><th>Events</th></tr></thead>
+                <tbody>${byVer}</tbody>
+              </table>
+              <p class="compare-cell-detail" style="margin-top: 0.7rem;">${srm.byAppVersion.takeaway}</p>
+            </div>
+            <div class="compare-cell is-latest">
+              <div class="compare-cell-label">⚠ login_rate asymmetry · NEW question</div>
+              <table class="compare-table" style="margin-top: 0.4rem;">
+                <thead><tr><th>Variant</th><th>Devices</th><th>Logged-in</th><th>Actors</th><th>Rate</th></tr></thead>
+                <tbody>${lr}</tbody>
+              </table>
+              <p class="compare-cell-detail" style="margin-top: 0.7rem;">${srm.loginRate.takeaway}</p>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderTempPasswordInvestigation(tp) {
+      const rvp = tp.rampVsPost100.rows;
+      const ramp = rvp.filter(r => r.window.startsWith('ramp'));
+      const post = rvp.filter(r => r.window.startsWith('post'));
+      const tableRows = (rows, classSuffix) => rows.map(r => `
+        <tr><td>${r.result}</td><td>${fmtInt(r.events)}</td><td>${fmtInt(r.users)}</td><td><strong>${r.pct}%</strong></td></tr>
+      `).join('');
+      const itRows = tp.inputTypeMix.rows.map(r => `
+        <tr><td>${r.window}</td><td>${r.input_type}</td><td>${fmtInt(r.events)}</td><td><strong>${r.pct}%</strong></td></tr>
+      `).join('');
+      return `
+        <section class="metric-section">
+          <div class="section-header">
+            <div class="section-eyebrow">⚙ temp_password investigation · May 8</div>
+            <h2 class="section-title">Why did temp_password share drop?</h2>
+            <p class="section-sub">${tp.headline}</p>
+          </div>
+          <div class="comparison-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+            <div class="compare-cell">
+              <div class="compare-cell-label">Ramp · Apr 30 → May 6</div>
+              <table class="compare-table" style="margin-top: 0.4rem;">
+                <thead><tr><th>Result</th><th>Events</th><th>Users</th><th>%</th></tr></thead>
+                <tbody>${tableRows(ramp)}</tbody>
+              </table>
+            </div>
+            <div class="compare-cell is-latest">
+              <div class="compare-cell-label">Post-100% · May 7+</div>
+              <table class="compare-table" style="margin-top: 0.4rem;">
+                <thead><tr><th>Result</th><th>Events</th><th>Users</th><th>%</th></tr></thead>
+                <tbody>${tableRows(post)}</tbody>
+              </table>
+            </div>
+            <div class="compare-cell">
+              <div class="compare-cell-label">Input type mix</div>
+              <table class="compare-table" style="margin-top: 0.4rem;">
+                <thead><tr><th>Window</th><th>Type</th><th>Events</th><th>%</th></tr></thead>
+                <tbody>${itRows}</tbody>
+              </table>
+              <p class="compare-cell-detail" style="margin-top: 0.7rem;">${tp.inputTypeMix.takeaway}</p>
+            </div>
+          </div>
+          <div class="delta-block">
+            <div class="delta-block-label">Hypothesis · backlog catch-up</div>
+            <p>${tp.rampVsPost100.takeaway}</p>
+          </div>
         </section>
       `;
     }

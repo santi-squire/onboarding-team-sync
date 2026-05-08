@@ -227,6 +227,57 @@
     }
   },
 
+  "srmInvestigation": {
+    "headline": "SRM 73/27 confirmed real, not a data artifact — but new question: flowB has 3% logged-in rate vs flowA 56%",
+    "byDay": {
+      "windowStart": "2026-05-07",
+      "windowEnd": "2026-05-08",
+      "rows": [
+        { "day": "2026-05-07", "flowA_devices": 207, "flowB_devices": 72, "split": "74/26" },
+        { "day": "2026-05-08", "flowA_devices": 95,  "flowB_devices": 35, "split": "73/27" }
+      ],
+      "takeaway": "Split is consistent across both post-100% days (73-74/26-27). Not a one-day fluke."
+    },
+    "byAppVersion": {
+      "rows": [
+        { "variant": "flowA", "version": "3.23.0", "devices": 288, "events": 729 },
+        { "variant": "flowB", "version": "3.23.0", "devices": 107, "events": 138 }
+      ],
+      "takeaway": "Post-100% has zero legacy version contamination — every device is on 3.23.0. The SRM is NOT explained by 'old versions only emit flowA'. It's a real LD bucketing skew."
+    },
+    "loginRate": {
+      "rows": [
+        { "variant": "flowA", "devices": 278, "logged_in_users": 155, "actors": 180, "login_rate_pct": 56 },
+        { "variant": "flowB", "devices": 103, "logged_in_users": 3,   "actors": 14,  "login_rate_pct": 3  }
+      ],
+      "takeaway": "flowB has 3% logged-in rate (3 distinct USER_IDs out of 103 devices) vs flowA's 56% (155/278). Suggests flowA is being assigned to existing logged-in users, while flowB catches mostly anonymous/first-time devices. This points to a real LD bucketing bias (or LOGIN_EXPERIMENT_ASSIGNED firing on contexts where flowA users are already logged in)."
+    }
+  },
+
+  "tempPasswordInvestigation": {
+    "headline": "temp_password share dropped 36.9% → 23.0% (email-only). Real drop — likely 'backlog catch-up' not noise.",
+    "rampVsPost100": {
+      "rows": [
+        { "window": "ramp (Apr 30 - May 6)",   "result": "returning",     "events": 218, "users": 20, "pct": 47.9 },
+        { "window": "ramp (Apr 30 - May 6)",   "result": "temp_password", "events": 168, "users": 13, "pct": 36.9 },
+        { "window": "ramp (Apr 30 - May 6)",   "result": "new_user",      "events": 69,  "users": 3,  "pct": 15.2 },
+        { "window": "post-100% (May 7+)",      "result": "returning",     "events": 73,  "users": 5,  "pct": 59.8 },
+        { "window": "post-100% (May 7+)",      "result": "temp_password", "events": 28,  "users": 4,  "pct": 23.0 },
+        { "window": "post-100% (May 7+)",      "result": "new_user",      "events": 21,  "users": 1,  "pct": 17.2 }
+      ],
+      "takeaway": "temp_password dropped from 36.9% (168 events) in the ramp to 23.0% (28 events) in post-100%. Returning rose 47.9% → 59.8%. Hypothesis: the ramp window caught a backlog of invited barbers who had been holding their temp_password emails for days/weeks before exposure to Flow B; once that backlog cleared, post-100% reflects steady-state organic mix. Sample is small (4 distinct users with temp_password in 1.5 days) — confirm at week 3."
+    },
+    "inputTypeMix": {
+      "rows": [
+        { "window": "ramp",      "input_type": "email",    "events": 455, "pct": 92.1 },
+        { "window": "ramp",      "input_type": "username", "events": 39,  "pct": 7.9 },
+        { "window": "post-100%", "input_type": "email",    "events": 129, "pct": 89.0 },
+        { "window": "post-100%", "input_type": "username", "events": 16,  "pct": 11.0 }
+      ],
+      "takeaway": "Username share rose slightly (7.9% → 11.0%). Adds a small effect — but B2 already filtered to email-only, so the temp_password drop is genuine, not just an input_type mix artifact."
+    }
+  },
+
   "deltas": {
     "vsWeek1Snapshot": {
       "weekOf": "2026-05-06",
@@ -236,7 +287,7 @@
           "before": "418 / 244 (63/37)",
           "after_cumulative": "746 / 393 (65.5/34.5)",
           "after_post100": "271 / 100 (73/27)",
-          "delta_takeaway": "SRM persisted and worsened in post-100% window. Worth re-checking with Tristan."
+          "delta_takeaway": "Real LD bucketing skew, not a legacy-version artifact (post-100% is 100% on 3.23.0). Stable across both post-100% days. NEW finding: flowB has 3% logged-in rate vs flowA's 56% — see SRM investigation block."
         },
         {
           "metric": "Login completion (Flow B conversion)",
@@ -249,8 +300,8 @@
           "metric": "Email check temp_password share",
           "before": "33.5%",
           "after_cumulative": "31.7%",
-          "after_post100": "21.3%",
-          "delta_takeaway": "Drops in the post-100% window — fewer invited barbers in the new traffic mix vs the ramp population. Watch as more days accrue."
+          "after_post100": "23.0% (email-only) / 21.3% (incl. username)",
+          "delta_takeaway": "Real drop. Most likely backlog catch-up: ramp days 1-7 picked up invited barbers who'd been holding temp_password emails before Flow B existed; post-100% is steady-state organic flux. Returning share rose proportionally (47.9% → 59.8%). Sample still small (4 distinct temp_password users in 1.5 days)."
         },
         {
           "metric": "Per-exposure barber signup rate",
@@ -264,14 +315,14 @@
           "before": "196 events",
           "after_cumulative": "278 events",
           "after_post100": "59 events",
-          "delta_takeaway": "Frustration tapping continues. Post-100% rate (59 in 1.5 days ≈ 39/day) is consistent with cumulative pace (278/9 ≈ 31/day) — slight uptick."
+          "delta_takeaway": "Frustration tapping continues. Post-100% pace (59 in 1.5 days ≈ 39/day) is slightly above cumulative (278/9 ≈ 31/day). Microsoft Clarity will help us understand the post-tap behavior — see CLARITY_IOS_PROMPT.md."
         },
         {
           "metric": "Login abandoned at email_entry (Flow B new step)",
           "before": "57 events",
           "after_cumulative": "111 events",
           "after_post100": "31 events",
-          "delta_takeaway": "Continues to grow — the new email step accumulates abandonment as expected with volume. Post-100% rate aligns with prior days."
+          "delta_takeaway": "Continues to grow proportionally with volume. Post-100% rate aligns with prior days. Clarity recording will help us see what users do at this step."
         },
         {
           "metric": "Scope leak (signup_link_tapped, Flow B, v3.23.0)",
@@ -279,21 +330,20 @@
           "after_cumulative": "8 events / 6 devices",
           "after_post100": "3 events / 3 devices",
           "delta_takeaway": "Leak still active until PR #4143 merges. Rate is roughly stable (~1 event/day)."
-        },
-        {
-          "metric": "Indie signups",
-          "before": "0",
-          "after_cumulative": "0",
-          "after_post100": "0",
-          "delta_takeaway": "Still 0 in both variants. Confirms instrumentation gap or genuine null — QA validation outstanding."
         }
       ]
     }
   },
 
   "openQuestions": [
-    "SRM at 73/27 in post-100% (vs 65.5/34.5 cumulative): is the LD bucketing logic biased on update install vs fresh install? Worth checking with Tristan.",
-    "Email check temp_password share fell from 33.5% → 21.3% in post-100% window. Could be (a) noise from small sample, or (b) the marginal users at 100% rollout differ from the ramp population (organic-only vs invited). Wait for ≥7 days.",
-    "Forgot password Flow A: 278 events / 13 distinct users in 9 days = ~21 events per affected user. The frustration tapping pattern is real and concentrated. Worth a UX review of the non-dismissible sheet."
+    "Why is flowB's logged-in rate only 3% (3/103 devices) vs flowA's 56% (155/278) in post-100%? Suggests LD assigns flowA mostly to existing logged-in users while flowB catches anonymous/first-time devices. Confirm by checking when LOGIN_EXPERIMENT_ASSIGNED fires (cold start? login screen only?) — if it fires on cold start for already-logged-in flowA users, that explains the SRM mechanically.",
+    "Indie signup channel: does meaningful indie volume historically come through iOS/Android, or do indies sign up via web? If web, this experiment can't measure the indie north star — need a different success metric. Ask Eric/Yurii.",
+    "Forgot password Flow A: 278 events / 13 distinct users in 9 days = ~21 events per affected user. The frustration tapping pattern is real and concentrated. UX review of the non-dismissible sheet recommended; Clarity recording will pinpoint why users tap repeatedly."
+  ],
+
+  "resolvedThisSession": [
+    "Indie identifier: role='barber' AND user_type IS NULL. Zero indies in the experiment population.",
+    "temp_password ≠ indie: all temp_password Flow B users are confirmed Rental/Commission shop barbers.",
+    "SRM 73/27 is consistent across days, not driven by legacy app versions (post-100% is 100% on 3.23.0)."
   ]
 }
