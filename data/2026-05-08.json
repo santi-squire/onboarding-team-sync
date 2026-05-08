@@ -711,30 +711,89 @@
   },
 
   "historicalComparison": {
-    "headline": "Comparing pre-experiment baseline vs the experiment window — what Eric asked for.",
+    "headline": "Comparing pre-experiment baseline vs the experiment window — what Eric asked for. Strongest signal: indie signups dropped ~43% during the experiment weeks.",
     "status": "partial",
-    "statusNote": "Some metrics have a pre-experiment baseline via IDENTIFIES history (which goes back 90+ days); others were instrumented at deploy (Apr 30) so no historical baseline exists for them.",
+    "statusNote": "IDENTIFIES table has 90+ days of history, so we can compare pre vs post for: indie signup volume, new barber breakdown by user_type, and duplicate-account-per-email rate. The funnel + email-check events were instrumented at deploy (Apr 30) so no historical baseline exists for those. CS support ticket volume needs to come from CS team.",
     "blocks": [
       {
-        "title": "Duplicate barber-account-per-email rate",
-        "subtitle": "% of new barber USER_IDs whose email already belongs to another USER_ID. Flow B should reduce this.",
-        "status": "pending",
-        "pendingNote": "Query saved to docs/HISTORICAL_QUERIES.sql (Q1). Will pull next session and update this block with weekly data + pre-vs-post comparison.",
-        "expectedShape": "Weekly time series + 'pre-experiment avg' vs 'experiment window avg' comparison badge"
-      },
-      {
         "title": "New indie signups · weekly",
-        "subtitle": "Indies first appearing in IDENTIFIES (role='barber' AND user_type IS NULL), pre vs post Apr 30. Tristan: 'indies are primarily signing up through the app, so maybe we just haven't gotten many indie sign ups recently'.",
-        "status": "pending",
-        "pendingNote": "Query saved to docs/HISTORICAL_QUERIES.sql (Q2). Will pull next session.",
-        "expectedShape": "Weekly count + per-week trend"
+        "subtitle": "Indies (final user_type stayed NULL) first appearing in IDENTIFIES, weekly. Pre-experiment avg ~14/week (Apr 6-20), experiment weeks 8/week → ~43% drop.",
+        "status": "ready",
+        "comparison": {
+          "preBaseline": { "label": "Pre-experiment (Apr 6-20)", "value": "14/wk avg", "weeks": [12, 15, 15] },
+          "experiment": { "label": "Experiment (Apr 27 - May 4)", "value": "8/wk avg", "weeks": [8, 8] },
+          "deltaPct": -43,
+          "winner": "flowB",
+          "verdict": "Real drop · most direct signal Flow B is reducing accidental indie signups"
+        },
+        "weeks": [
+          { "week": "2026-02-16", "new_barbers": 1276, "indies": 31, "share_pct": 2.4 },
+          { "week": "2026-02-23", "new_barbers": 915,  "indies": 20, "share_pct": 2.2 },
+          { "week": "2026-03-02", "new_barbers": 772,  "indies": 31, "share_pct": 4.0 },
+          { "week": "2026-03-09", "new_barbers": 699,  "indies": 27, "share_pct": 3.9 },
+          { "week": "2026-03-16", "new_barbers": 602,  "indies": 21, "share_pct": 3.5 },
+          { "week": "2026-03-23", "new_barbers": 617,  "indies": 22, "share_pct": 3.6 },
+          { "week": "2026-03-30", "new_barbers": 531,  "indies": 20, "share_pct": 3.8 },
+          { "week": "2026-04-06", "new_barbers": 485,  "indies": 12, "share_pct": 2.5 },
+          { "week": "2026-04-13", "new_barbers": 517,  "indies": 15, "share_pct": 2.9 },
+          { "week": "2026-04-20", "new_barbers": 467,  "indies": 15, "share_pct": 3.2 },
+          { "week": "2026-04-27", "new_barbers": 439,  "indies": 8,  "share_pct": 1.8, "isExperiment": true, "rolloutEvent": "Experiment start (1% → 50%)" },
+          { "week": "2026-05-04", "new_barbers": 395,  "indies": 8,  "share_pct": 2.0, "isExperiment": true, "rolloutEvent": "100% rollout" }
+        ],
+        "caveat": "Pre-experiment had a mild declining trend (~5/week). Even after correcting for trend, the experiment-window indie volume is well below extrapolation."
       },
       {
-        "title": "New barber breakdown · weekly (Rental / Commission / Indie)",
-        "subtitle": "Total new barber accounts per week, segmented by user_type. Lets us see if the mix shifted post-launch.",
-        "status": "pending",
-        "pendingNote": "Query saved to docs/HISTORICAL_QUERIES.sql (Q3). Will pull next session.",
-        "expectedShape": "Stacked bar / table per week"
+        "title": "Duplicate barber-account-per-email rate",
+        "subtitle": "% of new barber USER_IDs whose email already belongs to another USER_ID. Most direct prevention signal Flow B should move.",
+        "status": "ready",
+        "comparison": {
+          "preBaseline": { "label": "Pre-experiment recent (Apr 13-20)", "value": "15.6% avg" },
+          "experiment": { "label": "Experiment (Apr 27 - May 4)", "value": "13.85% avg" },
+          "deltaPct": -11,
+          "winner": "tied",
+          "verdict": "Slight downward drift but inside week-to-week noise · 1.5 weeks too few to call"
+        },
+        "weeks": [
+          { "week": "2026-02-09", "new_barber_user_ids": 3819, "duplicates": 266, "duplicate_pct": 7.0, "note": "Outlier — likely backfill/import" },
+          { "week": "2026-02-16", "new_barber_user_ids": 1276, "duplicates": 130, "duplicate_pct": 10.2 },
+          { "week": "2026-02-23", "new_barber_user_ids": 1023, "duplicates": 120, "duplicate_pct": 11.7 },
+          { "week": "2026-03-02", "new_barber_user_ids": 889,  "duplicates": 126, "duplicate_pct": 14.2 },
+          { "week": "2026-03-09", "new_barber_user_ids": 792,  "duplicates": 110, "duplicate_pct": 13.9 },
+          { "week": "2026-03-16", "new_barber_user_ids": 695,  "duplicates": 108, "duplicate_pct": 15.5 },
+          { "week": "2026-03-23", "new_barber_user_ids": 702,  "duplicates": 105, "duplicate_pct": 15.0 },
+          { "week": "2026-03-30", "new_barber_user_ids": 615,  "duplicates": 114, "duplicate_pct": 18.5 },
+          { "week": "2026-04-06", "new_barber_user_ids": 572,  "duplicates": 107, "duplicate_pct": 18.7 },
+          { "week": "2026-04-13", "new_barber_user_ids": 575,  "duplicates": 82,  "duplicate_pct": 14.3 },
+          { "week": "2026-04-20", "new_barber_user_ids": 537,  "duplicates": 90,  "duplicate_pct": 16.8 },
+          { "week": "2026-04-27", "new_barber_user_ids": 491,  "duplicates": 68,  "duplicate_pct": 13.8, "isExperiment": true, "rolloutEvent": "Experiment start" },
+          { "week": "2026-05-04", "new_barber_user_ids": 445,  "duplicates": 62,  "duplicate_pct": 13.9, "isExperiment": true, "rolloutEvent": "100% rollout" }
+        ],
+        "caveat": "Older weeks under-count duplicates because we don't have history before the 90-day window. Compare only to weeks with ≥60 days of prior history (Apr 13+) for a fair read. Re-check after 4+ weeks of post-rollout data."
+      },
+      {
+        "title": "New barber breakdown · Rental / Commission / Indie weekly",
+        "subtitle": "Total new barbers per week segmented by final user_type. Lets us see whether the experiment shifted the mix away from indie toward shop-employed.",
+        "status": "ready",
+        "comparison": {
+          "preBaseline": { "label": "Pre-experiment indie share (Apr 6-20)", "value": "2.9% avg" },
+          "experiment": { "label": "Experiment indie share (Apr 27 - May 4)", "value": "1.9% avg" },
+          "deltaPct": -34,
+          "winner": "flowB",
+          "verdict": "Indie share of new barbers dropped from ~2.9% to ~1.9% during the experiment. Shop-employed share grew correspondingly."
+        },
+        "weeks": [
+          { "week": "2026-02-23", "rental": 535, "commission": 360, "indies": 20 },
+          { "week": "2026-03-02", "rental": 438, "commission": 303, "indies": 31 },
+          { "week": "2026-03-09", "rental": 383, "commission": 289, "indies": 27 },
+          { "week": "2026-03-16", "rental": 363, "commission": 218, "indies": 21 },
+          { "week": "2026-03-23", "rental": 399, "commission": 196, "indies": 22 },
+          { "week": "2026-03-30", "rental": 295, "commission": 216, "indies": 20 },
+          { "week": "2026-04-06", "rental": 291, "commission": 182, "indies": 12 },
+          { "week": "2026-04-13", "rental": 291, "commission": 211, "indies": 15 },
+          { "week": "2026-04-20", "rental": 248, "commission": 204, "indies": 15 },
+          { "week": "2026-04-27", "rental": 242, "commission": 189, "indies": 8, "isExperiment": true },
+          { "week": "2026-05-04", "rental": 223, "commission": 164, "indies": 8, "isExperiment": true }
+        ]
       },
       {
         "title": "CS support tickets · 'delete my accidental indie signup' volume",
