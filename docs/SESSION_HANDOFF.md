@@ -377,3 +377,95 @@ Use the chrome MCP to navigate to app.snowflake.com and verify I'm logged in.
 ```
 
 If yes — done. From there, you ask Claude to run any query via the Snowsight UI.
+
+## Chrome DevTools MCP — concrete usage recipes
+
+The Chrome MCP exposes tools to navigate, click, type, evaluate JS, and screenshot. Use these patterns to drive Snowsight.
+
+### Pattern 1 — Auto mode (Claude does everything)
+
+Higher friction but no manual steps once it works:
+
+```
+Use the chrome MCP to:
+1. Navigate to https://app.snowflake.com/mhazqgd/dja79986/#/q
+   (this is the new-worksheet URL)
+2. Wait for the editor to load
+3. Use evaluate to set the CodeMirror editor value to:
+   "SELECT VARIANT, COUNT(*) FROM RAW.RUDDER_EVENTS.LOGIN_EXPERIMENT_ASSIGNED WHERE TIMESTAMP >= '2026-04-30' GROUP BY VARIANT"
+4. Click the "Run" button (selector: button[aria-label='Run']
+   or button containing text "Run")
+5. Wait 3-5 seconds for the result grid to render
+6. Extract the table data from the grid (selector: .ag-row inside .ag-body-viewport
+   for ag-Grid, or whatever grid component Snowsight uses today)
+7. Return the result as JSON
+```
+
+**Brittleness note**: Snowsight uses ag-Grid for results. Selectors may shift if Snowflake updates the UI. If selectors break, fall back to Pattern 2.
+
+### Pattern 2 — Hybrid mode (recommended, more robust)
+
+You run the query manually in the browser, Claude reads the result. Less automation, more reliability:
+
+```
+1. Use chrome MCP to navigate to https://app.snowflake.com/mhazqgd/dja79986/#/q
+2. Tell me when the worksheet is loaded.
+3. I'll paste the SQL and hit Run myself.
+4. Once results are visible, take a screenshot or extract the grid contents and tell me what the data shows.
+```
+
+This is the SAFE path — Claude only READS, you DRIVE. Works around any UI brittleness.
+
+### Pattern 3 — Vision-only (slowest but bulletproof)
+
+If DOM extraction fails:
+```
+Take a screenshot of the result grid. Read the values into a markdown table.
+```
+
+Claude's vision model handles this fine for small result sets (<50 rows).
+
+### Recipe: running the 8 standard weekly queries
+
+For the standard pull, the most reliable pattern is **Pattern 2 (hybrid)**:
+
+```
+Open Snowsight in Chrome. I'll run each of the 8 queries manually
+(they're in this same handoff doc above). After each one, I'll tell
+you it's done — you read the grid and store the result in
+data/<this-week>.json under the appropriate field.
+```
+
+Order to run them in:
+1. Q1 → variant balance → fills `variantBalance.snowflake.{flowA, flowB}`
+2. Q2 → funnel → fills `funnel.{steps, flowA, flowB}`
+3. Q3 → north star → fills `northStarData.{categories, flowA, flowB}`
+4. Q4 → email check → fills `emailCheck.{returning, temp_password, new_user, totals}`
+5. Q5a → login failed → fills part of `friction.{flowA[0], flowB[0]}`
+6. Q5b → forgot password → fills part of `friction.{flowA[1], flowB[1]}`
+7. Q5c → login abandoned → fills part of `friction.{flowA[2], flowB[2]}`
+8. Q6 → signup_link sanity → updates the leak caveat
+
+After each, tell Claude: *"that one is done, here's the data"* and Claude updates the JSON.
+
+### Tools the Chrome MCP exposes (typical)
+
+When the MCP is installed, ask Claude `/mcp` to see the actual tools — but typical names are:
+
+- `navigate(url)` — go to URL
+- `click(selector)` — click an element
+- `type(selector, text)` — type into input
+- `evaluate(js_expression)` — run JS in page context
+- `screenshot()` — capture viewport
+- `get_text(selector)` — extract text from element
+- `get_html(selector)` — extract HTML
+
+If your MCP has different names, the Patterns above still apply conceptually — adapt.
+
+### Gotchas
+
+- **First query opens browser auth dance** — make sure Chrome is launched with the `--user-data-dir=$HOME/.chrome-mcp-profile` flag and you logged into Snowsight ONCE in that profile. Cookies persist.
+- **CodeMirror editor** — needs `evaluate` to set the value (not `type`). The hidden textarea pattern requires JS injection.
+- **Result grid pagination** — Snowsight loads ~100 rows at a time. For large queries, tell Claude to scroll the grid.
+- **Auto-rerun on edit** — be careful: Snowsight may re-run if you edit + tab out. Always paste full SQL then click Run.
+- **Session timeout** — Snowsight idles you out after ~30 min. The chrome-debug profile may need re-login. Re-trigger SSO from inside that Chrome window.
