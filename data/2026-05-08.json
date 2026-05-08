@@ -1,0 +1,267 @@
+{
+  "snapshotDate": "2026-05-08",
+  "snapshotLabel": "First post-100% rollout pull",
+  "weekNumber": 2,
+  "presenter": "Santiago Anaya",
+
+  "rolloutContext": {
+    "fullRolloutDate": "2026-05-07",
+    "today": "2026-05-08",
+    "daysAtFullRollout": 1.5,
+    "note": "100% rollout went live 2026-05-07. This snapshot pulls two parallel windows: the full cumulative since experiment start (Apr 30+, 9 days) and the post-rollout subset (May 7+, ~1.5 days)."
+  },
+
+  "windows": {
+    "cumulative": {
+      "label": "Cumulative · Apr 30 → May 8",
+      "windowStart": "2026-04-30",
+      "windowEnd": "2026-05-08",
+      "approxDays": 9,
+
+      "variantBalance": {
+        "expected": { "flowA": 50, "flowB": 50 },
+        "snowflake": {
+          "flowA": 746,
+          "flowB": 393,
+          "actorsFlowA": 404,
+          "actorsFlowB": 63,
+          "totalEventsFlowA": 1916,
+          "totalEventsFlowB": 545,
+          "unit": "distinct devices"
+        },
+        "splitPct": { "flowA": 65.5, "flowB": 34.5 },
+        "srmStatus": "real, persists at 65.5/34.5 (was 63/37 in week 1)"
+      },
+
+      "funnel": {
+        "steps": ["Assigned", "Welcome viewed", "Login succeeded"],
+        "flowA": [746, 625, 366],
+        "flowB": [393, 393, 264],
+        "rates": {
+          "flowA": { "welcome": 83.8, "conversion": 58.6 },
+          "flowB": { "welcome": 100.0, "conversion": 67.2 }
+        }
+      },
+
+      "northStarData": {
+        "categories": ["barber/signup_link", "barber/email_not_found", "shop/signup_link", "shop/email_not_found", "indie/signup_link"],
+        "flowA": [49, 0, 1, 0, 0],
+        "flowB": [1, 45, 0, 1, 0],
+        "note": "flowB barber/signup_link = 1 user (instrumentation leak from PR #4143 not yet merged)"
+      },
+
+      "emailCheck": {
+        "events": {
+          "returning_email": 289,
+          "temp_password_email": 196,
+          "new_user_email": 90,
+          "new_user_username": 37,
+          "returning_username": 14,
+          "temp_password_username": 4
+        },
+        "totals": {
+          "totalEvents": 630,
+          "returning_email_pct": 45.9,
+          "temp_password_email_pct": 31.1,
+          "new_user_email_pct": 14.3,
+          "temp_password_total_pct": 31.7,
+          "username_total_pct": 8.7
+        }
+      },
+
+      "loginFailed": {
+        "flowA": { "total": 0, "byReason": {} },
+        "flowB": { "total": 45, "byReason": { "wrong_password": 39, "network_error": 6 } }
+      },
+
+      "forgotPassword": {
+        "flowA": { "total": 278, "byState": { "flow_a_sheet": 278 } },
+        "flowB": { "total": 86, "byState": { "flow_b_returning": 53, "flow_b_temp": 24, "flow_a_sheet": 9 } }
+      },
+
+      "loginAbandoned": {
+        "flowA": { "total": 329, "byStep": { "password_entry": 329 } },
+        "flowB": { "total": 278, "byStep": { "password_entry": 167, "email_entry": 111 } }
+      },
+
+      "friction": {
+        "events": ["Login attempt failed", "Forgot password", "Login abandoned"],
+        "flowA": [0, 278, 329],
+        "flowB": [45, 86, 278]
+      },
+
+      "perExposure": {
+        "flowA": { "rate": 6.6, "numerator": 49, "denominator": 746, "label": "Flow A · barber via signup_link" },
+        "flowB": { "rate": 11.5, "numerator": 45, "denominator": 393, "label": "Flow B · barber via email_not_found" }
+      },
+
+      "scopeLeak": {
+        "totalEvents": 8,
+        "distinctDevices": 6,
+        "appVersion": "3.23.0",
+        "fixStatus": "PR #4143 pending merge"
+      }
+    },
+
+    "postRollout": {
+      "label": "Post-100% rollout · May 7 → May 8",
+      "windowStart": "2026-05-07",
+      "windowEnd": "2026-05-08",
+      "approxDays": 1.5,
+
+      "variantBalance": {
+        "expected": { "flowA": 50, "flowB": 50 },
+        "snowflake": {
+          "flowA": 271,
+          "flowB": 100,
+          "actorsFlowA": 174,
+          "actorsFlowB": 13,
+          "totalEventsFlowA": 680,
+          "totalEventsFlowB": 127,
+          "unit": "distinct devices"
+        },
+        "splitPct": { "flowA": 73.0, "flowB": 27.0 },
+        "srmStatus": "more skewed than cumulative (73/27) — full-rollout traffic appears worse, watch over coming days"
+      },
+
+      "funnel": {
+        "steps": ["Assigned", "Welcome viewed", "Login succeeded"],
+        "flowA": [271, 214, 130],
+        "flowB": [100, 100, 67],
+        "rates": {
+          "flowA": { "welcome": 79.0, "conversion": 60.7 },
+          "flowB": { "welcome": 100.0, "conversion": 67.0 }
+        }
+      },
+
+      "northStarData": {
+        "categories": ["barber/signup_link", "barber/email_not_found", "shop/signup_link", "shop/email_not_found", "indie/signup_link"],
+        "flowA": [9, 0, 0, 0, 0],
+        "flowB": [1, 7, 0, 0, 0],
+        "note": "Still 0 indie in either variant; flowB barber/signup_link leak still active (1 user)"
+      },
+
+      "emailCheck": {
+        "events": {
+          "returning_email": 71,
+          "temp_password_email": 28,
+          "new_user_email": 21,
+          "new_user_username": 10,
+          "returning_username": 5,
+          "temp_password_username": 1
+        },
+        "totals": {
+          "totalEvents": 136,
+          "returning_email_pct": 52.2,
+          "temp_password_email_pct": 20.6,
+          "new_user_email_pct": 15.4,
+          "temp_password_total_pct": 21.3,
+          "username_total_pct": 11.8
+        }
+      },
+
+      "loginFailed": {
+        "flowA": { "total": 0, "byReason": {} },
+        "flowB": { "total": 17, "byReason": { "wrong_password": 12, "network_error": 5 } }
+      },
+
+      "forgotPassword": {
+        "flowA": { "total": 59, "byState": { "flow_a_sheet": 59 } },
+        "flowB": { "total": 15, "byState": { "flow_b_returning": 9, "flow_a_sheet": 4, "flow_b_temp": 2 } }
+      },
+
+      "loginAbandoned": {
+        "flowA": { "total": 92, "byStep": { "password_entry": 92 } },
+        "flowB": { "total": 56, "byStep": { "email_entry": 31, "password_entry": 25 } }
+      },
+
+      "friction": {
+        "events": ["Login attempt failed", "Forgot password", "Login abandoned"],
+        "flowA": [0, 59, 92],
+        "flowB": [17, 15, 56]
+      },
+
+      "perExposure": {
+        "flowA": { "rate": 3.3, "numerator": 9, "denominator": 271, "label": "Flow A · barber via signup_link" },
+        "flowB": { "rate": 7.0, "numerator": 7, "denominator": 100, "label": "Flow B · barber via email_not_found" }
+      },
+
+      "scopeLeak": {
+        "totalEvents": 3,
+        "distinctDevices": 3,
+        "appVersion": "3.23.0",
+        "fixStatus": "PR #4143 pending merge"
+      }
+    }
+  },
+
+  "deltas": {
+    "vsWeek1Snapshot": {
+      "weekOf": "2026-05-06",
+      "notes": [
+        {
+          "metric": "Variant balance (devices)",
+          "before": "418 / 244 (63/37)",
+          "after_cumulative": "746 / 393 (65.5/34.5)",
+          "after_post100": "271 / 100 (73/27)",
+          "delta_takeaway": "SRM persisted and worsened in post-100% window. Worth re-checking with Tristan."
+        },
+        {
+          "metric": "Login completion (Flow B conversion)",
+          "before": "67.5%",
+          "after_cumulative": "67.2%",
+          "after_post100": "67.0%",
+          "delta_takeaway": "Stable across windows. Flow B conversion lift over Flow A holds (~8-9 pp)."
+        },
+        {
+          "metric": "Email check temp_password share",
+          "before": "33.5%",
+          "after_cumulative": "31.7%",
+          "after_post100": "21.3%",
+          "delta_takeaway": "Drops in the post-100% window — fewer invited barbers in the new traffic mix vs the ramp population. Watch as more days accrue."
+        },
+        {
+          "metric": "Per-exposure barber signup rate",
+          "before": "Flow A 9.1% · Flow B 14.3%",
+          "after_cumulative": "Flow A 6.6% · Flow B 11.5%",
+          "after_post100": "Flow A 3.3% · Flow B 7.0%",
+          "delta_takeaway": "Both rates dropped uniformly. Flow B still ~2× Flow A — the gap (and direction) persists."
+        },
+        {
+          "metric": "Forgot password (Flow A)",
+          "before": "196 events",
+          "after_cumulative": "278 events",
+          "after_post100": "59 events",
+          "delta_takeaway": "Frustration tapping continues. Post-100% rate (59 in 1.5 days ≈ 39/day) is consistent with cumulative pace (278/9 ≈ 31/day) — slight uptick."
+        },
+        {
+          "metric": "Login abandoned at email_entry (Flow B new step)",
+          "before": "57 events",
+          "after_cumulative": "111 events",
+          "after_post100": "31 events",
+          "delta_takeaway": "Continues to grow — the new email step accumulates abandonment as expected with volume. Post-100% rate aligns with prior days."
+        },
+        {
+          "metric": "Scope leak (signup_link_tapped, Flow B, v3.23.0)",
+          "before": "5 events / 3 devices",
+          "after_cumulative": "8 events / 6 devices",
+          "after_post100": "3 events / 3 devices",
+          "delta_takeaway": "Leak still active until PR #4143 merges. Rate is roughly stable (~1 event/day)."
+        },
+        {
+          "metric": "Indie signups",
+          "before": "0",
+          "after_cumulative": "0",
+          "after_post100": "0",
+          "delta_takeaway": "Still 0 in both variants. Confirms instrumentation gap or genuine null — QA validation outstanding."
+        }
+      ]
+    }
+  },
+
+  "openQuestions": [
+    "SRM at 73/27 in post-100% (vs 65.5/34.5 cumulative): is the LD bucketing logic biased on update install vs fresh install? Worth checking with Tristan.",
+    "Email check temp_password share fell from 33.5% → 21.3% in post-100% window. Could be (a) noise from small sample, or (b) the marginal users at 100% rollout differ from the ramp population (organic-only vs invited). Wait for ≥7 days.",
+    "Forgot password Flow A: 278 events / 13 distinct users in 9 days = ~21 events per affected user. The frustration tapping pattern is real and concentrated. Worth a UX review of the non-dismissible sheet."
+  ]
+}
