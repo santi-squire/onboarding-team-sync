@@ -597,6 +597,9 @@
 
       const sections = [];
 
+      // === 0. Indie classification — answers Tristan's question ===
+      if (week2.indieClassification) sections.push(renderIndieClassification(week2.indieClassification));
+
       // === 1. Variant balance ===
       sections.push(renderVariantBalance(week1, cum, post, week2.deltas.vsWeek1Snapshot.notes[0]));
 
@@ -929,6 +932,55 @@
           </div>
           <ul class="questions-list">
             ${qs.map(q => `<li>${q}</li>`).join('')}
+          </ul>
+        </section>
+      `;
+    }
+
+    function renderIndieClassification(ic) {
+      const fa = ic.experimentBreakdown.byVariant.flowA;
+      const fb = ic.experimentBreakdown.byVariant.flowB;
+      const total = ic.experimentBreakdown.totalNewBarbers;
+      return `
+        <section class="metric-section indie-callout">
+          <div class="section-header">
+            <div class="section-eyebrow" style="color: var(--success);">⚡ Findings from May 8 · investigation</div>
+            <h2 class="section-title">How are indies tagged? — answer to Tristan's question</h2>
+            <p class="section-sub">${ic.headline}</p>
+          </div>
+          <div class="comparison-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="compare-cell">
+              <div class="compare-cell-label">Indie identifier · canonical</div>
+              <p style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text); line-height: 1.55; margin: 0;">
+                <code style="color: var(--accent-bright);">CONTEXT_TRAITS_ROLE = 'barber'</code><br>
+                <code style="color: var(--text-muted);">AND</code><br>
+                <code style="color: var(--accent-bright);">CONTEXT_TRAITS_USER_TYPE IS NULL</code>
+              </p>
+              <p class="compare-cell-detail">Rental and Commission are explicit user_types for shop-employed barbers. Indies have no shop relationship → no user_type set.</p>
+            </div>
+            <div class="compare-cell is-latest">
+              <div class="compare-cell-label">Experiment window · Apr 30 → May 8</div>
+              <p class="compare-cell-stat">${total}<span class="compare-cell-stat-suffix">new barbers · 0 indies</span></p>
+              <table class="compare-table" style="margin-top: 0.6rem;">
+                <thead><tr><th>Type</th><th class="flowA">Flow A</th><th class="flowB">Flow B</th></tr></thead>
+                <tbody>
+                  <tr><td>Rental</td><td>${fa.rental}</td><td>${fb.rental}</td></tr>
+                  <tr><td>Commission</td><td>${fa.commission}</td><td>${fb.commission}</td></tr>
+                  <tr class="zero-row"><td>Indie</td><td>${fa.indie}</td><td>${fb.indie}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="delta-block" style="border-left-color: var(--success);">
+            <div class="delta-block-label" style="color: var(--success);">temp_password ≠ indie · correction</div>
+            <p>${ic.tempPasswordCorrection.reality}</p>
+          </div>
+          <div class="delta-block">
+            <div class="delta-block-label">Global context</div>
+            <p>${ic.globalContext.interpretation}</p>
+          </div>
+          <ul class="questions-list" style="margin-top: 1rem;">
+            ${ic.implications.map(i => `<li>${i}</li>`).join('')}
           </ul>
         </section>
       `;

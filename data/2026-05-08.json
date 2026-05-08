@@ -11,6 +11,38 @@
     "note": "100% rollout went live 2026-05-07. This snapshot pulls two parallel windows: the full cumulative since experiment start (Apr 30+, 9 days) and the post-rollout subset (May 7+, ~1.5 days)."
   },
 
+  "indieClassification": {
+    "headline": "Zero indie signups in the experiment population — all 95 new barbers are Rental or Commission",
+    "definition": "An indie is identified by CONTEXT_TRAITS_ROLE = 'barber' AND CONTEXT_TRAITS_USER_TYPE IS NULL in the IDENTIFIES table. Rental and Commission are explicit user_type values used for shop-employed barbers; indies have no shop relationship and therefore no user_type set.",
+    "experimentBreakdown": {
+      "windowStart": "2026-04-30",
+      "windowEnd": "2026-05-08",
+      "totalNewBarbers": 95,
+      "byVariant": {
+        "flowA": { "rental": 37, "commission": 12, "indie": 0, "unclassified": 0 },
+        "flowB": { "rental": 32, "commission": 14, "indie": 0, "unclassified": 0 }
+      },
+      "method": "Cross-joined ACCOUNT_CREATED users with IDENTIFIES traits using ever-had logic (any timestamp). MAX_BY produced misleading nulls because user_type is sometimes transient at re-identify time."
+    },
+    "tempPasswordCorrection": {
+      "claim": "temp_password = indie (FALSE)",
+      "reality": "All Flow B email_check temp_password results map to confirmed Rental/Commission barbers — they get temp_password from their shop owner. Indies do not show up via temp_password.",
+      "impactOnNarrative": "The 33.5% temp_password share remains the strongest Flow B signal (catching invited shop barbers before they create duplicate accounts), but it should NOT be described as 'catching indies'. It is catching shop-employed barbers who were already provisioned."
+    },
+    "globalContext": {
+      "indiesInLast90d": 1641,
+      "rentalInLast90d": 14944,
+      "commissionInLast90d": 12632,
+      "interpretation": "Indies exist as a population (1,641 active in IDENTIFIES last 90d) but the ACCOUNT_CREATED event was only instrumented at experiment deploy (2026-04-30), so we have no pre-experiment baseline of indie creation rate. All 1,641 indies are pre-existing accounts, not new signups during our window."
+    },
+    "implications": [
+      "The north-star metric 'reduction of accidental indie signups in Flow B' cannot be measured in this experiment because zero indies are being created in this traffic.",
+      "Possible explanations: (a) organic indie volume is genuinely low post-deploy; (b) indies typically sign up via web, not iOS/Android; (c) the experiment population (logged-out users on iOS/Android) does not include the indie acquisition channel.",
+      "Actionable: ask Eric/Yurii whether indie signups historically come through iOS/Android at meaningful volume. If not, we may need a different success metric for this experiment."
+    ]
+  },
+
+
   "windows": {
     "cumulative": {
       "label": "Cumulative · Apr 30 → May 8",
