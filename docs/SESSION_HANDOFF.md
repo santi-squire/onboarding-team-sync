@@ -72,6 +72,66 @@ snow sql -q "SELECT VARIANT, COUNT(*) FROM RAW.RUDDER_EVENTS.LOGIN_EXPERIMENT_AS
 
 Claude can pipe through Bash tool. Less elegant but reliable once auth works.
 
+### Option 4: Chrome DevTools MCP — fallback if Snowflake auth keeps blocking
+
+If `snow` auth is permanently stuck, this lets Claude **read your Snowsight web UI directly** — you stay logged in via SSO in Chrome (which already works for you), and Claude reads the query results from the rendered page. No Snowflake auth needed on Claude's side.
+
+#### Install (single message in next session)
+
+```bash
+# Install the MCP package globally via npm
+npm install -g chrome-devtools-mcp
+
+# Register it with Claude (single-line, no backslashes — zsh quirk)
+claude mcp add chrome --scope user -- npx -y chrome-devtools-mcp@latest
+```
+
+#### Start Chrome with debugging port (one-time setup)
+
+The MCP attaches to your existing Chrome via the DevTools Protocol. You need to launch Chrome with the debugging port exposed.
+
+Add an alias to `~/.zshrc`:
+```bash
+alias chrome-debug='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-mcp-profile &'
+```
+
+Then:
+```bash
+source ~/.zshrc
+chrome-debug
+```
+
+That opens Chrome with a SEPARATE profile (`.chrome-mcp-profile`) on port 9222. **Log into Snowsight** in this Chrome instance once — cookies persist in that profile.
+
+#### How to use
+
+In a Claude session:
+```
+"Open https://app.snowflake.com in Chrome and run this query, then read the results back:
+SELECT VARIANT, COUNT(*) FROM RAW.RUDDER_EVENTS.LOGIN_EXPERIMENT_ASSIGNED ..."
+```
+
+Claude → uses chrome-devtools MCP → opens tab → pastes SQL into Snowsight worksheet → reads grid → returns results.
+
+#### Tradeoffs vs Snowflake MCP
+
+| | Snowflake MCP (preferred) | Chrome DevTools MCP (fallback) |
+|---|---|---|
+| Auth | Needs key-pair (admin step) | Uses your existing Snowsight login |
+| Speed | Direct SQL, fast | Slower (browser automation) |
+| Reliability | Once auth works, rock solid | Brittle to UI changes |
+| Setup complexity | High (this whole saga) | Low (3 commands) |
+| Multi-tasking | Can run while you do other things | Browser is "in use" while Claude works |
+
+#### Recommended order in next session
+
+1. **First** — check if Denis ran the ALTER USER. If yes → Option 1 (key-pair).
+2. **If still blocked** — install Chrome DevTools MCP per this section.
+3. **Use Chrome MCP for queries** until Snowflake auth gets resolved.
+4. **Eventually** switch to Snowflake MCP when auth works (faster + cleaner).
+
+Both can coexist — you can have BOTH MCPs registered. Claude picks the appropriate one per task.
+
 ---
 
 ## The 8 queries we run weekly + why
@@ -279,10 +339,41 @@ The MCP just removes the manual paste-back step — it's a productivity boost, n
 When you start the next session, ask Claude:
 
 ```
-Read docs/SESSION_HANDOFF.md and tell me:
-1. Did Denis run the ALTER USER for the public key?
-2. Are we on key-pair or externalbrowser?
-3. What's the next concrete action?
+Read docs/SESSION_HANDOFF.md. Two parallel paths:
+
+A) If Denis ran the ALTER USER → switch config to JWT, test, register Snowflake MCP.
+B) If Denis hasn't responded → install Chrome DevTools MCP (Option 4 in handoff) so I can use Snowsight via browser. Less elegant but unblocks me.
+
+Pick the one that's ready. Tell me the concrete commands to run.
 ```
 
-That gives the new session the full context immediately.
+That gives the new session enough context to execute either path immediately without re-debugging.
+
+## Quick-start: Chrome DevTools MCP only (skip Snowflake entirely)
+
+If you just want to get unblocked TODAY without waiting for Denis:
+
+```bash
+# 1. Install
+npm install -g chrome-devtools-mcp
+
+# 2. Register
+claude mcp add chrome --scope user -- npx -y chrome-devtools-mcp@latest
+
+# 3. Add Chrome alias (one time)
+echo 'alias chrome-debug='"'"'/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-mcp-profile &'"'"'' >> ~/.zshrc
+source ~/.zshrc
+
+# 4. Open Chrome (do this once per day)
+chrome-debug
+# → in that Chrome window, log into Snowsight ONCE
+
+# 5. Restart Claude Code so the new MCP loads
+```
+
+After restart, ask Claude:
+```
+Use the chrome MCP to navigate to app.snowflake.com and verify I'm logged in.
+```
+
+If yes — done. From there, you ask Claude to run any query via the Snowsight UI.
