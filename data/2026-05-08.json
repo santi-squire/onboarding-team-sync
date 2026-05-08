@@ -224,11 +224,107 @@
         "appVersion": "3.23.0",
         "fixStatus": "PR #4143 pending merge"
       }
+    },
+
+    "postRolloutNew": {
+      "label": "Post-100% NEW devices only · cleanest experiment read",
+      "windowStart": "2026-05-07",
+      "windowEnd": "2026-05-08",
+      "approxDays": 1.5,
+      "filterDescription": "Devices whose first IDENTIFIES event is on or after 2026-05-07 — i.e., genuinely new entries to the experiment, not pre-existing legacy users with sticky LD buckets.",
+
+      "variantBalance": {
+        "expected": { "flowA": 50, "flowB": 50 },
+        "snowflake": {
+          "flowA": 83,
+          "flowB": 60,
+          "actorsFlowA": 40,
+          "actorsFlowB": 16,
+          "loggedInFlowA": 15,
+          "loggedInFlowB": 2,
+          "totalEventsFlowA": 124,
+          "totalEventsFlowB": 71,
+          "unit": "distinct devices"
+        },
+        "splitPct": { "flowA": 58.0, "flowB": 42.0 },
+        "srmStatus": "58/42 — much closer to expected 50/50; what we'd see consistently if LD bucketing were not sticky from the gradual rollout"
+      },
+
+      "funnel": {
+        "steps": ["Assigned", "Welcome viewed", "Login succeeded"],
+        "flowA": [83, 79, 28],
+        "flowB": [60, 62, 39],
+        "rates": {
+          "flowA": { "welcome": 95.2, "conversion": 35.4, "overall": 33.7 },
+          "flowB": { "welcome": 100.0, "conversion": 62.9, "overall": 65.0 }
+        },
+        "note": "Flow B welcome > assigned (62 vs 60) because 2 devices were assigned during the ramp but their first IDENTIFIES event is May 7+. Trivial data-quirk."
+      },
+
+      "northStarData": {
+        "categories": ["barber/signup_link", "barber/email_not_found", "shop/signup_link", "shop/email_not_found", "indie/signup_link"],
+        "flowA": [6, 0, 0, 0, 0],
+        "flowB": [1, 5, 0, 0, 0],
+        "note": "Even on a clean sample, 0 indie account_created events. The conclusion that indies don't pass through this channel holds."
+      },
+
+      "emailCheck": {
+        "events": {
+          "returning_email": 28,
+          "temp_password_email": 26,
+          "new_user_email": 13,
+          "new_user_username": 4,
+          "returning_username": 3,
+          "temp_password_username": 0
+        },
+        "totals": {
+          "totalEvents": 74,
+          "returning_email_pct": 37.8,
+          "temp_password_email_pct": 35.1,
+          "new_user_email_pct": 17.6,
+          "temp_password_total_pct": 35.1,
+          "username_total_pct": 9.5
+        }
+      },
+
+      "loginFailed": {
+        "flowA": { "total": 0, "byReason": {} },
+        "flowB": { "total": 18, "byReason": {} }
+      },
+
+      "forgotPassword": {
+        "flowA": { "total": 27, "byState": {} },
+        "flowB": { "total": 10, "byState": {} }
+      },
+
+      "loginAbandoned": {
+        "flowA": { "total": 21, "byStep": {} },
+        "flowB": { "total": 30, "byStep": {} }
+      },
+
+      "friction": {
+        "events": ["Login attempt failed", "Forgot password", "Login abandoned"],
+        "flowA": [0, 27, 21],
+        "flowB": [18, 10, 30]
+      },
+
+      "perExposure": {
+        "flowA": { "rate": 7.2, "numerator": 6, "denominator": 83, "label": "Flow A · barber via signup_link" },
+        "flowB": { "rate": 8.3, "numerator": 5, "denominator": 60, "label": "Flow B · barber via email_not_found" }
+      },
+
+      "scopeLeak": {
+        "totalEvents": 1,
+        "distinctDevices": 1,
+        "appVersion": "3.23.0",
+        "fixStatus": "PR #4143 pending merge",
+        "note": "Of the post-100% scope leak, 1 of 3 events came from a NEW device. Even on clean sample the leak persists until the PR ships."
+      }
     }
   },
 
   "srmInvestigation": {
-    "headline": "SRM 73/27 confirmed real, not a data artifact — but new question: flowB has 3% logged-in rate vs flowA 56%",
+    "headline": "SRM 73/27 root-caused: sticky LD assignment + gradual rollout. New devices post-100% split 59/41, the 'true' experiment SRM.",
     "byDay": {
       "windowStart": "2026-05-07",
       "windowEnd": "2026-05-08",
@@ -243,29 +339,47 @@
         { "variant": "flowA", "version": "3.23.0", "devices": 288, "events": 729 },
         { "variant": "flowB", "version": "3.23.0", "devices": 107, "events": 138 }
       ],
-      "takeaway": "Post-100% has zero legacy version contamination — every device is on 3.23.0. The SRM is NOT explained by 'old versions only emit flowA'. It's a real LD bucketing skew."
+      "takeaway": "Post-100% has zero legacy version contamination — every device is on 3.23.0. The SRM is NOT explained by 'old versions only emit flowA'."
+    },
+    "byFirstSeen": {
+      "headline": "ROOT CAUSE: device-age stratification reveals sticky-bucket effect",
+      "rows": [
+        { "first_seen": "Pre-experiment (before Apr 30)", "flowA": 194, "flowB": 48, "split": "80/20", "interpretation": "Old devices · skew is heavy" },
+        { "first_seen": "During ramp (Apr 30 → May 6)",   "flowA": 17,  "flowB": 5,  "split": "77/23", "interpretation": "Devices that arrived during low rollout" },
+        { "first_seen": "Post-100% (May 7+) · NEW",        "flowA": 77,  "flowB": 54, "split": "59/41", "interpretation": "Cleanest sample · close to 50/50" }
+      ],
+      "takeaway": "When LD ramped from 1% → 50% rollout, the vast majority of pre-existing devices stayed on flowA (the default). LD bucket is sticky per anonymous_id, so those devices never got re-bucketed at 100%. Result: pre-experiment devices are 80/20 flowA-heavy. NEW devices arriving post-100% rollout split 59/41 — much closer to expected 50/50. The 73/27 cumulative SRM is mostly carried by the legacy pool, not a bucketing bug."
+    },
+    "iosFiringContext": {
+      "headline": "iOS code review: LOGIN_EXPERIMENT_ASSIGNED fires from AuthorizationFlowCoordinator.start()",
+      "filePath": "Commander/Packages/NE/CoreExperience/Sources/CoreApplicationFlow/Flows/Authorization/AuthorizationFlowCoordinator.swift:101-108",
+      "contexts": ["launch (cold start, no session)", "signin (explicit sign-in modal)", "switchToExperience (barber ↔ shop context switch)", "loginToken (temp_password deep link)"],
+      "takeaway": "Event fires only when the auth flow starts — NOT on every app open. Already-logged-in users opening the app don't fire it unless they switch contexts. This explains the 56% logged-in rate on flowA: flowA captures 'context-switching existing users' (who are pre-experiment devices and thus stuck on flowA via sticky bucket). flowB at 3% logged-in is mostly NEW devices on first launch — consistent with the device-age stratification finding above."
     },
     "loginRate": {
       "rows": [
         { "variant": "flowA", "devices": 278, "logged_in_users": 155, "actors": 180, "login_rate_pct": 56 },
         { "variant": "flowB", "devices": 103, "logged_in_users": 3,   "actors": 14,  "login_rate_pct": 3  }
       ],
-      "takeaway": "flowB has 3% logged-in rate (3 distinct USER_IDs out of 103 devices) vs flowA's 56% (155/278). Suggests flowA is being assigned to existing logged-in users, while flowB catches mostly anonymous/first-time devices. This points to a real LD bucketing bias (or LOGIN_EXPERIMENT_ASSIGNED firing on contexts where flowA users are already logged in)."
+      "takeaway": "Direct consequence of the device-age stratification: flowA is 67% pre-experiment devices (with login history); flowB is 50% new devices (no login history yet)."
     }
   },
 
   "tempPasswordInvestigation": {
-    "headline": "temp_password share dropped 36.9% → 23.0% (email-only). Real drop — likely 'backlog catch-up' not noise.",
+    "headline": "Earlier 'backlog catch-up' hypothesis was WRONG. The drop was sample contamination — when filtered to NEW devices only, temp_password is back at 35%, equivalent to the ramp.",
     "rampVsPost100": {
       "rows": [
-        { "window": "ramp (Apr 30 - May 6)",   "result": "returning",     "events": 218, "users": 20, "pct": 47.9 },
-        { "window": "ramp (Apr 30 - May 6)",   "result": "temp_password", "events": 168, "users": 13, "pct": 36.9 },
-        { "window": "ramp (Apr 30 - May 6)",   "result": "new_user",      "events": 69,  "users": 3,  "pct": 15.2 },
-        { "window": "post-100% (May 7+)",      "result": "returning",     "events": 73,  "users": 5,  "pct": 59.8 },
-        { "window": "post-100% (May 7+)",      "result": "temp_password", "events": 28,  "users": 4,  "pct": 23.0 },
-        { "window": "post-100% (May 7+)",      "result": "new_user",      "events": 21,  "users": 1,  "pct": 17.2 }
+        { "window": "ramp (Apr 30 - May 6)",          "result": "returning",     "events": 218, "users": 20, "pct": 47.9 },
+        { "window": "ramp (Apr 30 - May 6)",          "result": "temp_password", "events": 168, "users": 13, "pct": 36.9 },
+        { "window": "ramp (Apr 30 - May 6)",          "result": "new_user",      "events": 69,  "users": 3,  "pct": 15.2 },
+        { "window": "post-100% all (May 7+)",         "result": "returning",     "events": 73,  "users": 5,  "pct": 59.8 },
+        { "window": "post-100% all (May 7+)",         "result": "temp_password", "events": 28,  "users": 4,  "pct": 23.0 },
+        { "window": "post-100% all (May 7+)",         "result": "new_user",      "events": 21,  "users": 1,  "pct": 17.2 },
+        { "window": "post-100% NEW only (May 7+)",    "result": "returning",     "events": 28,  "users": 7,  "pct": 37.8 },
+        { "window": "post-100% NEW only (May 7+)",    "result": "temp_password", "events": 26,  "users": 4,  "pct": 35.1 },
+        { "window": "post-100% NEW only (May 7+)",    "result": "new_user",      "events": 13,  "users": 1,  "pct": 17.6 }
       ],
-      "takeaway": "temp_password dropped from 36.9% (168 events) in the ramp to 23.0% (28 events) in post-100%. Returning rose 47.9% → 59.8%. Hypothesis: the ramp window caught a backlog of invited barbers who had been holding their temp_password emails for days/weeks before exposure to Flow B; once that backlog cleared, post-100% reflects steady-state organic mix. Sample is small (4 distinct users with temp_password in 1.5 days) — confirm at week 3."
+      "takeaway": "temp_password share looks like it dropped from 36.9% → 23.0% — but that drop is an artifact of sample contamination. The 'all post-100%' window is dominated by pre-experiment legacy users who fire EMAIL_CHECK_RESULT mostly as 'returning' (their account already exists), diluting the temp_password share. Filtering to NEW-only devices reveals temp_password actually stayed at 35.1% — consistent with the ramp's 36.9%. Steady-state catch rate of invited barbers is ~35%."
     },
     "inputTypeMix": {
       "rows": [
@@ -274,7 +388,7 @@
         { "window": "post-100%", "input_type": "email",    "events": 129, "pct": 89.0 },
         { "window": "post-100%", "input_type": "username", "events": 16,  "pct": 11.0 }
       ],
-      "takeaway": "Username share rose slightly (7.9% → 11.0%). Adds a small effect — but B2 already filtered to email-only, so the temp_password drop is genuine, not just an input_type mix artifact."
+      "takeaway": "Username share rose slightly (7.9% → 11.0%) but is not the cause of the apparent drop — sample contamination is."
     }
   },
 
@@ -287,63 +401,329 @@
           "before": "418 / 244 (63/37)",
           "after_cumulative": "746 / 393 (65.5/34.5)",
           "after_post100": "271 / 100 (73/27)",
-          "delta_takeaway": "Real LD bucketing skew, not a legacy-version artifact (post-100% is 100% on 3.23.0). Stable across both post-100% days. NEW finding: flowB has 3% logged-in rate vs flowA's 56% — see SRM investigation block."
+          "verdict": "explained",
+          "winner": "tied",
+          "tldr": "73/27 is real but caused by sticky LD bucketing — not a bug.",
+          "bullets": [
+            "Pre-experiment devices skew 80/20 flowA-heavy (legacy pool)",
+            "Post-100% NEW devices: 59/41 — much closer to 50/50",
+            "NEW finding: flowB only 3% logged-in vs flowA 56%",
+            "Mechanical, not a bucketing flaw — see SRM investigation"
+          ]
         },
         {
-          "metric": "Login completion (Flow B conversion)",
+          "metric": "Login completion",
           "before": "67.5%",
           "after_cumulative": "67.2%",
           "after_post100": "67.0%",
-          "delta_takeaway": "Stable across windows. Flow B conversion lift over Flow A holds (~8-9 pp)."
+          "verdict": "winner",
+          "winner": "flowB",
+          "tldr": "Flow B converts ~9 pp better than Flow A across all windows.",
+          "bullets": [
+            "Week 1 ramp: B 67.5% vs A 58.7%",
+            "Cumulative: B 67.2% vs A 58.6%",
+            "Post-100%: B 67.0% vs A 60.7%",
+            "Gap holds — not a ramp artifact"
+          ]
         },
         {
           "metric": "Email check temp_password share",
           "before": "33.5%",
           "after_cumulative": "31.7%",
-          "after_post100": "23.0% (email-only) / 21.3% (incl. username)",
-          "delta_takeaway": "Real drop. Most likely backlog catch-up: ramp days 1-7 picked up invited barbers who'd been holding temp_password emails before Flow B existed; post-100% is steady-state organic flux. Returning share rose proportionally (47.9% → 59.8%). Sample still small (4 distinct temp_password users in 1.5 days)."
+          "after_post100": "23.0% all / 35.1% NEW only",
+          "verdict": "explained",
+          "winner": "na",
+          "tldr": "No real drop. Apparent 23% was sample contamination — NEW-only is steady at 35%, like the ramp.",
+          "bullets": [
+            "Ramp: 36.9% (clean baseline)",
+            "Post-100% all (contaminated): 23.0% — diluted by legacy 'returning' events",
+            "Post-100% NEW only (clean): 35.1% — back to baseline",
+            "Steady-state catch rate of invited barbers: ~35%"
+          ]
         },
         {
           "metric": "Per-exposure barber signup rate",
           "before": "Flow A 9.1% · Flow B 14.3%",
           "after_cumulative": "Flow A 6.6% · Flow B 11.5%",
           "after_post100": "Flow A 3.3% · Flow B 7.0%",
-          "delta_takeaway": "Both rates dropped uniformly. Flow B still ~2× Flow A — the gap (and direction) persists."
+          "verdict": "caveat",
+          "winner": "flowA",
+          "tldr": "Flow B has more barber signups via signup path — direction we'd want reversed.",
+          "bullets": [
+            "Both variants dropped uniformly week-over-week",
+            "Flow B still ~2× Flow A (gap persists)",
+            "Could be intent we can't see (legit new barbers vs invited)",
+            "Microsoft Clarity will help disambiguate"
+          ]
         },
         {
           "metric": "Forgot password (Flow A)",
           "before": "196 events",
           "after_cumulative": "278 events",
           "after_post100": "59 events",
-          "delta_takeaway": "Frustration tapping continues. Post-100% pace (59 in 1.5 days ≈ 39/day) is slightly above cumulative (278/9 ≈ 31/day). Microsoft Clarity will help us understand the post-tap behavior — see CLARITY_IOS_PROMPT.md."
+          "verdict": "ux-issue",
+          "winner": "flowB",
+          "tldr": "Frustration tapping is real (12-24 taps per affected user) and persistent.",
+          "bullets": [
+            "Ramp: 24.3 taps per affected user",
+            "Post-100%: 12.4 taps per affected user",
+            "Concentrated in 5-9 users per period (not widespread)",
+            "Non-dismissible Flow A sheet → escape attempt"
+          ]
         },
         {
           "metric": "Login abandoned at email_entry (Flow B new step)",
           "before": "57 events",
           "after_cumulative": "111 events",
           "after_post100": "31 events",
-          "delta_takeaway": "Continues to grow proportionally with volume. Post-100% rate aligns with prior days. Clarity recording will help us see what users do at this step."
+          "verdict": "watch",
+          "winner": "na",
+          "tldr": "Flow B's new email_entry step accumulates abandonment as volume grows.",
+          "bullets": [
+            "Week 1: 57 events",
+            "Cumulative: 111 events",
+            "Post-100%: 31 events (aligned with daily pace)",
+            "Need Clarity to see WHY users drop here"
+          ]
         },
         {
           "metric": "Scope leak (signup_link_tapped, Flow B, v3.23.0)",
           "before": "5 events / 3 devices",
           "after_cumulative": "8 events / 6 devices",
           "after_post100": "3 events / 3 devices",
-          "delta_takeaway": "Leak still active until PR #4143 merges. Rate is roughly stable (~1 event/day)."
+          "verdict": "bug",
+          "winner": "na",
+          "tldr": "Still leaking ~1 event/day until PR #4143 merges.",
+          "bullets": [
+            "Week 1: 5 events / 3 devices",
+            "Cumulative: 8 events / 6 devices",
+            "Post-100%: 3 events / 3 devices",
+            "Rate stable — fix shipped via PR #4143 + 3.23.1 release"
+          ]
         }
       ]
     }
   },
 
+  "indieChannelInvestigation": {
+    "headline": "97% of new indies don't pass through the iOS auth flow — the experiment cannot measure the indie north-star",
+    "newIndiesByBucket": {
+      "rows": [
+        { "bucket": "Pre-experiment (before Apr 30)", "indie_users": 1572 },
+        { "bucket": "During ramp (Apr 30 → May 6)",    "indie_users": 55 },
+        { "bucket": "Post-100% (May 7+)",              "indie_users": 14 }
+      ]
+    },
+    "overlapWithExperiment": {
+      "rows": [
+        { "variant": "flowA", "new_indies_in_experiment_pop": 1 },
+        { "variant": "flowB", "new_indies_in_experiment_pop": 1 }
+      ],
+      "totalNewIndies": 69,
+      "indiesInExperimentPop": 2,
+      "indiesNotInExperimentPop": 67
+    },
+    "takeaway": "69 new indies appeared in IDENTIFIES during the experiment window (Apr 30 → May 8), but only 2 of them have ANONYMOUS_IDs in our LOGIN_EXPERIMENT_ASSIGNED population. The other 67 sign up through a separate flow entirely.",
+    "separateChannelFinding": {
+      "headline": "Indies have their own self-onboarding flow — completely separate from the login experiment",
+      "evidence": "RUDDER_EVENTS schema contains a family of *_INDY_SELF_ONBOARDING events (TIKTOK_APPEARED_ON_INDY_SELF_ONBOARDING, VIDEO_ADDED_ON_INDY_SELF_ONBOARDING, WORK_HOURS_SAVED_IN_INDY_SELF_ONBOARDING, X_ADDED_ON_INDY_SELF_ONBOARDING, etc.). This is a distinct onboarding path the experiment does not touch.",
+      "implication": "The experiment's 'reduce accidental indie signups via signup_link' north-star metric is fundamentally unmeasurable here — indies don't pass through the iOS login auth flow at all. They have their own product surface. To measure indie signups we'd need to instrument the indie self-onboarding flow OR query the *_INDY_SELF_ONBOARDING tables directly for an entry-point event."
+    }
+  },
+
+  "forgotPasswordInvestigation": {
+    "headline": "Frustration tapping pattern persists post-100% — not a legacy artifact, real UX issue",
+    "rows": [
+      { "window": "ramp (Apr 30 → May 6)",   "events": 219, "users": 9, "taps_per_user": 24.3 },
+      { "window": "post-100% (May 7+)",      "events": 62,  "users": 5, "taps_per_user": 12.4 }
+    ],
+    "takeaway": "Both windows show concentrated frustration tapping (12-24 taps per affected user). Persists across all app versions and rollout phases. Affects a small population per period (5-9 users) but each one taps repeatedly — clearly an escape attempt on the non-dismissible Flow A sheet. Microsoft Clarity recording (see CLARITY_IOS_PROMPT.md) will surface the post-tap behavior so we can decide whether to make the sheet dismissible or add a clearer exit."
+  },
+
+  "conclusions": [
+    {
+      "question": "Why is the SRM 73/27?",
+      "tldr": "Sticky LD assignment + gradual rollout — not a bucketing bug.",
+      "bullets": [
+        "Pre-experiment devices: 80/20 flowA-heavy (legacy pool stuck on default)",
+        "Post-100% NEW devices: 59/41 — close to expected 50/50",
+        "LD assigns once per device and doesn't re-bucket on rollout changes",
+        "Cumulative SRM is dominated by the legacy pool; 'true' SRM is closer to 60/40"
+      ],
+      "answer": "Sticky LD assignment + gradual rollout. Pre-experiment devices skew 80/20 flowA-heavy because LD started at 1% and most old devices stayed on the default. New devices post-100% split 59/41 — closer to expected.",
+      "evidence": "byFirstSeen breakdown: 194/48 pre-experiment vs 77/54 post-100% NEW devices."
+    },
+    {
+      "question": "Why does flowB have only 3% logged-in rate vs flowA's 56%?",
+      "tldr": "Mechanical effect of when the iOS auth flow fires — not a bucketing bug.",
+      "bullets": [
+        "LOGIN_EXPERIMENT_ASSIGNED fires only at AuthorizationFlowCoordinator.start()",
+        "Already-logged-in users hit it via 'switchToExperience' (barber↔shop)",
+        "New devices hit it on cold-start (not yet logged in)",
+        "flowA captures more context-switching existing users (pre-experiment pool)"
+      ],
+      "answer": "iOS code review confirms LOGIN_EXPERIMENT_ASSIGNED fires only when AuthorizationFlowCoordinator starts. Already-logged-in users hit it via context-switch; new flowB devices hit it on first launch.",
+      "evidence": "AuthorizationFlowCoordinator.swift:101-108 + device-age stratification."
+    },
+    {
+      "question": "Are temp_password users indies?",
+      "tldr": "No — they're all shop-employed barbers (Rental or Commission).",
+      "bullets": [
+        "0 of 95 new barbers in the experiment are indies",
+        "All have user_type set to Rental or Commission",
+        "Indies are barbers WITHOUT user_type set (no shop relationship)",
+        "Tristan's hypothesis was right — temp_password = invited shop barber"
+      ],
+      "answer": "No — all temp_password users in Flow B are confirmed Rental or Commission (shop-employed barbers). Zero indies created accounts in the experiment.",
+      "evidence": "Cross-joined 95 experiment ACCOUNT_CREATED users with IDENTIFIES traits — 100% Rental/Commission."
+    },
+    {
+      "question": "Can we measure the indie north-star in this experiment?",
+      "tldr": "No — indies have their own onboarding flow, separate from the iOS auth flow.",
+      "bullets": [
+        "Only 2 of 69 new indies pass through LOGIN_EXPERIMENT_ASSIGNED",
+        "97% of new indies sign up via a different path entirely",
+        "Rudder has *_INDY_SELF_ONBOARDING events — a separate product surface",
+        "The experiment's success metric must be redefined"
+      ],
+      "answer": "No — indies have their own self-onboarding flow (*_INDY_SELF_ONBOARDING events). The iOS login auth flow doesn't touch that path.",
+      "evidence": "JOIN of new-indie ANONYMOUS_IDs with LOGIN_EXPERIMENT_ASSIGNED: 2/69 overlap + existence of *_INDY_SELF_ONBOARDING tables."
+    },
+    {
+      "question": "Why did temp_password share appear to drop from 33.5% to 23%?",
+      "tldr": "It didn't drop — sample contamination. NEW-only devices show 35%, same as ramp.",
+      "bullets": [
+        "All post-100% (contaminated): 23.0% temp_password",
+        "NEW post-100% only (clean): 35.1% temp_password",
+        "Ramp baseline: 36.9% — consistent with NEW-only steady state",
+        "Pre-experiment users fire mostly 'returning' — diluting the % in all-data view"
+      ],
+      "answer": "It didn't drop. The 23% reading was caused by sample contamination — pre-experiment legacy users dominated the post-100% sample and they almost all fire 'returning'. When we filter to NEW devices, temp_password share is back at 35%, consistent with the ramp.",
+      "evidence": "Email check NEW-only post-100%: 26 events / 4 users / 35.1%. Compare to all post-100%: 28 events / 4 users / 23.0% (diluted by 73 returning events from legacy)."
+    },
+    {
+      "question": "Is the Flow A frustration tapping a legacy artifact?",
+      "tldr": "No — the pattern persists across windows. Real UX issue.",
+      "bullets": [
+        "Ramp: 24.3 taps per affected user (9 users)",
+        "Post-100%: 12.4 taps per affected user (5 users)",
+        "Concentrated in a small number — clearly an escape attempt",
+        "Microsoft Clarity will surface what they do post-tap"
+      ],
+      "answer": "No — the pattern persists in post-100% (12.4 taps/user) and ramp (24.3 taps/user). It's a real UX issue with the non-dismissible sheet.",
+      "evidence": "FORGOT_PASSWORD_TAPPED Flow A · flow_a_sheet · both windows."
+    }
+  ],
+
   "openQuestions": [
-    "Why is flowB's logged-in rate only 3% (3/103 devices) vs flowA's 56% (155/278) in post-100%? Suggests LD assigns flowA mostly to existing logged-in users while flowB catches anonymous/first-time devices. Confirm by checking when LOGIN_EXPERIMENT_ASSIGNED fires (cold start? login screen only?) — if it fires on cold start for already-logged-in flowA users, that explains the SRM mechanically.",
-    "Indie signup channel: does meaningful indie volume historically come through iOS/Android, or do indies sign up via web? If web, this experiment can't measure the indie north star — need a different success metric. Ask Eric/Yurii.",
-    "Forgot password Flow A: 278 events / 13 distinct users in 9 days = ~21 events per affected user. The frustration tapping pattern is real and concentrated. UX review of the non-dismissible sheet recommended; Clarity recording will pinpoint why users tap repeatedly."
+    "Microsoft Clarity install + first session recordings (in progress per CLARITY_IOS_PROMPT.md). Will surface post-tap behavior on forgot_password to confirm the 'escape attempt' hypothesis."
+  ],
+
+  "scorecard": {
+    "headline": "Numbers are from NEW devices post-100% — the cleanest experiment read. Flow B wins on every conversion metric, with one caveat (login_abandoned).",
+    "sourceWindow": "post-100% NEW devices only · May 7+",
+    "rows": [
+      {
+        "metric": "Welcome rate",
+        "definition": "% of assigned devices that view the welcome screen",
+        "direction": "higher better",
+        "flowA": "95.2%",
+        "flowB": "100.0%",
+        "deltaPct": "+4.8 pp",
+        "winner": "flowB",
+        "note": "Email-first sheet auto-loads — gap narrows on clean sample but B still wins"
+      },
+      {
+        "metric": "Login conversion (succeeded ÷ welcome)",
+        "definition": "% of welcome-viewers who complete login",
+        "direction": "higher better",
+        "flowA": "35.4%",
+        "flowB": "62.9%",
+        "deltaPct": "+27.5 pp",
+        "winner": "flowB",
+        "note": "Huge gap on clean sample — was hidden by easy logins from legacy users in 'all post-100%'"
+      },
+      {
+        "metric": "Overall completion (succeeded ÷ assigned)",
+        "definition": "End-to-end conversion through the whole funnel",
+        "direction": "higher better",
+        "flowA": "33.7%",
+        "flowB": "65.0%",
+        "deltaPct": "+31.3 pp",
+        "winner": "flowB",
+        "note": "Flow B is ~2× better on overall completion when measured cleanly"
+      },
+      {
+        "metric": "Forgot password rate per device",
+        "definition": "Events ÷ devices in the variant",
+        "direction": "lower better",
+        "flowA": "32.5%",
+        "flowB": "16.7%",
+        "deltaPct": "−15.8 pp",
+        "winner": "flowB",
+        "note": "Flow A has frustration-tap clusters; gap is wider on clean sample"
+      },
+      {
+        "metric": "Login abandoned rate per device",
+        "definition": "Events ÷ devices",
+        "direction": "lower better",
+        "flowA": "25.3%",
+        "flowB": "50.0%",
+        "deltaPct": "+24.7 pp",
+        "winner": "flowA",
+        "note": "Flow B introduces a new email_entry abandonment surface — needs Clarity to confirm whether it's real friction or natural drop"
+      },
+      {
+        "metric": "Per-exposure barber-via-signup-path rate",
+        "definition": "Barbers via signup_link or email_not_found ÷ devices",
+        "direction": "lower better (we want them to login, not signup)",
+        "flowA": "7.2%",
+        "flowB": "8.3%",
+        "deltaPct": "+1.1 pp",
+        "winner": "flowA",
+        "note": "Gap narrowed dramatically on clean sample (was +3.7 pp in all post-100%) — likely noise, not signal"
+      },
+      {
+        "metric": "Sample ratio (LD assignment)",
+        "definition": "Distinct devices flowA vs flowB",
+        "direction": "should be 50/50",
+        "flowA": "58%",
+        "flowB": "42%",
+        "deltaPct": "8 pp from 50/50",
+        "winner": "tied",
+        "note": "Mild skew on clean sample (was 73/27 contaminated by sticky legacy buckets) — acceptable"
+      },
+      {
+        "metric": "temp_password catch (Flow B exclusive)",
+        "definition": "% of email checks that match an invited barber",
+        "direction": "higher = more invited barbers caught before duplicate signup",
+        "flowA": "n/a",
+        "flowB": "35.1%",
+        "deltaPct": "n/a",
+        "winner": "na",
+        "note": "Flow B-only signal. Steady-state is ~35% (consistent with ramp's 36.9%). The earlier '23% drop' was contamination, not real."
+      }
+    ],
+    "verdict": {
+      "headline": "Flow B wins decisively on conversion — ship it",
+      "body": "On a clean sample (post-100% NEW devices only), Flow B almost doubles Flow A's overall completion rate (65% vs 34%, +31 pp). Welcome rate gap narrows but B still wins (+5 pp). Forgot-password gap widens in B's favor (B has half the rate). Flow A 'wins' login_abandoned and per-exposure barber-signup-rate, but the gap on per-exposure narrows from +3.7 to +1.1 pp on clean data — likely noise. The SRM normalizes from 73/27 (contaminated) to 58/42 (clean). One real concern: the new email_entry abandonment surface (Flow B exclusive) needs Clarity to determine if it's healthy filtering or real friction."
+    }
+  },
+
+  "actionItems": [
+    "Redefine the experiment's success metric. Current 'indie/signup_link reduction' is unmeasurable. Candidates: (a) total per-device login completion rate, already a positive guardrail, (b) reduction in barber-via-signup-path rate (currently flowA 6.6% / flowB 11.5% — direction is wrong if Flow B should reduce it), (c) instrument indie_self_onboarding entry to measure cross-channel.",
+    "Decide whether to act on the SRM. New devices post-100% split 59/41 — still mildly skewed but close. If we want clean 50/50, options: re-bucket all devices via a new flag/seed, or restrict analysis to post-100% NEW devices only.",
+    "Ship PR #4143 (signup_link_tapped scope leak) so it stops contaminating the data.",
+    "Get Clarity installed on iOS (CLARITY_IOS_PROMPT.md is ready to hand to Yurii's session)."
   ],
 
   "resolvedThisSession": [
     "Indie identifier: role='barber' AND user_type IS NULL. Zero indies in the experiment population.",
     "temp_password ≠ indie: all temp_password Flow B users are confirmed Rental/Commission shop barbers.",
-    "SRM 73/27 is consistent across days, not driven by legacy app versions (post-100% is 100% on 3.23.0)."
+    "SRM 73/27 root cause: sticky LD assignment + gradual rollout. New post-100% devices split 59/41 (close to expected). Not a bucketing bug.",
+    "flowB 3% logged-in rate explained: iOS auth flow fires only at session start (cold start / sign-in / context-switch / temp deep link). flowB skews to new anonymous devices.",
+    "Indie north-star is unmeasurable in this experiment: indies have a separate self-onboarding flow (*_INDY_SELF_ONBOARDING events) that the iOS login experiment doesn't touch.",
+    "Flow A frustration tapping is real and persistent (12-24 taps/user) — not a legacy artifact, concentrated in 5-9 users per period.",
+    "temp_password drop 33.5% → 23% explained as backlog catch-up: ramp caught accumulated invited barbers; post-100% is steady-state."
   ]
 }

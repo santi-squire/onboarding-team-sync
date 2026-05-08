@@ -167,10 +167,11 @@
     /* Snapshot meta strip */
     .meta-strip {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1rem;
       margin-bottom: 3rem;
     }
+    .meta-strip > * { min-width: 0; }
     .meta-cell {
       padding: 1rem 1.2rem;
       background: var(--bg-surface);
@@ -178,8 +179,8 @@
       border-radius: 8px;
     }
     .meta-cell.is-latest {
-      border-color: var(--accent);
-      background: var(--accent-soft);
+      border-color: var(--border-strong);
+      background: var(--bg-surface);
     }
     .meta-cell-eyebrow {
       font-size: 0.7rem;
@@ -237,13 +238,15 @@
       line-height: 1.55;
     }
 
-    /* Comparison grid */
+    /* Comparison grid — sized to fit 4 columns at 1200px container */
     .comparison-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 0.8rem;
       margin-bottom: 1.4rem;
     }
+    .comparison-grid > * { min-width: 0; }
+    .compare-cell { padding: 1rem 1.1rem; }
     .compare-cell {
       padding: 1.2rem 1.3rem;
       background: var(--bg-surface);
@@ -252,9 +255,10 @@
       position: relative;
     }
     .compare-cell.is-latest {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent-soft) inset;
+      border-color: var(--border-strong);
+      box-shadow: none;
     }
+    .compare-cell.is-latest .compare-cell-label { color: var(--accent); }
     .compare-cell-label {
       font-size: 0.7rem;
       font-weight: 600;
@@ -319,44 +323,46 @@
     /* Funnel */
     .funnel-rows {
       display: grid;
-      gap: 0.4rem;
+      gap: 0.7rem;
     }
     .funnel-row {
       display: grid;
-      grid-template-columns: 110px 1fr 1fr;
-      gap: 0.6rem;
-      align-items: center;
+      grid-template-columns: 90px 1fr 1fr;
+      gap: 0.5rem;
+      align-items: start;
     }
     .funnel-row-step {
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       color: var(--text-muted);
       font-family: var(--font-mono);
+      padding-top: 0.1rem;
+      line-height: 1.25;
     }
+    .funnel-bar-cell { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
     .funnel-bar-track {
       position: relative;
-      height: 22px;
+      height: 12px;
       background: rgba(255,255,255,0.04);
-      border-radius: 4px;
+      border-radius: 3px;
       overflow: hidden;
     }
     .funnel-bar-fill {
       position: absolute;
       left: 0; top: 0; bottom: 0;
-      border-radius: 4px;
+      border-radius: 3px;
     }
     .funnel-bar-flowA { background: var(--flow-a); }
     .funnel-bar-flowB { background: var(--flow-b); }
-    .funnel-bar-label {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.74rem;
+    .funnel-bar-num {
+      font-size: 0.72rem;
       font-family: var(--font-mono);
-      color: var(--text);
       font-weight: 600;
-      mix-blend-mode: difference;
+      line-height: 1;
+      letter-spacing: 0;
     }
+    .funnel-bar-num .pct-suffix { font-weight: 400; opacity: 0.7; }
+    .funnel-bar-num.flowA-num { color: var(--flow-a); }
+    .funnel-bar-num.flowB-num { color: var(--flow-b); }
     .funnel-rates {
       display: flex;
       gap: 1.2rem;
@@ -374,7 +380,10 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 0.86rem;
+      table-layout: auto;
     }
+    table.compare-table td { word-break: break-word; }
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table.compare-table th {
       text-align: left;
       padding: 0.5rem 0.7rem;
@@ -513,6 +522,334 @@
       border: 1px solid rgba(248, 113, 113, 0.3);
     }
 
+    /* Delta cards — bullets + verdict badge */
+    .delta-card {
+      margin-top: 1rem;
+      padding: 1rem 1.2rem;
+      background: var(--bg-elevated);
+      border-radius: 8px;
+      border-left: 3px solid var(--border-strong);
+    }
+    .delta-header {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+    .delta-metric-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      margin-right: auto;
+    }
+    .delta-verdict-badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .verdict-winner    { background: rgba(74, 222, 128, 0.16);  color: var(--success); border: 1px solid rgba(74, 222, 128, 0.3); }
+    .verdict-explained { background: rgba(56, 189, 248, 0.16);  color: var(--info);    border: 1px solid rgba(56, 189, 248, 0.3); }
+    .verdict-caveat    { background: rgba(251, 191, 36, 0.16);  color: var(--warning); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .verdict-uxissue   { background: rgba(248, 113, 113, 0.16); color: var(--danger);  border: 1px solid rgba(248, 113, 113, 0.3); }
+    .verdict-watch     { background: rgba(154, 163, 194, 0.14); color: var(--text-muted); border: 1px solid var(--border-strong); }
+    .verdict-bug       { background: rgba(248, 113, 113, 0.10); color: var(--danger);  border: 1px solid rgba(248, 113, 113, 0.22); }
+
+    .delta-card.has-winner-flowA { border-left-color: var(--flow-a); }
+    .delta-card.has-winner-flowB { border-left-color: var(--flow-b); }
+
+    .delta-tldr {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
+      margin: 0 0 0.6rem;
+      font-weight: 500;
+    }
+    ul.delta-bullets {
+      margin: 0;
+      padding-left: 1.1rem;
+      list-style: none;
+    }
+    ul.delta-bullets li {
+      position: relative;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 0.3rem;
+      padding-left: 0.4rem;
+    }
+    ul.delta-bullets li::before {
+      content: "▸";
+      position: absolute;
+      left: -1rem;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+    }
+
+    /* Hypothesis card */
+    .hypothesis-card {
+      margin-top: 1rem;
+      padding: 1.1rem 1.3rem;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.06), rgba(56, 189, 248, 0.02));
+      border: 1px solid rgba(56, 189, 248, 0.18);
+      border-left: 3px solid var(--info);
+      border-radius: 8px;
+    }
+    .hypothesis-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+    }
+    .hypothesis-badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      background: var(--info);
+      color: var(--bg-deep);
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .hypothesis-label {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .hypothesis-tldr {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.5;
+      margin: 0 0 0.7rem;
+    }
+    .hypothesis-bullets {
+      margin: 0;
+      padding-left: 1.1rem;
+      list-style: none;
+    }
+    .hypothesis-bullets li {
+      position: relative;
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 0.35rem;
+      padding-left: 0.4rem;
+    }
+    .hypothesis-bullets li::before {
+      content: "▸";
+      position: absolute;
+      left: -1rem;
+      color: var(--info);
+      font-size: 0.75rem;
+    }
+    .hypothesis-bullets li strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Next steps list */
+    ul.next-steps-list { margin: 0; padding: 0; list-style: none; }
+    ul.next-steps-list li { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.55rem 0; font-size: 0.88rem; color: var(--text); line-height: 1.55; border-bottom: 1px solid var(--border); }
+    ul.next-steps-list li:last-child { border-bottom: 0; }
+    .ns-marker { flex-shrink: 0; width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: var(--font-mono); font-size: 0.78rem; }
+    .ns-marker-action { background: var(--warning); color: var(--bg-deep); }
+    .ns-marker-open { background: var(--info); color: var(--bg-deep); border-radius: 50%; }
+
+    /* Conclusion cards — TL;DR + bullets */
+    .conclusion-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+    .conclusion-card {
+      padding: 1.2rem 1.3rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--success);
+      border-radius: 8px;
+      min-width: 0;
+    }
+    .conclusion-card-question {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.7rem;
+      letter-spacing: -0.01em;
+      line-height: 1.35;
+    }
+    .conclusion-card-tldr {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.55rem 0.7rem;
+      background: rgba(74, 222, 128, 0.08);
+      border-radius: 5px;
+      margin-bottom: 0.7rem;
+    }
+    .tldr-badge {
+      display: inline-block;
+      flex-shrink: 0;
+      padding: 0.15rem 0.42rem;
+      border-radius: 3px;
+      background: var(--success);
+      color: var(--bg-deep);
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      line-height: 1.4;
+    }
+    .tldr-text {
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.45;
+      font-weight: 500;
+    }
+    ul.conclusion-bullets {
+      margin: 0 0 0.8rem;
+      padding-left: 1.1rem;
+      list-style: none;
+    }
+    ul.conclusion-bullets li {
+      position: relative;
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 0.4rem;
+      padding-left: 0.4rem;
+    }
+    ul.conclusion-bullets li::before {
+      content: "▸";
+      position: absolute;
+      left: -1rem;
+      color: var(--accent);
+      font-size: 0.75rem;
+    }
+    p.conclusion-fallback-body {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin: 0 0 0.8rem;
+    }
+    .conclusion-card-evidence {
+      padding-top: 0.6rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
+    .evidence-label {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-right: 0.4rem;
+      font-weight: 600;
+    }
+
+    /* Winner badge */
+    .winner-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.32rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      vertical-align: middle;
+    }
+    .winner-badge.flowA { background: rgba(96, 165, 250, 0.16); color: var(--flow-a); border: 1px solid rgba(96, 165, 250, 0.32); }
+    .winner-badge.flowB { background: rgba(249, 115, 22, 0.16); color: var(--flow-b); border: 1px solid rgba(249, 115, 22, 0.32); }
+    .winner-badge.tied  { background: rgba(154, 163, 194, 0.14); color: var(--text-muted); border: 1px solid var(--border-strong); }
+    .winner-badge.na    { background: rgba(154, 163, 194, 0.08); color: var(--text-dim); border: 1px solid var(--border); }
+
+    /* Scorecard */
+    .scorecard-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.88rem;
+    }
+    .scorecard-table thead th {
+      text-align: left;
+      padding: 0.8rem 0.9rem;
+      font-weight: 600;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border-strong);
+    }
+    .scorecard-table thead th.center { text-align: center; }
+    .scorecard-table tbody td {
+      padding: 0.85rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .scorecard-table tbody td.metric-name { color: var(--text); font-weight: 500; }
+    .scorecard-table tbody td.metric-direction {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+    .scorecard-table tbody td.value {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .scorecard-table tbody td.value.is-winner {
+      color: var(--text);
+      background: rgba(74, 222, 128, 0.06);
+    }
+    .scorecard-table tbody td.winner-cell { text-align: center; }
+    .scorecard-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* Verdict box */
+    .verdict-box {
+      padding: 1.4rem 1.6rem;
+      background: linear-gradient(135deg, var(--bg-surface), var(--bg-elevated));
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      margin-top: 1.5rem;
+    }
+    .verdict-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .verdict-headline {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 0.6rem;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+    .verdict-body {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
     .loading {
       padding: 4rem 2rem;
       text-align: center;
@@ -520,10 +857,35 @@
       font-size: 1rem;
     }
 
+    /* Intermediate breakpoint for tablet-landscape and laptop-narrow */
+    @media (max-width: 1100px) {
+      .comparison-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.7rem;
+      }
+      .compare-cell { padding: 0.9rem 1rem; }
+      .compare-cell-stat { font-size: 2.1rem; }
+    }
+    @media (max-width: 1024px) {
+      .conclusion-grid, .meta-strip {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+      h1.tracker-title { font-size: clamp(2rem, 4vw, 2.6rem); }
+      .section-title, .verdict-headline { font-size: clamp(1.2rem, 2.2vw, 1.4rem); }
+      .container { padding: 2.5rem 1.5rem 5rem; }
+    }
+
+    /* Force narrow column for funnel rows on small screens since the auto-fit handles other grids */
     @media (max-width: 880px) {
-      .comparison-grid, .meta-strip { grid-template-columns: 1fr; }
-      .funnel-row { grid-template-columns: 1fr; }
+      .funnel-row { grid-template-columns: 80px 1fr; gap: 0.4rem; }
+      .funnel-row .funnel-bar-track:nth-child(3) { grid-column: 2 / 3; margin-top: 0.2rem; }
       header.tracker-header { flex-direction: column; align-items: flex-start; }
+      h1.tracker-title { font-size: 2rem; }
+      .container { padding: 2rem 1rem 4rem; }
+    }
+    @media (max-width: 540px) {
+      .scorecard-table { font-size: 0.78rem; }
+      .scorecard-table thead th, .scorecard-table tbody td { padding: 0.5rem 0.5rem; }
     }
   </style>
 </head>
@@ -569,75 +931,87 @@
       const week2 = snapshots.find(s => s.date === '2026-05-08').json;
       const cum = week2.windows.cumulative;
       const post = week2.windows.postRollout;
+      const postNew = week2.windows.postRolloutNew;
 
       // Last-updated badge — show latest snapshot date
       const latestDate = snapshots.map(s => s.date).sort().pop();
       const formatted = new Date(latestDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
       document.getElementById('last-updated-date').textContent = formatted;
 
-      // Meta strip
+      // Meta strip — 4 windows
       const metaEl = document.getElementById('meta');
       metaEl.innerHTML = `
         <div class="meta-cell">
-          <div class="meta-cell-eyebrow">Snapshot · Week 1</div>
-          <h3 class="meta-cell-title">${week1.weekOf} · ramp window</h3>
-          <p class="meta-cell-detail">Apr 30 → May 6 · phased rollout (1% → 50%). Source: <code>data/2026-05-06.json</code></p>
+          <div class="meta-cell-eyebrow">Week 1 · ramp</div>
+          <h3 class="meta-cell-title">Apr 30 → May 6</h3>
+          <p class="meta-cell-detail">Phased rollout (1% → 50%). What the ramp window saw.</p>
         </div>
-        <div class="meta-cell is-latest">
-          <div class="meta-cell-eyebrow">Snapshot · Week 2 cumulative</div>
+        <div class="meta-cell">
+          <div class="meta-cell-eyebrow">Week 2 · cumulative</div>
           <h3 class="meta-cell-title">${cum.windowStart} → ${cum.windowEnd}</h3>
-          <p class="meta-cell-detail">Cumulative since experiment start (~${cum.approxDays} days). Includes ramp + 100% rollout. Source: <code>data/2026-05-08.json</code></p>
+          <p class="meta-cell-detail">All devices since experiment start (~${cum.approxDays} days). Broad operational view.</p>
+        </div>
+        <div class="meta-cell">
+          <div class="meta-cell-eyebrow">Week 2 · post-100% all</div>
+          <h3 class="meta-cell-title">${post.windowStart} → ${post.windowEnd}</h3>
+          <p class="meta-cell-detail">All devices firing post-rollout (~${post.approxDays} days). Includes legacy users with sticky LD buckets.</p>
         </div>
         <div class="meta-cell is-latest">
-          <div class="meta-cell-eyebrow">Snapshot · Week 2 post-100%</div>
-          <h3 class="meta-cell-title">${post.windowStart} → ${post.windowEnd}</h3>
-          <p class="meta-cell-detail">Post-rollout subset (~${post.approxDays} days at full traffic). Cleanest read of equilibrium behavior.</p>
+          <div class="meta-cell-eyebrow">★ Week 2 · NEW only</div>
+          <h3 class="meta-cell-title">${postNew.windowStart} → ${postNew.windowEnd}</h3>
+          <p class="meta-cell-detail">Devices first seen May 7+. Cleanest experiment read — no legacy contamination from sticky LD buckets.</p>
         </div>
       `;
 
       const sections = [];
 
-      // === 0. Indie classification — answers Tristan's question ===
+      // === 1. Conclusions — questions we answered with evidence ===
+      if (week2.conclusions) sections.push(renderConclusions(week2.conclusions));
+
+      // === 2. Final scorecard + verdict — moved up so the verdict is visible early ===
+      if (week2.scorecard) sections.push(renderScorecard(week2.scorecard));
+
+      // === 3. Indie classification — Tristan's headline question, full callout ===
       if (week2.indieClassification) sections.push(renderIndieClassification(week2.indieClassification));
 
-      // === 0.5 Resolved this session — what we cleared up ===
-      if (week2.resolvedThisSession) sections.push(renderResolvedSection(week2.resolvedThisSession));
+      // === 4. Variant balance (4 cols) ===
+      sections.push(renderVariantBalance(week1, cum, post, postNew, week2.deltas.vsWeek1Snapshot.notes[0]));
 
-      // === 1. Variant balance ===
-      sections.push(renderVariantBalance(week1, cum, post, week2.deltas.vsWeek1Snapshot.notes[0]));
+      // === 5. Funnel (4 cols) ===
+      sections.push(renderFunnel(week1, cum, post, postNew, week2.deltas.vsWeek1Snapshot.notes[1]));
 
-      // === 1.5 SRM investigation deep-dive ===
+      // === 6. SRM investigation deep-dive ===
       if (week2.srmInvestigation) sections.push(renderSrmInvestigation(week2.srmInvestigation));
 
-      // === 2. Funnel ===
-      sections.push(renderFunnel(week1, cum, post, week2.deltas.vsWeek1Snapshot.notes[1]));
+      // === 7. Email check (4 cols) ===
+      sections.push(renderEmailCheck(week1, cum, post, postNew, week2.deltas.vsWeek1Snapshot.notes[2]));
 
-      // === 3. Email check ===
-      sections.push(renderEmailCheck(week1, cum, post, week2.deltas.vsWeek1Snapshot.notes[2]));
-
-      // === 3.5 temp_password drop investigation ===
+      // === 8. temp_password drop investigation ===
       if (week2.tempPasswordInvestigation) sections.push(renderTempPasswordInvestigation(week2.tempPasswordInvestigation));
 
-      // === 4. Per-exposure ===
-      sections.push(renderPerExposure(week1, cum, post, week2.deltas.vsWeek1Snapshot.notes[3]));
+      // === 9. Per-exposure (4 cols) ===
+      sections.push(renderPerExposure(week1, cum, post, postNew, week2.deltas.vsWeek1Snapshot.notes[3]));
 
-      // === 5. Friction ===
-      sections.push(renderFriction(week1, cum, post,
+      // === 10. Friction (4 cols) ===
+      sections.push(renderFriction(week1, cum, post, postNew,
         week2.deltas.vsWeek1Snapshot.notes[4],
         week2.deltas.vsWeek1Snapshot.notes[5]));
 
-      // === 6. Scope leak ===
-      sections.push(renderScopeLeak(cum, post, week2.deltas.vsWeek1Snapshot.notes[6]));
+      // === 11. Forgot password investigation ===
+      if (week2.forgotPasswordInvestigation) sections.push(renderForgotPasswordInvestigation(week2.forgotPasswordInvestigation));
 
-      // === 7. Open questions ===
-      sections.push(renderOpenQuestions(week2.openQuestions));
+      // === 12. Scope leak (4 cols) ===
+      sections.push(renderScopeLeak(cum, post, postNew, week2.deltas.vsWeek1Snapshot.notes[6]));
+
+      // === 13. Next steps — merged action items + open questions ===
+      if (week2.actionItems || week2.openQuestions) sections.push(renderNextSteps(week2.actionItems, week2.openQuestions));
 
       const content = document.getElementById('content');
       content.classList.remove('loading');
       content.innerHTML = sections.join('');
     }
 
-    function renderVariantBalance(w1, cum, post, delta) {
+    function renderVariantBalance(w1, cum, post, postNew, delta) {
       const w1Total = w1.variantBalance.snowflake.flowA + w1.variantBalance.snowflake.flowB;
       const w1A = (w1.variantBalance.snowflake.flowA / w1Total * 100).toFixed(1);
       const w1B = (w1.variantBalance.snowflake.flowB / w1Total * 100).toFixed(1);
@@ -646,18 +1020,21 @@
       const cumB = cum.variantBalance.splitPct.flowB;
       const postA = post.variantBalance.splitPct.flowA;
       const postB = post.variantBalance.splitPct.flowB;
+      const newA = postNew.variantBalance.splitPct.flowA;
+      const newB = postNew.variantBalance.splitPct.flowB;
 
       return `
         <section class="metric-section">
           <div class="section-header">
             <div class="section-eyebrow">Health check · SRM</div>
             <h2 class="section-title">Variant balance — should be 50/50</h2>
-            <p class="section-sub">Distinct devices LaunchDarkly assigned to each variant (LOGIN_EXPERIMENT_ASSIGNED). A persistent split off 50/50 means downstream comparisons are biased.</p>
+            <p class="section-sub">Distinct devices LaunchDarkly assigned to each variant. The "post-100% NEW only" column filters out pre-experiment legacy devices stuck on their original LD bucket — the cleanest experiment read.</p>
           </div>
           <div class="comparison-grid">
             ${variantCell('Week 1 · ramp', w1.variantBalance.snowflake.flowA, w1.variantBalance.snowflake.flowB, w1A, w1B, false)}
-            ${variantCell('Week 2 · cumulative', cum.variantBalance.snowflake.flowA, cum.variantBalance.snowflake.flowB, cumA, cumB, true)}
-            ${variantCell('Week 2 · post-100%', post.variantBalance.snowflake.flowA, post.variantBalance.snowflake.flowB, postA, postB, true)}
+            ${variantCell('Week 2 · cumulative', cum.variantBalance.snowflake.flowA, cum.variantBalance.snowflake.flowB, cumA, cumB, false)}
+            ${variantCell('Week 2 · post-100% all', post.variantBalance.snowflake.flowA, post.variantBalance.snowflake.flowB, postA, postB, false)}
+            ${variantCell('Week 2 · NEW only ★', postNew.variantBalance.snowflake.flowA, postNew.variantBalance.snowflake.flowB, newA, newB, true)}
           </div>
           ${deltaBlock(delta)}
         </section>
@@ -681,18 +1058,19 @@
       `;
     }
 
-    function renderFunnel(w1, cum, post, delta) {
+    function renderFunnel(w1, cum, post, postNew, delta) {
       return `
         <section class="metric-section">
           <div class="section-header">
             <div class="section-eyebrow">Guardrail · overall_login_success_rate</div>
             <h2 class="section-title">Login completion funnel</h2>
-            <p class="section-sub">Distinct devices through assigned → welcome viewed → login succeeded. Conversion = succeeded ÷ welcome.</p>
+            <p class="section-sub">Distinct devices through assigned → welcome viewed → login succeeded. Bars are scaled per variant (% of that variant's "assigned"), so the SRM doesn't visually distort the comparison. The NEW-only column removes legacy users who already have accounts → cleanest conversion read.</p>
           </div>
           <div class="comparison-grid">
             ${funnelCell('Week 1 · ramp', w1.funnel.steps, w1.funnel.flowA, w1.funnel.flowB, deriveRates(w1.funnel.flowA, w1.funnel.flowB), false)}
-            ${funnelCell('Week 2 · cumulative', cum.funnel.steps, cum.funnel.flowA, cum.funnel.flowB, cum.funnel.rates, true)}
-            ${funnelCell('Week 2 · post-100%', post.funnel.steps, post.funnel.flowA, post.funnel.flowB, post.funnel.rates, true)}
+            ${funnelCell('Week 2 · cumulative', cum.funnel.steps, cum.funnel.flowA, cum.funnel.flowB, cum.funnel.rates, false)}
+            ${funnelCell('Week 2 · post-100% all', post.funnel.steps, post.funnel.flowA, post.funnel.flowB, post.funnel.rates, false)}
+            ${funnelCell('Week 2 · NEW only ★', postNew.funnel.steps, postNew.funnel.flowA, postNew.funnel.flowB, postNew.funnel.rates, true)}
           </div>
           ${deltaBlock(delta)}
         </section>
@@ -707,44 +1085,65 @@
     }
 
     function funnelCell(label, steps, a, b, rates, isLatest) {
-      const max = Math.max(...a, ...b);
-      const rows = steps.map((step, i) => `
-        <div class="funnel-row">
-          <div class="funnel-row-step">${step}</div>
-          <div class="funnel-bar-track">
-            <div class="funnel-bar-fill funnel-bar-flowA" style="width: ${a[i]/max*100}%"></div>
-            <span class="funnel-bar-label">${fmtInt(a[i])}</span>
+      // Bars are scaled per variant (% of that variant's "assigned"), so the 73/27 SRM doesn't visually
+      // dominate the comparison. Labels live BELOW the bars so they don't overflow at narrow widths.
+      const aTotal = a[0] || 1;
+      const bTotal = b[0] || 1;
+      const rows = steps.map((step, i) => {
+        const aPct = (a[i] / aTotal * 100);
+        const bPct = (b[i] / bTotal * 100);
+        return `
+          <div class="funnel-row">
+            <div class="funnel-row-step">${step}</div>
+            <div class="funnel-bar-cell">
+              <div class="funnel-bar-track">
+                <div class="funnel-bar-fill funnel-bar-flowA" style="width: ${aPct}%"></div>
+              </div>
+              <div class="funnel-bar-num flowA-num">${fmtInt(a[i])} <span class="pct-suffix">· ${aPct.toFixed(0)}%</span></div>
+            </div>
+            <div class="funnel-bar-cell">
+              <div class="funnel-bar-track">
+                <div class="funnel-bar-fill funnel-bar-flowB" style="width: ${bPct}%"></div>
+              </div>
+              <div class="funnel-bar-num flowB-num">${fmtInt(b[i])} <span class="pct-suffix">· ${bPct.toFixed(0)}%</span></div>
+            </div>
           </div>
-          <div class="funnel-bar-track">
-            <div class="funnel-bar-fill funnel-bar-flowB" style="width: ${b[i]/max*100}%"></div>
-            <span class="funnel-bar-label">${fmtInt(b[i])}</span>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+      const aOverall = (a[2] / a[0] * 100);
+      const bOverall = (b[2] / b[0] * 100);
+      const winsB = bOverall > aOverall;
       return `
         <div class="compare-cell ${isLatest ? 'is-latest' : ''}">
           <div class="compare-cell-label">${label}</div>
           <div class="funnel-rows">${rows}</div>
-          <div class="funnel-rates">
-            <span>Flow A conv <strong>${fmtPct(rates.flowA.conversion)}</strong></span>
-            <span>Flow B conv <strong>${fmtPct(rates.flowB.conversion)}</strong></span>
+          <div class="funnel-rates" style="margin-top: 0.7rem; padding-top: 0.6rem; border-top: 1px solid var(--border); flex-direction: column; gap: 0.3rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.6rem;">
+              <span style="font-size: 0.74rem; color: var(--text-muted);">Conv (succ÷welcome)</span>
+              <span><span style="color: var(--flow-a); font-family: var(--font-mono);">${fmtPct(rates.flowA.conversion)}</span> <span style="color: var(--text-dim);">·</span> <span style="color: var(--flow-b); font-family: var(--font-mono);">${fmtPct(rates.flowB.conversion)}</span></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.6rem;">
+              <span style="font-size: 0.74rem; color: var(--text-muted);">Overall (succ÷assigned)</span>
+              <span><span style="color: var(--flow-a); font-family: var(--font-mono);">${aOverall.toFixed(1)}%</span> <span style="color: var(--text-dim);">·</span> <span style="color: var(--flow-b); font-family: var(--font-mono);">${bOverall.toFixed(1)}%</span> ${winnerBadge(winsB ? 'flowB' : 'flowA')}</span>
+            </div>
           </div>
         </div>
       `;
     }
 
-    function renderEmailCheck(w1, cum, post, delta) {
+    function renderEmailCheck(w1, cum, post, postNew, delta) {
       return `
         <section class="metric-section">
           <div class="section-header">
             <div class="section-eyebrow">Flow B · the money signal</div>
             <h2 class="section-title">Email check distribution</h2>
-            <p class="section-sub">When a Flow B user types email, the API returns one of: returning, temp_password (invited barber), new_user. Drop in temp_password share post-100% is worth tracking.</p>
+            <p class="section-sub">When a Flow B user types email, the API returns: returning, temp_password (invited barber), or new_user. The NEW-only column reveals that the apparent post-100% drop in temp_password was sample contamination — the steady-state catch rate is ~35%, consistent with the ramp.</p>
           </div>
           <div class="comparison-grid">
             ${emailCheckCell('Week 1 · ramp', w1.emailCheck.totals, false)}
-            ${emailCheckCell('Week 2 · cumulative', cum.emailCheck.totals, true)}
-            ${emailCheckCell('Week 2 · post-100%', post.emailCheck.totals, true)}
+            ${emailCheckCell('Week 2 · cumulative', cum.emailCheck.totals, false)}
+            ${emailCheckCell('Week 2 · post-100% all', post.emailCheck.totals, false)}
+            ${emailCheckCell('Week 2 · NEW only ★', postNew.emailCheck.totals, true)}
           </div>
           ${deltaBlock(delta)}
         </section>
@@ -826,20 +1225,20 @@
       `;
     }
 
-    function renderPerExposure(w1, cum, post, delta) {
-      const w1A = w1.perExposure.flowA;
-      const w1B = w1.perExposure.flowB;
+    function renderPerExposure(w1, cum, post, postNew, delta) {
+      const cellArgs = (pe) => [pe.flowA.rate, pe.flowB.rate, pe.flowA.numerator, pe.flowA.denominator, pe.flowB.numerator, pe.flowB.denominator];
       return `
         <section class="metric-section">
           <div class="section-header">
             <div class="section-eyebrow">Counterintuitive · early signal</div>
             <h2 class="section-title">Per-exposure barber signup rate</h2>
-            <p class="section-sub">Barber accounts created via the signup path, divided by distinct devices in each variant. We'd want this to drop in Flow B if the experiment is redirecting invited barbers to login.</p>
+            <p class="section-sub">Barber accounts created via the signup path, divided by distinct devices in each variant. We'd want this to drop in Flow B if the experiment is redirecting invited barbers to login. Gap narrows substantially on the clean NEW-only sample.</p>
           </div>
           <div class="comparison-grid">
-            ${perExposureCell('Week 1 · ramp', w1A.rate, w1B.rate, w1A.numerator, w1A.denominator, w1B.numerator, w1B.denominator, false)}
-            ${perExposureCell('Week 2 · cumulative', cum.perExposure.flowA.rate, cum.perExposure.flowB.rate, cum.perExposure.flowA.numerator, cum.perExposure.flowA.denominator, cum.perExposure.flowB.numerator, cum.perExposure.flowB.denominator, true)}
-            ${perExposureCell('Week 2 · post-100%', post.perExposure.flowA.rate, post.perExposure.flowB.rate, post.perExposure.flowA.numerator, post.perExposure.flowA.denominator, post.perExposure.flowB.numerator, post.perExposure.flowB.denominator, true)}
+            ${perExposureCell('Week 1 · ramp', ...cellArgs(w1.perExposure), false)}
+            ${perExposureCell('Week 2 · cumulative', ...cellArgs(cum.perExposure), false)}
+            ${perExposureCell('Week 2 · post-100% all', ...cellArgs(post.perExposure), false)}
+            ${perExposureCell('Week 2 · NEW only ★', ...cellArgs(postNew.perExposure), true)}
           </div>
           ${deltaBlock(delta)}
         </section>
@@ -858,18 +1257,23 @@
       `;
     }
 
-    function renderFriction(w1, cum, post, deltaForgot, deltaAbandon) {
+    function renderFriction(w1, cum, post, postNew, deltaForgot, deltaAbandon) {
+      const w1Devices = { a: w1.variantBalance.snowflake.flowA, b: w1.variantBalance.snowflake.flowB };
+      const cumDevices = { a: cum.variantBalance.snowflake.flowA, b: cum.variantBalance.snowflake.flowB };
+      const postDevices = { a: post.variantBalance.snowflake.flowA, b: post.variantBalance.snowflake.flowB };
+      const newDevices = { a: postNew.variantBalance.snowflake.flowA, b: postNew.variantBalance.snowflake.flowB };
       return `
         <section class="metric-section">
           <div class="section-header">
             <div class="section-eyebrow">Guardrails · login_failed + forgot_password + login_abandoned</div>
-            <h2 class="section-title">Friction signals</h2>
-            <p class="section-sub">Counts per variant. Flow A login_failed is 0 because legacy versions don't emit variant — known data quality issue, not a real zero.</p>
+            <h2 class="section-title">Friction signals — rate per device</h2>
+            <p class="section-sub">Events normalized to "% of variant devices that triggered the event" so the SRM doesn't distort the comparison. Flow A login_failed is 0 because legacy versions don't emit variant — known data quality issue.</p>
           </div>
           <div class="comparison-grid">
-            ${frictionCell('Week 1 · ramp', w1.friction.events, w1.friction.flowA, w1.friction.flowB, false)}
-            ${frictionCell('Week 2 · cumulative', cum.friction.events, cum.friction.flowA, cum.friction.flowB, true)}
-            ${frictionCell('Week 2 · post-100%', post.friction.events, post.friction.flowA, post.friction.flowB, true)}
+            ${frictionCell('Week 1 · ramp', w1.friction.events, w1.friction.flowA, w1.friction.flowB, w1Devices, false)}
+            ${frictionCell('Week 2 · cumulative', cum.friction.events, cum.friction.flowA, cum.friction.flowB, cumDevices, false)}
+            ${frictionCell('Week 2 · post-100% all', post.friction.events, post.friction.flowA, post.friction.flowB, postDevices, false)}
+            ${frictionCell('Week 2 · NEW only ★', postNew.friction.events, postNew.friction.flowA, postNew.friction.flowB, newDevices, true)}
           </div>
           ${deltaBlock(deltaForgot)}
           ${deltaBlock(deltaAbandon)}
@@ -877,30 +1281,39 @@
       `;
     }
 
-    function frictionCell(label, events, a, b, isLatest) {
-      const max = Math.max(...a, ...b, 1);
+    function frictionCell(label, events, a, b, devices, isLatest) {
+      // Convert raw event counts into "% of variant devices" so the SRM doesn't visually skew the bars.
+      // Labels are below bars (not overlay) to keep readable at narrow widths.
+      const aRates = a.map(v => (v / devices.a) * 100);
+      const bRates = b.map(v => (v / devices.b) * 100);
+      const max = Math.max(...aRates, ...bRates, 1);
       const rows = events.map((e, i) => `
         <div class="funnel-row">
           <div class="funnel-row-step">${e}</div>
-          <div class="funnel-bar-track">
-            <div class="funnel-bar-fill funnel-bar-flowA" style="width: ${a[i]/max*100}%"></div>
-            <span class="funnel-bar-label">${fmtInt(a[i])}</span>
+          <div class="funnel-bar-cell">
+            <div class="funnel-bar-track">
+              <div class="funnel-bar-fill funnel-bar-flowA" style="width: ${aRates[i]/max*100}%"></div>
+            </div>
+            <div class="funnel-bar-num flowA-num">${aRates[i].toFixed(1)}% <span class="pct-suffix">· ${fmtInt(a[i])}</span></div>
           </div>
-          <div class="funnel-bar-track">
-            <div class="funnel-bar-fill funnel-bar-flowB" style="width: ${b[i]/max*100}%"></div>
-            <span class="funnel-bar-label">${fmtInt(b[i])}</span>
+          <div class="funnel-bar-cell">
+            <div class="funnel-bar-track">
+              <div class="funnel-bar-fill funnel-bar-flowB" style="width: ${bRates[i]/max*100}%"></div>
+            </div>
+            <div class="funnel-bar-num flowB-num">${bRates[i].toFixed(1)}% <span class="pct-suffix">· ${fmtInt(b[i])}</span></div>
           </div>
         </div>
       `).join('');
       return `
         <div class="compare-cell ${isLatest ? 'is-latest' : ''}">
-          <div class="compare-cell-label">${label}</div>
+          <div class="compare-cell-label">${label} <span style="font-weight: 400; opacity: 0.7; letter-spacing: 0;">· devices A=${fmtInt(devices.a)} / B=${fmtInt(devices.b)}</span></div>
           <div class="funnel-rows">${rows}</div>
+          <p style="font-size: 0.7rem; color: var(--text-dim); margin: 0.6rem 0 0; font-family: var(--font-mono);">% = events ÷ devices in variant. Lower is better.</p>
         </div>
       `;
     }
 
-    function renderScopeLeak(cum, post, delta) {
+    function renderScopeLeak(cum, post, postNew, delta) {
       return `
         <section class="metric-section">
           <div class="section-header">
@@ -910,8 +1323,9 @@
           </div>
           <div class="comparison-grid">
             ${leakCell('Week 1 · ramp', { totalEvents: 5, distinctDevices: 3, fixStatus: 'audit done, PR pending' }, false)}
-            ${leakCell('Week 2 · cumulative', cum.scopeLeak, true)}
-            ${leakCell('Week 2 · post-100%', post.scopeLeak, true)}
+            ${leakCell('Week 2 · cumulative', cum.scopeLeak, false)}
+            ${leakCell('Week 2 · post-100% all', post.scopeLeak, false)}
+            ${leakCell('Week 2 · NEW only ★', postNew.scopeLeak, true)}
           </div>
           ${deltaBlock(delta)}
         </section>
@@ -943,6 +1357,194 @@
       `;
     }
 
+    function renderScorecard(sc) {
+      const rows = sc.rows.map(r => {
+        const isAWin = r.winner === 'flowA';
+        const isBWin = r.winner === 'flowB';
+        return `
+          <tr>
+            <td class="metric-name">${r.metric}<div class="metric-direction">${r.direction}</div></td>
+            <td class="value ${isAWin ? 'is-winner' : ''}">${r.flowA}</td>
+            <td class="value ${isBWin ? 'is-winner' : ''}">${r.flowB}</td>
+            <td class="value">${r.deltaPct}</td>
+            <td class="winner-cell">${winnerBadge(r.winner)}</td>
+          </tr>
+          ${r.note ? `<tr><td colspan="5" style="padding: 0.2rem 0.9rem 0.85rem; font-size: 0.78rem; color: var(--text-dim); border-bottom: 1px solid var(--border);">↳ ${r.note}</td></tr>` : ''}
+        `;
+      }).join('');
+      return `
+        <section class="metric-section" style="border-top: 2px solid var(--accent); padding-top: 2rem; margin-top: 2rem;">
+          <div class="section-header">
+            <div class="section-eyebrow" style="color: var(--accent);">⚖ Final scorecard · A vs B head-to-head</div>
+            <h2 class="section-title">Where each variant wins</h2>
+            <p class="section-sub">${sc.headline}</p>
+            ${sc.sourceWindow ? `<p style="margin: 0.5rem 0 0; font-size: 0.78rem; font-family: var(--font-mono); color: var(--accent);">Source: ${sc.sourceWindow}</p>` : ''}
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="scorecard-table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th class="center" style="color: var(--flow-a);">Flow A</th>
+                  <th class="center" style="color: var(--flow-b);">Flow B</th>
+                  <th class="center">Δ</th>
+                  <th class="center">Winner</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+          <div class="verdict-box">
+            <div class="verdict-eyebrow">⚖ Overall verdict</div>
+            <h3 class="verdict-headline">${sc.verdict.headline}</h3>
+            <p class="verdict-body">${sc.verdict.body}</p>
+          </div>
+        </section>
+      `;
+    }
+
+    function winnerBadge(w) {
+      const map = {
+        flowA: { cls: 'flowA', label: 'Flow A' },
+        flowB: { cls: 'flowB', label: 'Flow B' },
+        tied:  { cls: 'tied',  label: 'Tied' },
+        na:    { cls: 'na',    label: 'N/A' }
+      };
+      const m = map[w] || map.na;
+      return `<span class="winner-badge ${m.cls}">${m.label}</span>`;
+    }
+
+    function renderNextSteps(actionItems, openQuestions) {
+      const actions = (actionItems || []).map(t => `<li class="ns-action"><span class="ns-marker ns-marker-action">→</span><span>${t}</span></li>`).join('');
+      const opens = (openQuestions || []).map(t => `<li class="ns-open"><span class="ns-marker ns-marker-open">?</span><span>${t}</span></li>`).join('');
+      return `
+        <section class="metric-section">
+          <div class="section-header">
+            <div class="section-eyebrow">→ Next steps</div>
+            <h2 class="section-title">What to do next</h2>
+            <p class="section-sub">Concrete follow-ups (action items) and the one thing we don't yet know (open question).</p>
+          </div>
+          <div class="comparison-grid" style="grid-template-columns: 1fr;">
+            <div class="compare-cell">
+              <div class="compare-cell-label" style="color: var(--warning);">→ Action items · ${(actionItems||[]).length}</div>
+              <ul class="next-steps-list" style="margin-top: 0.5rem;">${actions}</ul>
+            </div>
+            ${opens ? `<div class="compare-cell"><div class="compare-cell-label">? Open · ${(openQuestions||[]).length}</div><ul class="next-steps-list" style="margin-top: 0.5rem;">${opens}</ul></div>` : ''}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderActionItems(items) {
+      return `
+        <section class="metric-section">
+          <div class="section-header">
+            <div class="section-eyebrow" style="color: var(--warning);">→ Action items · what to do next</div>
+            <h2 class="section-title">Decisions and follow-ups</h2>
+            <p class="section-sub">Things to discuss with Tristan / Eric / Yurii based on the conclusions above.</p>
+          </div>
+          <ul class="questions-list" style="margin: 0;">
+            ${items.map(t => `<li style="padding-left: 2.6rem;"><span style="position: absolute; left: 1rem; top: 1rem; width: 22px; height: 22px; border-radius: 4px; background: var(--warning); color: var(--bg-deep); font-weight: 700; font-size: 0.82rem; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono);">→</span><span style="display: block;">${t}</span></li>`).join('')}
+          </ul>
+        </section>
+      `;
+    }
+
+    function renderConclusions(items) {
+      // Each conclusion needs: question, tldr (short), bullets (3-4), evidence
+      const cards = items.map(c => {
+        const tldr = c.tldr || c.answer.split('.')[0] + '.';
+        const bullets = c.bullets || [];
+        const bulletsHtml = bullets.length
+          ? `<ul class="conclusion-bullets">${bullets.map(b => `<li>${b}</li>`).join('')}</ul>`
+          : `<p class="conclusion-fallback-body">${c.answer}</p>`;
+        return `
+          <div class="conclusion-card">
+            <div class="conclusion-card-question">${c.question}</div>
+            <div class="conclusion-card-tldr">
+              <span class="tldr-badge">TL;DR</span>
+              <span class="tldr-text">${tldr}</span>
+            </div>
+            ${bulletsHtml}
+            <div class="conclusion-card-evidence">
+              <span class="evidence-label">Evidence</span>
+              <span class="evidence-text">${c.evidence}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      return `
+        <section class="metric-section">
+          <div class="section-header">
+            <div class="section-eyebrow" style="color: var(--success);">✓ Conclusions · investigation outcomes</div>
+            <h2 class="section-title">What we now know</h2>
+            <p class="section-sub">Questions investigated this session, with evidence. Click through the deep-dive sections below for the underlying data.</p>
+          </div>
+          <div class="conclusion-grid">${cards}</div>
+        </section>
+      `;
+    }
+
+    function renderForgotPasswordInvestigation(fp) {
+      const rows = fp.rows.map(r => `
+        <tr><td>${r.window}</td><td>${fmtInt(r.events)}</td><td>${fmtInt(r.users)}</td><td><strong>${r.taps_per_user}</strong></td></tr>
+      `).join('');
+      return `
+        <section class="metric-section">
+          <div class="section-header">
+            <div class="section-eyebrow">⚙ Forgot password investigation · May 8</div>
+            <h2 class="section-title">Is the Flow A frustration tapping a legacy artifact?</h2>
+            <p class="section-sub">${fp.headline}</p>
+          </div>
+          <div class="comparison-grid" style="grid-template-columns: 1fr;">
+            <div class="compare-cell is-latest">
+              <div class="compare-cell-label">Flow A · flow_a_sheet · taps per user</div>
+              <table class="compare-table" style="margin-top: 0.4rem;">
+                <thead><tr><th>Window</th><th>Events</th><th>Users</th><th>Taps / user</th></tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+              <p class="compare-cell-detail" style="margin-top: 0.7rem;">${fp.takeaway}</p>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderIndieChannelInvestigation(ic) {
+      const bucketRows = ic.newIndiesByBucket.rows.map(r => `
+        <tr><td>${r.bucket}</td><td><strong>${fmtInt(r.indie_users)}</strong></td></tr>
+      `).join('');
+      const overlap = ic.overlapWithExperiment;
+      return `
+        <section class="metric-section">
+          <div class="section-header">
+            <div class="section-eyebrow">⚙ Indie channel investigation · May 8</div>
+            <h2 class="section-title">Where do indies actually sign up?</h2>
+            <p class="section-sub">${ic.headline}</p>
+          </div>
+          <div class="comparison-grid">
+            <div class="compare-cell">
+              <div class="compare-cell-label">New indies · by first-seen bucket (last 90d)</div>
+              <table class="compare-table" style="margin-top: 0.4rem;">
+                <thead><tr><th>Bucket</th><th>Users</th></tr></thead>
+                <tbody>${bucketRows}</tbody>
+              </table>
+              <p class="compare-cell-detail" style="margin-top: 0.7rem;">69 indies first appeared in IDENTIFIES during the experiment window (Apr 30+). Pre-experiment indies are pre-existing accounts.</p>
+            </div>
+            <div class="compare-cell is-latest">
+              <div class="compare-cell-label">⚠ Overlap with experiment population</div>
+              <p class="compare-cell-stat">${overlap.indiesInExperimentPop}<span class="compare-cell-stat-suffix">of ${overlap.totalNewIndies} new indies in the experiment pop</span></p>
+              <p class="compare-cell-detail" style="margin-top: 0.7rem;">Only 1 in flowA + 1 in flowB. The other ${overlap.indiesNotInExperimentPop} indies (97%) never fired LOGIN_EXPERIMENT_ASSIGNED.</p>
+            </div>
+          </div>
+          <div class="delta-block" style="border-left-color: var(--warning);">
+            <div class="delta-block-label" style="color: var(--warning);">Implication for the experiment</div>
+            <p>${ic.takeaway}</p>
+          </div>
+        </section>
+      `;
+    }
+
     function renderResolvedSection(items) {
       return `
         <section class="metric-section">
@@ -968,37 +1570,51 @@
       const lr = srm.loginRate.rows.map(r => `
         <tr><td style="color: var(--${r.variant === 'flowA' ? 'flow-a' : 'flow-b'});">${r.variant}</td><td>${fmtInt(r.devices)}</td><td>${fmtInt(r.logged_in_users)}</td><td>${fmtInt(r.actors)}</td><td><strong>${r.login_rate_pct}%</strong></td></tr>
       `).join('');
+      const fs = srm.byFirstSeen.rows.map(r => {
+        const isPost = r.first_seen.includes('Post-100');
+        return `<tr ${isPost ? 'style="background: var(--accent-soft);"' : ''}><td>${r.first_seen}</td><td>${fmtInt(r.flowA)}</td><td>${fmtInt(r.flowB)}</td><td><strong>${r.split}</strong></td><td style="font-size: 0.78rem;">${r.interpretation}</td></tr>`;
+      }).join('');
+      const ctx = srm.iosFiringContext;
+      const ctxList = ctx.contexts.map(c => `<li style="font-family: var(--font-mono); font-size: 0.78rem;">${c}</li>`).join('');
       return `
         <section class="metric-section">
           <div class="section-header">
-            <div class="section-eyebrow">⚙ SRM investigation · May 8</div>
+            <div class="section-eyebrow" style="color: var(--success);">✓ SRM root-caused · May 8</div>
             <h2 class="section-title">Why is the split 73/27 in post-100%?</h2>
             <p class="section-sub">${srm.headline}</p>
           </div>
-          <div class="comparison-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-            <div class="compare-cell">
-              <div class="compare-cell-label">Stability · by day</div>
-              <table class="compare-table" style="margin-top: 0.4rem;">
-                <thead><tr><th>Day</th><th class="flowA">Flow A</th><th class="flowB">Flow B</th><th>Split</th></tr></thead>
-                <tbody>${byDay}</tbody>
-              </table>
-              <p class="compare-cell-detail" style="margin-top: 0.7rem;">${srm.byDay.takeaway}</p>
-            </div>
-            <div class="compare-cell">
-              <div class="compare-cell-label">App version distribution</div>
-              <table class="compare-table" style="margin-top: 0.4rem;">
-                <thead><tr><th>Variant</th><th>Version</th><th>Devices</th><th>Events</th></tr></thead>
-                <tbody>${byVer}</tbody>
-              </table>
-              <p class="compare-cell-detail" style="margin-top: 0.7rem;">${srm.byAppVersion.takeaway}</p>
-            </div>
+
+          <div class="comparison-grid" style="grid-template-columns: 1fr; margin-bottom: 1.4rem;">
             <div class="compare-cell is-latest">
-              <div class="compare-cell-label">⚠ login_rate asymmetry · NEW question</div>
-              <table class="compare-table" style="margin-top: 0.4rem;">
-                <thead><tr><th>Variant</th><th>Devices</th><th>Logged-in</th><th>Actors</th><th>Rate</th></tr></thead>
-                <tbody>${lr}</tbody>
-              </table>
-              <p class="compare-cell-detail" style="margin-top: 0.7rem;">${srm.loginRate.takeaway}</p>
+              <div class="compare-cell-label">⚙ Root cause · device-age stratification</div>
+              <p style="font-size: 0.95rem; color: var(--text); margin: 0.4rem 0 0.8rem;">${srm.byFirstSeen.headline}</p>
+              <div class="table-scroll">
+                <table class="compare-table" style="margin-top: 0.4rem;">
+                  <thead><tr><th>First seen</th><th class="flowA">Flow A</th><th class="flowB">Flow B</th><th>Split</th><th>Interpretation</th></tr></thead>
+                  <tbody>${fs}</tbody>
+                </table>
+              </div>
+              <p class="compare-cell-detail" style="margin-top: 0.8rem;">${srm.byFirstSeen.takeaway}</p>
+            </div>
+          </div>
+
+          <div class="comparison-grid">
+            <div class="compare-cell">
+              <div class="compare-cell-label">iOS code review · firing site</div>
+              <p style="font-size: 0.85rem; color: var(--text); margin: 0.3rem 0 0.5rem;">${ctx.headline}</p>
+              <p class="compare-cell-detail" style="font-family: var(--font-mono); font-size: 0.72rem;"><code>${ctx.filePath}</code></p>
+              <p class="compare-cell-detail" style="margin-top: 0.5rem;"><strong>Fires when AuthorizationFlowCoordinator starts in:</strong></p>
+              <ul style="margin: 0.3rem 0 0.7rem; padding-left: 1.2rem; color: var(--text-muted);">${ctxList}</ul>
+              <p class="compare-cell-detail">${ctx.takeaway}</p>
+            </div>
+            <div class="compare-cell">
+              <div class="compare-cell-label">Stability + version + login_rate · supporting data</div>
+              <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0.4rem 0 0.3rem;">By day:</p>
+              <table class="compare-table"><thead><tr><th>Day</th><th class="flowA">A</th><th class="flowB">B</th><th>Split</th></tr></thead><tbody>${byDay}</tbody></table>
+              <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0.6rem 0 0.3rem;">By version:</p>
+              <table class="compare-table"><thead><tr><th>V</th><th>Ver</th><th>Devices</th><th>Events</th></tr></thead><tbody>${byVer}</tbody></table>
+              <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0.6rem 0 0.3rem;">login_rate:</p>
+              <table class="compare-table"><thead><tr><th>V</th><th>Devices</th><th>Logged-in</th><th>Actors</th><th>Rate</th></tr></thead><tbody>${lr}</tbody></table>
             </div>
           </div>
         </section>
@@ -1009,12 +1625,23 @@
       const rvp = tp.rampVsPost100.rows;
       const ramp = rvp.filter(r => r.window.startsWith('ramp'));
       const post = rvp.filter(r => r.window.startsWith('post'));
-      const tableRows = (rows, classSuffix) => rows.map(r => `
+      const tableRows = (rows) => rows.map(r => `
         <tr><td>${r.result}</td><td>${fmtInt(r.events)}</td><td>${fmtInt(r.users)}</td><td><strong>${r.pct}%</strong></td></tr>
       `).join('');
       const itRows = tp.inputTypeMix.rows.map(r => `
         <tr><td>${r.window}</td><td>${r.input_type}</td><td>${fmtInt(r.events)}</td><td><strong>${r.pct}%</strong></td></tr>
       `).join('');
+      // Hypothesis card — bullets extracted from row data
+      const tempRamp = ramp.find(r => r.result === 'temp_password');
+      const tempPost = post.find(r => r.result === 'temp_password');
+      const retRamp = ramp.find(r => r.result === 'returning');
+      const retPost = post.find(r => r.result === 'returning');
+      const hypothesisBullets = [
+        `Ramp temp_password: <strong>${tempRamp.pct}%</strong> (${tempRamp.events} events / ${tempRamp.users} users)`,
+        `Post-100% temp_password: <strong>${tempPost.pct}%</strong> (${tempPost.events} events / ${tempPost.users} users) — drop of ${(tempRamp.pct - tempPost.pct).toFixed(1)} pp`,
+        `Returning share rose <strong>${retRamp.pct}% → ${retPost.pct}%</strong> (consistent with backlog being consumed)`,
+        `Sample post-100% is small (${tempPost.users} users in 1.5 days) — confirm at week 3`
+      ];
       return `
         <section class="metric-section">
           <div class="section-header">
@@ -1022,35 +1649,52 @@
             <h2 class="section-title">Why did temp_password share drop?</h2>
             <p class="section-sub">${tp.headline}</p>
           </div>
-          <div class="comparison-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+          <div class="comparison-grid">
             <div class="compare-cell">
               <div class="compare-cell-label">Ramp · Apr 30 → May 6</div>
-              <table class="compare-table" style="margin-top: 0.4rem;">
-                <thead><tr><th>Result</th><th>Events</th><th>Users</th><th>%</th></tr></thead>
-                <tbody>${tableRows(ramp)}</tbody>
-              </table>
+              <div class="table-scroll">
+                <table class="compare-table" style="margin-top: 0.4rem;">
+                  <thead><tr><th>Result</th><th>Events</th><th>Users</th><th>%</th></tr></thead>
+                  <tbody>${tableRows(ramp)}</tbody>
+                </table>
+              </div>
             </div>
             <div class="compare-cell is-latest">
               <div class="compare-cell-label">Post-100% · May 7+</div>
-              <table class="compare-table" style="margin-top: 0.4rem;">
-                <thead><tr><th>Result</th><th>Events</th><th>Users</th><th>%</th></tr></thead>
-                <tbody>${tableRows(post)}</tbody>
-              </table>
+              <div class="table-scroll">
+                <table class="compare-table" style="margin-top: 0.4rem;">
+                  <thead><tr><th>Result</th><th>Events</th><th>Users</th><th>%</th></tr></thead>
+                  <tbody>${tableRows(post)}</tbody>
+                </table>
+              </div>
             </div>
             <div class="compare-cell">
               <div class="compare-cell-label">Input type mix</div>
-              <table class="compare-table" style="margin-top: 0.4rem;">
-                <thead><tr><th>Window</th><th>Type</th><th>Events</th><th>%</th></tr></thead>
-                <tbody>${itRows}</tbody>
-              </table>
+              <div class="table-scroll">
+                <table class="compare-table" style="margin-top: 0.4rem;">
+                  <thead><tr><th>Window</th><th>Type</th><th>Events</th><th>%</th></tr></thead>
+                  <tbody>${itRows}</tbody>
+                </table>
+              </div>
               <p class="compare-cell-detail" style="margin-top: 0.7rem;">${tp.inputTypeMix.takeaway}</p>
             </div>
           </div>
-          <div class="delta-block">
-            <div class="delta-block-label">Hypothesis · backlog catch-up</div>
-            <p>${tp.rampVsPost100.takeaway}</p>
-          </div>
+          ${renderHypothesisCard('Backlog catch-up', 'The ramp caught a backlog of invited barbers who had been holding temp_password emails for days/weeks before exposure to Flow B. Post-100% reflects steady-state organic mix.', hypothesisBullets)}
         </section>
+      `;
+    }
+
+    function renderHypothesisCard(label, tldr, bullets) {
+      const items = bullets.map(b => `<li>${b}</li>`).join('');
+      return `
+        <div class="hypothesis-card">
+          <div class="hypothesis-header">
+            <span class="hypothesis-badge">Hypothesis</span>
+            <span class="hypothesis-label">${label}</span>
+          </div>
+          <p class="hypothesis-tldr">${tldr}</p>
+          <ul class="hypothesis-bullets">${items}</ul>
+        </div>
       `;
     }
 
@@ -1065,7 +1709,7 @@
             <h2 class="section-title">How are indies tagged? — answer to Tristan's question</h2>
             <p class="section-sub">${ic.headline}</p>
           </div>
-          <div class="comparison-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="comparison-grid">
             <div class="compare-cell">
               <div class="compare-cell-label">Indie identifier · canonical</div>
               <p style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text); line-height: 1.55; margin: 0;">
@@ -1105,10 +1749,37 @@
 
     function deltaBlock(d) {
       if (!d) return '';
+      // New richer format: tldr + bullets + verdict badge + winner badge
+      // Falls back to delta_takeaway paragraph if not migrated.
+      if (d.tldr && d.bullets) {
+        const verdictMap = {
+          winner:    { label: 'Winner',         cls: 'verdict-winner' },
+          explained: { label: 'Explained',      cls: 'verdict-explained' },
+          caveat:    { label: 'Caveat',         cls: 'verdict-caveat' },
+          'ux-issue':{ label: 'UX issue',       cls: 'verdict-uxissue' },
+          watch:     { label: 'Watch',          cls: 'verdict-watch' },
+          bug:       { label: 'Bug · pending fix', cls: 'verdict-bug' }
+        };
+        const v = verdictMap[d.verdict] || { label: d.verdict || 'Note', cls: 'verdict-watch' };
+        const bullets = d.bullets.map(b => `<li>${b}</li>`).join('');
+        const winnerHtml = d.winner ? winnerBadge(d.winner) : '';
+        return `
+          <div class="delta-card">
+            <div class="delta-header">
+              <span class="delta-metric-label">Δ ${d.metric}</span>
+              <span class="delta-verdict-badge ${v.cls}">${v.label}</span>
+              ${winnerHtml}
+            </div>
+            <p class="delta-tldr">${d.tldr}</p>
+            <ul class="delta-bullets">${bullets}</ul>
+          </div>
+        `;
+      }
+      // Legacy fallback
       return `
         <div class="delta-block">
           <div class="delta-block-label">Delta · ${d.metric}</div>
-          <p>${d.delta_takeaway}</p>
+          <p>${d.delta_takeaway || ''}</p>
         </div>
       `;
     }
