@@ -710,6 +710,42 @@
     }
   },
 
+  "historicalComparison": {
+    "headline": "Comparing pre-experiment baseline vs the experiment window — what Eric asked for.",
+    "status": "partial",
+    "statusNote": "Some metrics have a pre-experiment baseline via IDENTIFIES history (which goes back 90+ days); others were instrumented at deploy (Apr 30) so no historical baseline exists for them.",
+    "blocks": [
+      {
+        "title": "Duplicate barber-account-per-email rate",
+        "subtitle": "% of new barber USER_IDs whose email already belongs to another USER_ID. Flow B should reduce this.",
+        "status": "pending",
+        "pendingNote": "Query saved to docs/HISTORICAL_QUERIES.sql (Q1). Will pull next session and update this block with weekly data + pre-vs-post comparison.",
+        "expectedShape": "Weekly time series + 'pre-experiment avg' vs 'experiment window avg' comparison badge"
+      },
+      {
+        "title": "New indie signups · weekly",
+        "subtitle": "Indies first appearing in IDENTIFIES (role='barber' AND user_type IS NULL), pre vs post Apr 30. Tristan: 'indies are primarily signing up through the app, so maybe we just haven't gotten many indie sign ups recently'.",
+        "status": "pending",
+        "pendingNote": "Query saved to docs/HISTORICAL_QUERIES.sql (Q2). Will pull next session.",
+        "expectedShape": "Weekly count + per-week trend"
+      },
+      {
+        "title": "New barber breakdown · weekly (Rental / Commission / Indie)",
+        "subtitle": "Total new barber accounts per week, segmented by user_type. Lets us see if the mix shifted post-launch.",
+        "status": "pending",
+        "pendingNote": "Query saved to docs/HISTORICAL_QUERIES.sql (Q3). Will pull next session.",
+        "expectedShape": "Stacked bar / table per week"
+      },
+      {
+        "title": "CS support tickets · 'delete my accidental indie signup' volume",
+        "subtitle": "Real-world signal of accidental duplicate signups — Tristan's suggestion + what Eric most cares about.",
+        "status": "external-pending",
+        "pendingNote": "Tristan is connecting with the CS team next week to pull volumes pre vs post 2026-04-30. Will incorporate when available.",
+        "owner": "Tristan + CS team"
+      }
+    ]
+  },
+
   "actionItems": [
     "Redefine the experiment's success metric. Current 'indie/signup_link reduction' is unmeasurable. Candidates: (a) total per-device login completion rate, already a positive guardrail, (b) reduction in barber-via-signup-path rate (currently flowA 6.6% / flowB 11.5% — direction is wrong if Flow B should reduce it), (c) instrument indie_self_onboarding entry to measure cross-channel.",
     "Decide whether to act on the SRM. New devices post-100% split 59/41 — still mildly skewed but close. If we want clean 50/50, options: re-bucket all devices via a new flag/seed, or restrict analysis to post-100% NEW devices only.",

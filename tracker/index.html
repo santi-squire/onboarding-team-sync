@@ -522,6 +522,42 @@
       border: 1px solid rgba(248, 113, 113, 0.3);
     }
 
+    /* Historical comparison badges + notes */
+    .hist-badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      letter-spacing: 0.06em;
+    }
+    .hist-pending  { background: rgba(56, 189, 248, 0.16); color: var(--info); border: 1px solid rgba(56, 189, 248, 0.3); }
+    .hist-external { background: rgba(251, 191, 36, 0.14); color: var(--warning); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .hist-ready    { background: rgba(74, 222, 128, 0.16); color: var(--success); border: 1px solid rgba(74, 222, 128, 0.3); }
+    .hist-pending-note {
+      padding: 0.55rem 0.7rem;
+      background: rgba(56, 189, 248, 0.05);
+      border-left: 2px solid var(--info);
+      border-radius: 0 4px 4px 0;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 0.5rem;
+    }
+    .hist-pending-label {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--info);
+      margin-right: 0.4rem;
+      font-weight: 700;
+    }
+
     /* Delta cards — bullets + verdict badge */
     .delta-card {
       margin-top: 1rem;
@@ -970,6 +1006,9 @@
 
       // === 2. Final scorecard + verdict — moved up so the verdict is visible early ===
       if (week2.scorecard) sections.push(renderScorecard(week2.scorecard));
+
+      // === 2.5 Historical comparison — pre-experiment vs experiment ===
+      if (week2.historicalComparison) sections.push(renderHistoricalComparison(week2.historicalComparison));
 
       // === 3. Indie classification — Tristan's headline question, full callout ===
       if (week2.indieClassification) sections.push(renderIndieClassification(week2.indieClassification));
@@ -1448,6 +1487,45 @@
           </ul>
         </section>
       `;
+    }
+
+    function renderHistoricalComparison(hc) {
+      const statusBadge = (s) => {
+        if (s === 'pending') return '<span class="hist-badge hist-pending">Data pending</span>';
+        if (s === 'external-pending') return '<span class="hist-badge hist-external">Waiting on CS team</span>';
+        if (s === 'ready') return '<span class="hist-badge hist-ready">Ready</span>';
+        return '';
+      };
+      const blocks = hc.blocks.map(b => `
+        <div class="compare-cell">
+          <div class="compare-cell-label" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem;">
+            <span>${b.title}</span>
+            ${statusBadge(b.status)}
+          </div>
+          <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin: 0.5rem 0 0.7rem;">${b.subtitle}</p>
+          ${b.pendingNote ? `<div class="hist-pending-note"><span class="hist-pending-label">${b.status === 'external-pending' ? 'Owner' : 'Note'}</span> ${b.owner ? `<strong>${b.owner}</strong> · ` : ''}${b.pendingNote}</div>` : ''}
+          ${b.expectedShape ? `<p style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono); margin: 0.6rem 0 0;">→ ${b.expectedShape}</p>` : ''}
+          ${b.data ? renderHistoricalData(b.data) : ''}
+        </div>
+      `).join('');
+      return `
+        <section class="metric-section">
+          <div class="section-header">
+            <div class="section-eyebrow" style="color: var(--info);">↺ Historical comparison · vs current experience</div>
+            <h2 class="section-title">Pre-experiment baseline</h2>
+            <p class="section-sub">${hc.headline}</p>
+            ${hc.statusNote ? `<p class="section-sub" style="margin-top: 0.4rem; font-size: 0.82rem; opacity: 0.8;">${hc.statusNote}</p>` : ''}
+          </div>
+          <div class="comparison-grid">${blocks}</div>
+        </section>
+      `;
+    }
+
+    function renderHistoricalData(data) {
+      // Renders weekly time-series rows when data is populated. For now, a noop placeholder.
+      if (!data || !data.weeks) return '';
+      const rows = data.weeks.map(w => `<tr><td>${w.week_start}</td><td>${fmtInt(w.value)}</td>${w.duplicate_pct != null ? `<td>${w.duplicate_pct}%</td>` : ''}</tr>`).join('');
+      return `<div class="table-scroll" style="margin-top: 0.7rem;"><table class="compare-table"><thead><tr><th>Week</th><th>${data.metricLabel || 'Value'}</th>${data.weeks[0].duplicate_pct != null ? '<th>Dup %</th>' : ''}</tr></thead><tbody>${rows}</tbody></table></div>`;
     }
 
     function renderConclusions(items) {
