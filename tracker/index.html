@@ -1115,6 +1115,9 @@
 
       const sections = [];
 
+      // === 0.5 Abandon followup — answers the Flow B login_abandoned concern ===
+      if (week2.abandonFollowup) sections.push(renderAbandonFollowup(week2.abandonFollowup));
+
       // === 1. Conclusions — questions we answered with evidence ===
       if (week2.conclusions) sections.push(renderConclusions(week2.conclusions));
 
@@ -1614,6 +1617,7 @@
         const comparison = b.comparison ? renderHistComparison(b.comparison) : '';
         const weekly = b.weeks ? renderHistWeeks(b.weeks, b.title) : '';
         const caveat = b.caveat ? `<p style="font-size: 0.74rem; color: var(--text-dim); font-style: italic; margin: 0.7rem 0 0; line-height: 1.5;">⚠ ${b.caveat}</p>` : '';
+        const shopTenure = b.shopTenureBreakdown ? renderShopTenureBreakdown(b.shopTenureBreakdown) : '';
         return `
           <div class="hist-block ${b.highlight ? 'hist-block-highlight' : ''}">
             <div class="hist-block-header">
@@ -1625,6 +1629,7 @@
             </div>
             ${comparison}
             ${weekly}
+            ${shopTenure}
             ${b.pendingNote ? `<div class="hist-pending-note"><span class="hist-pending-label">${b.status === 'external-pending' ? 'Owner' : 'Note'}</span> ${b.owner ? `<strong>${b.owner}</strong> · ` : ''}${b.pendingNote}</div>` : ''}
             ${caveat}
           </div>
@@ -1640,6 +1645,25 @@
           </div>
           <div class="hist-blocks">${blocks}</div>
         </section>
+      `;
+    }
+
+    function renderShopTenureBreakdown(st) {
+      const rows = st.rows.map(r => {
+        const isLegit = r.label && r.label.toLowerCase().includes('legit');
+        return `<tr><td>${r.bucket}</td><td>${fmtInt(r.count)}</td><td>${r.pct}%</td><td style="font-size: 0.76rem; color: ${isLegit ? 'var(--text-dim)' : 'var(--text-muted)'};">${r.label}</td></tr>`;
+      }).join('');
+      return `
+        <details class="hist-details" open style="margin-top: 1rem;">
+          <summary><strong style="color: var(--text); font-family: var(--font-sans);">${st.title}</strong></summary>
+          <div class="table-scroll" style="margin-top: 0.5rem;">
+            <table class="compare-table hist-table">
+              <thead><tr><th>Days since shop invitation</th><th>Count</th><th>%</th><th>Note</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+          <p class="compare-cell-detail" style="margin-top: 0.7rem;">${st.takeaway}</p>
+        </details>
       `;
     }
 
@@ -1668,11 +1692,15 @@
     function renderHistWeeks(weeks, title) {
       // Different table shape per metric: detect by available fields
       const hasAccidental = 'accidental' in weeks[0];
-      const hasIndies = 'indies' in weeks[0];
+      const hasIndies = 'indies' in weeks[0] && 'new_barbers' in weeks[0];
       const hasDup = 'duplicate_pct' in weeks[0];
       const hasBreakdown = 'rental' in weeks[0];
+      const hasDevicesOnly = 'devices' in weeks[0] && !hasBreakdown && !hasAccidental && !hasIndies && !hasDup;
       let head, body;
-      if (hasAccidental) {
+      if (hasDevicesOnly) {
+        head = `<th>Week</th><th>Devices</th>`;
+        body = weeks.map(w => `<tr class="${w.isExperiment ? 'is-experiment-row' : ''}"><td>${w.week}</td><td>${fmtInt(w.devices)}</td></tr>`).join('');
+      } else if (hasAccidental) {
         head = `<th>Week</th><th>Indies (w/ email)</th><th>Accidental</th><th>Accidental %</th>`;
         body = weeks.map(w => `<tr class="${w.isExperiment ? 'is-experiment-row' : ''}"><td>${w.week}</td><td>${fmtInt(w.total_indies)}</td><td>${fmtInt(w.accidental)}</td><td>${w.accidental_pct}%</td></tr>`).join('');
       } else if (hasBreakdown) {
@@ -1690,6 +1718,45 @@
         body = weeks.map(w => `<tr class="${w.isExperiment ? 'is-experiment-row' : ''}"><td>${w.week}</td><td>${fmtInt(w.new_barbers)}</td><td>${fmtInt(w.indies)}</td><td>${w.share_pct}%</td></tr>`).join('');
       }
       return `<details class="hist-details" ${weeks.find(w => w.isExperiment) ? 'open' : ''}><summary>Weekly data (${weeks.length} weeks)</summary><div class="table-scroll"><table class="compare-table hist-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div></details>`;
+    }
+
+    function renderAbandonFollowup(af) {
+      const r = af.results;
+      return `
+        <section class="metric-section">
+          <div class="section-header">
+            <div class="section-eyebrow" style="color: var(--success);">⚡ Investigation followup · ${af.headline}</div>
+            <h2 class="section-title">Did Flow B's email_entry abandoners actually leave?</h2>
+            <p class="section-sub">${af.subtitle}</p>
+          </div>
+          <div class="comparison-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="compare-cell" style="border-left: 3px solid var(--success);">
+              <div class="compare-cell-label">Outcome breakdown · post-100% NEW devices</div>
+              <p class="compare-cell-stat">${r.total_email_abandoners}<span class="compare-cell-stat-suffix">unique abandoners</span></p>
+              <ul style="margin: 0.8rem 0 0; padding: 0; list-style: none; font-family: var(--font-mono); font-size: 0.82rem;">
+                <li style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--border);"><span style="color: var(--success);">↩ Came back & logged in</span><strong>${r.later_logged_in.count} · ${r.later_logged_in.pct}%</strong></li>
+                <li style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--border);"><span style="color: var(--success);">↩ Came back & signed up</span><strong>${r.later_signed_up.count} · ${r.later_signed_up.pct}%</strong></li>
+                <li style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--border);"><span style="color: var(--info);">↻ Came back, no outcome yet</span><strong>${r.came_back_no_outcome.count} · ${r.came_back_no_outcome.pct}%</strong></li>
+                <li style="display: flex; justify-content: space-between; padding: 0.4rem 0;"><span style="color: var(--danger);">✗ Truly lost</span><strong>${r.truly_lost.count} · ${r.truly_lost.pct}%</strong></li>
+              </ul>
+            </div>
+            <div class="compare-cell">
+              <div class="compare-cell-label">Implication</div>
+              <p style="font-size: 0.88rem; color: var(--text); line-height: 1.55; margin: 0.4rem 0 0.8rem;">${af.implication}</p>
+              <div class="hypothesis-card" style="margin-top: 0.7rem;">
+                <div class="hypothesis-header">
+                  <span class="hypothesis-badge" style="background: var(--success);">Verdict</span>
+                </div>
+                <p class="hypothesis-tldr">${af.verdict}</p>
+              </div>
+            </div>
+          </div>
+          <div class="hist-pending-note" style="margin-top: 0.8rem;">
+            <span class="hist-pending-label">Method</span> ${af.method}
+          </div>
+          ${af.caveat ? `<p style="font-size: 0.74rem; color: var(--text-dim); font-style: italic; margin: 0.7rem 0 0; line-height: 1.5;">⚠ ${af.caveat}</p>` : ''}
+        </section>
+      `;
     }
 
     function renderConclusions(items) {
