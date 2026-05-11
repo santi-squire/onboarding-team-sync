@@ -531,6 +531,12 @@
       border-left: 3px solid var(--info);
       border-radius: 8px;
     }
+    .hist-block-highlight {
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.05), rgba(74, 222, 128, 0.01));
+      border: 1px solid rgba(74, 222, 128, 0.25);
+      border-left: 3px solid var(--success);
+    }
+    .hist-block-highlight .hist-block-title { color: var(--success); }
     .hist-block-header {
       display: flex;
       justify-content: space-between;
@@ -1609,7 +1615,7 @@
         const weekly = b.weeks ? renderHistWeeks(b.weeks, b.title) : '';
         const caveat = b.caveat ? `<p style="font-size: 0.74rem; color: var(--text-dim); font-style: italic; margin: 0.7rem 0 0; line-height: 1.5;">⚠ ${b.caveat}</p>` : '';
         return `
-          <div class="hist-block">
+          <div class="hist-block ${b.highlight ? 'hist-block-highlight' : ''}">
             <div class="hist-block-header">
               <div>
                 <div class="hist-block-title">${b.title}</div>
@@ -1661,11 +1667,15 @@
 
     function renderHistWeeks(weeks, title) {
       // Different table shape per metric: detect by available fields
+      const hasAccidental = 'accidental' in weeks[0];
       const hasIndies = 'indies' in weeks[0];
       const hasDup = 'duplicate_pct' in weeks[0];
       const hasBreakdown = 'rental' in weeks[0];
       let head, body;
-      if (hasBreakdown) {
+      if (hasAccidental) {
+        head = `<th>Week</th><th>Indies (w/ email)</th><th>Accidental</th><th>Accidental %</th>`;
+        body = weeks.map(w => `<tr class="${w.isExperiment ? 'is-experiment-row' : ''}"><td>${w.week}</td><td>${fmtInt(w.total_indies)}</td><td>${fmtInt(w.accidental)}</td><td>${w.accidental_pct}%</td></tr>`).join('');
+      } else if (hasBreakdown) {
         head = `<th>Week</th><th>Rental</th><th>Commission</th><th>Indies</th><th>Indie %</th>`;
         body = weeks.map(w => {
           const total = w.rental + w.commission + w.indies;
@@ -1679,7 +1689,7 @@
         head = `<th>Week</th><th>New barbers</th><th>Indies</th><th>Share</th>`;
         body = weeks.map(w => `<tr class="${w.isExperiment ? 'is-experiment-row' : ''}"><td>${w.week}</td><td>${fmtInt(w.new_barbers)}</td><td>${fmtInt(w.indies)}</td><td>${w.share_pct}%</td></tr>`).join('');
       }
-      return `<details class="hist-details"><summary>Weekly data (${weeks.length} weeks)</summary><div class="table-scroll"><table class="compare-table hist-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div></details>`;
+      return `<details class="hist-details" ${weeks.find(w => w.isExperiment) ? 'open' : ''}><summary>Weekly data (${weeks.length} weeks)</summary><div class="table-scroll"><table class="compare-table hist-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div></details>`;
     }
 
     function renderConclusions(items) {

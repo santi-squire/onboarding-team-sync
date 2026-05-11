@@ -711,12 +711,40 @@
   },
 
   "historicalComparison": {
-    "headline": "Comparing pre-experiment baseline vs the experiment window — what Eric asked for. Indie signup volume dropped ~43% during the experiment weeks, but the cause (Flow B preventing accidental signups vs organic decline) is not yet established.",
+    "headline": "Comparing pre-experiment baseline vs the experiment window — what Eric asked for. The 'accidental indies' proxy (indies whose email matches a shop-employed barber) dropped ~62% during the experiment — sharper signal than the total indie volume.",
     "status": "partial",
-    "statusNote": "IDENTIFIES table has 90+ days of history. We can show: indie signup volume, new barber breakdown by user_type, duplicate-account-per-email rate. CAVEAT: total indie signups ≠ accidental indie signups. A drop in total volume could mean Flow B is preventing duplicates, OR organic decline (which was already happening pre-experiment). The cleaner measure needs: (a) CS data on actual accidental signups [pending Tristan] OR (b) a Snowflake query for indies whose email matches a shop-employed barber [TODO next session]. The funnel + email-check events were instrumented at deploy so no historical baseline exists for those.",
+    "statusNote": "IDENTIFIES table has 90+ days of history. The 'accidental indie' block below is the closest we can get in Snowflake to the metric Eric/Tristan actually care about (accidental duplicate signups), without waiting for CS. CS support ticket data is still pending Tristan + CS team.",
     "blocks": [
       {
-        "title": "New indie signups · weekly",
+        "title": "★ Accidental indies · weekly (sharpest signal)",
+        "subtitle": "Indies whose email ALSO belongs to a Rental/Commission account — strong proxy for 'accidental duplicate signups'. This is what Flow B should specifically reduce.",
+        "status": "ready",
+        "highlight": true,
+        "comparison": {
+          "preBaseline": { "label": "Pre-experiment recent (Apr 6-20)", "value": "13/wk avg · 84% rate" },
+          "experiment": { "label": "Experiment (Apr 27 - May 4)", "value": "5/wk avg · 50% rate" },
+          "deltaPct": -62,
+          "winner": "flowB",
+          "verdict": "Strong signal: accidental indies dropped ~62% (vs −43% for total indies), AND the accidental RATE among indies fell from ~84% to ~50%. The fact that accidentals dropped MORE than total indies suggests Flow B is specifically catching the duplicate case (not just organic decline). Caveat: sample is small (n=10 indies/week in experiment), Apr-27 was 3 vs May-04 was 7 — confirm with another 2-3 weeks of data."
+        },
+        "weeks": [
+          { "week": "2026-02-16", "total_indies": 36, "accidental": 19, "accidental_pct": 52.8 },
+          { "week": "2026-02-23", "total_indies": 22, "accidental": 13, "accidental_pct": 59.1 },
+          { "week": "2026-03-02", "total_indies": 33, "accidental": 16, "accidental_pct": 48.5 },
+          { "week": "2026-03-09", "total_indies": 27, "accidental": 12, "accidental_pct": 44.4 },
+          { "week": "2026-03-16", "total_indies": 21, "accidental": 12, "accidental_pct": 57.1 },
+          { "week": "2026-03-23", "total_indies": 22, "accidental": 13, "accidental_pct": 59.1 },
+          { "week": "2026-03-30", "total_indies": 21, "accidental": 15, "accidental_pct": 71.4 },
+          { "week": "2026-04-06", "total_indies": 15, "accidental": 14, "accidental_pct": 93.3 },
+          { "week": "2026-04-13", "total_indies": 14, "accidental": 11, "accidental_pct": 78.6 },
+          { "week": "2026-04-20", "total_indies": 16, "accidental": 13, "accidental_pct": 81.3 },
+          { "week": "2026-04-27", "total_indies": 10, "accidental": 3,  "accidental_pct": 30.0, "isExperiment": true, "rolloutEvent": "Experiment start" },
+          { "week": "2026-05-04", "total_indies": 10, "accidental": 7,  "accidental_pct": 70.0, "isExperiment": true, "rolloutEvent": "100% rollout" }
+        ],
+        "caveat": "Method: take all 'new indies' (role='barber', final user_type stayed null), cross-check whether their email also exists for any Rental/Commission user_id. Match = likely accidental. Excludes indies without an email recorded. The May 11 partial-week row (1 indie, 100% accidental) excluded — not a full week yet."
+      },
+      {
+        "title": "New indie signups · weekly (total volume)",
         "subtitle": "Indies (final user_type stayed NULL) first appearing in IDENTIFIES, weekly. Drop observed during experiment weeks but the inference 'this is Flow B preventing accidental signups' is NOT yet established — could be organic.",
         "status": "ready",
         "comparison": {
