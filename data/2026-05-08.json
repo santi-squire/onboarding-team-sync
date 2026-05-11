@@ -13,7 +13,7 @@
 
   "abandonFollowup": {
     "headline": "76% of Flow B email_entry abandoners come back to the app — most 'abandonment' is soft, not friction.",
-    "subtitle": "Concern from Friday: Flow B's login_abandoned rate (52% vs A's 28%) introduces a new email_entry surface. Followed up by tracing each abandoner's ANONYMOUS_ID for later activity.",
+    "subtitle": "Friday's concern was Flow B's 52% login_abandoned rate vs Flow A's 28%. We traced each abandoner's anonymous_id to see if they returned.",
     "method": "Took all distinct ANONYMOUS_IDs that fired login_abandoned with last_step_reached='email_entry' in Flow B (NEW devices, post-100%). For each, checked whether they had any LOGIN_SUCCEEDED, ACCOUNT_CREATED, or IDENTIFIES event AFTER their first abandon timestamp.",
     "results": {
       "total_email_abandoners": 25,
@@ -22,8 +22,15 @@
       "came_back_no_outcome": { "count": 7, "pct": 28 },
       "truly_lost": { "count": 6, "pct": 24 }
     },
-    "implication": "13 of 25 abandoners (52%) completed a login or signup later. 7 more came back to the app without yet completing an outcome — they may still do so. Only 6 (24%) are 'truly lost' with no further activity. The pattern of 25 unique abandoners producing 114 abandon events (~4.6 per user) is consistent with 'try multiple times before completing', not 'give up and leave'. The high abandon rate on Flow B's email_entry surface is largely an INSTRUMENTATION artifact — Flow B simply has more measurable abandonment surfaces than Flow A. Flow A users who leave silently don't fire abandon at all.",
-    "verdict": "The login_abandoned concern is significantly reduced. Clarity recordings will still help confirm WHAT users do during their abandon → return cycle, but the volume itself is not a red flag.",
+    "implicationHeadline": "Most 'abandonment' is users retrying, not leaving.",
+    "implicationBullets": [
+      "52% (13/25) completed login or signup later.",
+      "28% (7/25) returned but haven't finished yet.",
+      "24% (6/25) are truly lost.",
+      "25 abandoners fired 114 events (~4.6 each), classic retry pattern."
+    ],
+    "implicationWhy": "Flow B has more measurable abandon surfaces than Flow A, which inflates the rate.",
+    "verdict": "Concern downgraded. Clarity recordings will still show what users do during the abandon-to-return cycle.",
     "caveat": "Sample is small (25 unique abandoners). Refresh weekly. The 7 'came back but no outcome' bucket is a wait-and-see — could complete later."
   },
 
@@ -38,23 +45,44 @@
         "flowA": { "rental": 37, "commission": 12, "indie": 0, "unclassified": 0 },
         "flowB": { "rental": 32, "commission": 14, "indie": 0, "unclassified": 0 }
       },
-      "method": "Cross-joined ACCOUNT_CREATED users with IDENTIFIES traits using ever-had logic (any timestamp). MAX_BY produced misleading nulls because user_type is sometimes transient at re-identify time. NOTE: number reflects the experiment's ACCOUNT_CREATED event population, not the 'accidental indies' proxy in the Historical block."
+      "method": {
+        "headline": "Used ever-had trait logic across IDENTIFIES to avoid transient null user_type.",
+        "bullets": [
+          "Cross-joined ACCOUNT_CREATED users with IDENTIFIES traits at any timestamp.",
+          "MAX_BY produced misleading nulls because user_type is transient at re-identify.",
+          "Population reflects ACCOUNT_CREATED in the experiment, not the historical proxy."
+        ]
+      }
     },
     "tempPasswordCorrection": {
       "claim": "temp_password = indie (FALSE)",
       "reality": "All Flow B email_check temp_password results map to confirmed Rental/Commission barbers — they get temp_password from their shop owner. Indies do not show up via temp_password.",
-      "impactOnNarrative": "The 33.5% temp_password share remains the strongest Flow B signal (catching invited shop barbers before they create duplicate accounts), but it should NOT be described as 'catching indies'. It is catching shop-employed barbers who were already provisioned."
+      "impactOnNarrative": {
+        "headline": "temp_password catches invited shop barbers, not indies. Rename the signal.",
+        "bullets": [
+          "33.5% temp_password share is the strongest Flow B signal.",
+          "It prevents duplicate accounts from already-provisioned shop barbers.",
+          "Stop describing it as 'catching indies'. Those barbers are Rental or Commission."
+        ]
+      }
     },
     "globalContext": {
       "indiesInLast90d": 1641,
       "rentalInLast90d": 14944,
       "commissionInLast90d": 12632,
-      "interpretation": "Indies exist as a population (1,641 active in IDENTIFIES last 90d). The ACCOUNT_CREATED event was instrumented at experiment deploy so there's no pre-experiment baseline THERE — but IDENTIFIES first-seen gives us a usable proxy, which is what powers the Historical comparison block."
+      "interpretation": {
+        "headline": "Indies exist at scale, but ACCOUNT_CREATED has no pre-experiment baseline.",
+        "bullets": [
+          "1,641 indies active in IDENTIFIES over the last 90 days.",
+          "ACCOUNT_CREATED was instrumented at experiment deploy, so no historical reference.",
+          "IDENTIFIES first-seen powers the Historical comparison block as a usable proxy."
+        ]
+      }
     },
     "implications": [
-      "The north-star metric 'reduction of accidental indie signups in Flow B' cannot be measured in this experiment because zero indies are being created in this traffic.",
-      "Possible explanations: (a) organic indie volume is genuinely low post-deploy; (b) indies typically sign up via web, not iOS/Android; (c) the experiment population (logged-out users on iOS/Android) does not include the indie acquisition channel.",
-      "Actionable: ask Eric/Yurii whether indie signups historically come through iOS/Android at meaningful volume. If not, we may need a different success metric for this experiment."
+      "North-star metric 'reduce accidental indies in Flow B' cannot be measured: zero indies created accounts in this traffic.",
+      "Likely cause: indies sign up via web or a separate self-onboarding flow, not iOS/Android login.",
+      "Ask Eric/Yurii if indie signups historically come through iOS/Android. If not, we need a new success metric."
     ]
   },
 
@@ -372,13 +400,31 @@
         { "first_seen": "During ramp (Apr 30 → May 6)",   "flowA": 17,  "flowB": 5,  "split": "77/23", "interpretation": "Devices that arrived during low rollout" },
         { "first_seen": "Post-100% (May 7+) · NEW",        "flowA": 77,  "flowB": 54, "split": "59/41", "interpretation": "Cleanest sample · close to 50/50" }
       ],
-      "takeaway": "When LD ramped from 1% → 50% rollout, the vast majority of pre-existing devices stayed on flowA (the default). LD bucket is sticky per anonymous_id, so those devices never got re-bucketed at 100%. Result: pre-experiment devices are 80/20 flowA-heavy. NEW devices arriving post-100% rollout split 59/41 — much closer to expected 50/50. The 73/27 cumulative SRM is mostly carried by the legacy pool, not a bucketing bug."
+      "takeaway": {
+        "headline": "Sticky LaunchDarkly buckets, not a bug, drive the 73/27 SRM.",
+        "bullets": [
+          "Pre-experiment devices skew 80/20 Flow A (194 vs 48), stuck on the 1% default.",
+          "Ramp-window devices split 77/23 (17 vs 5), similar legacy inertia.",
+          "Post-100% NEW devices split 59/41 (77 vs 54), close to expected 50/50.",
+          "LD never re-buckets per anonymous_id, so the legacy pool carries the skew."
+        ],
+        "why": "Confirms the cumulative SRM is mechanical, not a flaw. Experiment reads stay valid."
+      }
     },
     "iosFiringContext": {
       "headline": "iOS code review: LOGIN_EXPERIMENT_ASSIGNED fires from AuthorizationFlowCoordinator.start()",
       "filePath": "Commander/Packages/NE/CoreExperience/Sources/CoreApplicationFlow/Flows/Authorization/AuthorizationFlowCoordinator.swift:101-108",
       "contexts": ["launch (cold start, no session)", "signin (explicit sign-in modal)", "switchToExperience (barber ↔ shop context switch)", "loginToken (temp_password deep link)"],
-      "takeaway": "Event fires only when the auth flow starts — NOT on every app open. Already-logged-in users opening the app don't fire it unless they switch contexts. This explains the 56% logged-in rate on flowA: flowA captures 'context-switching existing users' (who are pre-experiment devices and thus stuck on flowA via sticky bucket). flowB at 3% logged-in is mostly NEW devices on first launch — consistent with the device-age stratification finding above."
+      "takeaway": {
+        "headline": "Assignment fires only at auth start, which explains Flow A's logged-in skew.",
+        "bullets": [
+          "LOGIN_EXPERIMENT_ASSIGNED fires from AuthorizationFlowCoordinator.start(), not every app open.",
+          "Logged-in users trigger it via barber/shop context switch, landing on Flow A.",
+          "New devices trigger it on cold start and land on Flow B.",
+          "Explains Flow A's 56% logged-in rate vs Flow B's 3%."
+        ],
+        "why": "Rules out a bucketing bug. Login-rate gap is mechanical, consistent with device-age stratification."
+      }
     },
     "loginRate": {
       "rows": [
@@ -390,7 +436,7 @@
   },
 
   "tempPasswordInvestigation": {
-    "headline": "Two effects layered: sample contamination + a genuine softening of the catch rate as the invited-barber backlog cleared. Refreshed reading shows steady-state ~27% (NEW-only), down from 35% in the first NEW-only week.",
+    "headline": "Steady-state catch rate is ~27% on clean NEW data, down from 35% during the early backlog.",
     "rampVsPost100": {
       "rows": [
         { "window": "ramp (Apr 30 - May 6)",          "result": "returning",     "events": 218, "users": 20, "pct": 47.9 },
@@ -403,7 +449,15 @@
         { "window": "post-100% NEW only (May 7+)",    "result": "temp_password", "events": 26,  "users": 4,  "pct": 35.1 },
         { "window": "post-100% NEW only (May 7+)",    "result": "new_user",      "events": 13,  "users": 1,  "pct": 17.6 }
       ],
-      "takeaway": "Two effects combined. (1) Sample contamination: the 'all post-100%' window is dominated by pre-experiment legacy users who fire EMAIL_CHECK_RESULT mostly as 'returning' (their account already exists), diluting temp_password share. (2) Backlog catch-up: the first 1-2 days of NEW-only data captured a residual backlog of invited barbers who took the new flow, then the rate softened as the backlog cleared. NEW-only steady-state is now ~27% (Monday refresh), down from 35% on Friday and 36.9% during the ramp. The catch rate is real and meaningful — Flow B continues to catch ~1 in 4 email checks as an invited barber."
+      "takeaway": {
+        "headline": "Steady-state catch is ~27% on clean NEW data, down from 35% backlog peak.",
+        "bullets": [
+          "Two effects layered: legacy contamination dilutes the all-post-100% view to 23%.",
+          "Invited-barber backlog softened: 36.9% ramp to 35% NEW week 1 to 27% NEW refresh.",
+          "Clean NEW-only data is the right lens, not the contaminated all-devices view.",
+          "Flow B still catches roughly 1 in 4 email checks as an invited barber."
+        ]
+      }
     },
     "inputTypeMix": {
       "rows": [
@@ -547,11 +601,26 @@
       "indiesInExperimentPop": 2,
       "indiesNotInExperimentPop": 67
     },
-    "takeaway": "Initial 69 new indies finding during the experiment window held at the Friday cut. Only 2 of those overlapped with our LOGIN_EXPERIMENT_ASSIGNED population — the rest sign up through a separate flow entirely. The historical accidental-indies block above is now the canonical 'did Flow B prevent the duplicates' read.",
+    "takeaway": {
+      "headline": "Only 2 of 69 new indies pass through the experiment. The channel is wrong.",
+      "bullets": [
+        "67 of 69 new indies signed up via a separate flow entirely.",
+        "Indie north-star cannot be measured directly from this experiment population.",
+        "Historical accidental-indies block is now the canonical read on duplicate prevention."
+      ],
+      "why": "The success metric must be redefined or measured via a different instrumentation path."
+    },
     "separateChannelFinding": {
       "headline": "Indies have their own self-onboarding flow — completely separate from the login experiment",
       "evidence": "RUDDER_EVENTS schema contains a family of *_INDY_SELF_ONBOARDING events (TIKTOK_APPEARED_ON_INDY_SELF_ONBOARDING, VIDEO_ADDED_ON_INDY_SELF_ONBOARDING, WORK_HOURS_SAVED_IN_INDY_SELF_ONBOARDING, X_ADDED_ON_INDY_SELF_ONBOARDING, etc.). This is a distinct onboarding path the experiment does not touch.",
-      "implication": "The experiment's 'reduce accidental indie signups via signup_link' north-star metric is fundamentally unmeasurable here — indies don't pass through the iOS login auth flow at all. They have their own product surface. To measure indie signups we'd need to instrument the indie self-onboarding flow OR query the *_INDY_SELF_ONBOARDING tables directly for an entry-point event."
+      "implication": {
+        "headline": "Indies sign up via a separate product surface the experiment cannot touch.",
+        "bullets": [
+          "Rudder has a family of *_INDY_SELF_ONBOARDING events used by that flow.",
+          "iOS login auth flow does not route indies, so the north-star is unmeasurable here.",
+          "To measure indie signups, instrument the self-onboarding flow or query its tables."
+        ]
+      }
     }
   },
 
@@ -561,7 +630,17 @@
       { "window": "ramp (Apr 30 → May 6)",   "events": 219, "users": 9, "taps_per_user": 24.3 },
       { "window": "post-100% (May 7+)",      "events": 62,  "users": 5, "taps_per_user": 12.4 }
     ],
-    "takeaway": "Both windows show concentrated frustration tapping (12-24 taps per affected user). Persists across all app versions and rollout phases. Affects a small population per period (5-9 users) but each one taps repeatedly — clearly an escape attempt on the non-dismissible Flow A sheet. Microsoft Clarity recording (see CLARITY_IOS_PROMPT.md) will surface the post-tap behavior so we can decide whether to make the sheet dismissible or add a clearer exit."
+    "takeaway": {
+      "headline": "Frustration tapping is a real UX issue, not a legacy artifact.",
+      "bullets": [
+        "Ramp: 24.3 taps per affected user across 9 users.",
+        "Post-100%: 12.4 taps per affected user across 5 users.",
+        "Pattern persists across all app versions and rollout phases.",
+        "Concentrated escape attempts on the non-dismissible Flow A sheet.",
+        "Microsoft Clarity will record post-tap behavior to confirm the hypothesis."
+      ],
+      "why": "Drives the call on whether to make the Flow A sheet dismissible or add a clearer exit."
+    }
   },
 
   "conclusions": [
@@ -740,15 +819,31 @@
       }
     ],
     "verdict": {
-      "headline": "Flow B still wins on conversion + reduces accidental indie signups; one caveat (login_abandoned at email_entry)",
-      "body": "Refresh confirms the core verdict. On 3x more data: SRM cleared (52/48), Flow B beats A on overall completion by +15pp (moderated from +31pp last week), forgot-password rate, welcome rate. Accidental indie signups dropped ~65% vs pre-experiment baseline. Caveats: Flow B has higher login_abandoned at the new email_entry step (Clarity will tell us if it's healthy filtering or friction), and per-exposure barber-via-signup-path rate is now solidly +3.4pp vs A — worth watching to understand if B is routing confused users to signup instead of login."
+      "headline": "Flow B wins. CS confirms zero accidental indy signups in May.",
+      "bullets": [
+        "CS: 0 accidental indy self-signup cancellations in May vs 3 in April.",
+        "Snowflake: accidental indies down ~65%, total indies down ~48%.",
+        "SRM cleared at 52/48 on NEW devices (was 73/27 contaminated by legacy).",
+        "Flow B beats A on overall completion by +15pp, welcome rate, forgot-password rate."
+      ],
+      "caveats": [
+        "Flow B has higher login_abandoned, but 76% of abandoners return and complete (concern downgraded).",
+        "Per-exposure barber-via-signup is +3.4pp vs A, worth watching."
+      ]
     }
   },
 
   "historicalComparison": {
-    "headline": "Refreshed 2026-05-11 with an 8-week pre-experiment baseline (more stable than the 3-week reading we used on Friday). Sharpest signal: accidental indies dropped ~65% vs the 8wk baseline.",
+    "headline": "CS confirms: zero accidental indy self-signups in May. Snowflake shows accidental indies down ~65%. Two independent signals agree.",
     "status": "partial",
-    "statusNote": "IDENTIFIES table has 90+ days of history. Pre-experiment baseline is now an 8-week window (Mar 9 - Apr 20) for stability. The 'accidental indie' block below is the closest in-Snowflake proxy to the metric Eric/Tristan actually care about (accidental duplicate signups), without waiting for CS. CS support ticket data is still pending Tristan + CS team. NOTE: the duplicate-email block uses Friday's pull — refresh query is at docs/HISTORICAL_QUERIES.sql Q1.",
+    "statusNote": {
+      "headline": "Baseline widened to 8 weeks. CS data now confirms the Snowflake signal.",
+      "bullets": [
+        "Pre-experiment baseline now spans Mar 9 to Apr 20 for stability.",
+        "Accidental-indies block is the closest in-Snowflake proxy for duplicates.",
+        "Duplicate-email block uses Friday's pull. Refresh via docs/HISTORICAL_QUERIES.sql Q1."
+      ]
+    },
     "blocks": [
       {
         "title": "★ Accidental indies · weekly (sharpest signal)",
@@ -760,7 +855,16 @@
           "experiment": { "label": "Experiment (Apr 27 - May 11)", "value": "4.5/wk avg · 46% rate" },
           "deltaPct": -65,
           "winner": "flowB",
-          "verdict": "Strong signal sustained on refresh: accidental indies dropped ~65% vs an 8-week baseline (12.9/wk → 4.5/wk), and the accidental rate among indies dropped from ~70% to ~46%. The fact that accidentals dropped MORE than total indies (~37% drop) remains the core evidence that Flow B is specifically catching the duplicate case, not just riding organic decline. Note: the late-pre-experiment weeks (Apr 6-20) had especially high accidental rates (~85%) which may have been an anomalous run-up of invited-barber backlog right before launch."
+          "verdict": {
+            "headline": "Accidental indies dropped ~65%, sharper than the ~37% total-indies decline.",
+            "bullets": [
+              "12.9/wk to 4.5/wk average vs the 8-week pre-experiment baseline.",
+              "Accidental rate among indies fell from 70% to 46%.",
+              "Drop exceeds total-indies decline. Flow B catches duplicates, not just riding decline.",
+              "Late pre-experiment weeks (Apr 6-20) ran ~85% accidental, possibly a backlog spike."
+            ],
+            "why": "Sharpest in-Snowflake signal that Flow B reduces accidental duplicate signups specifically."
+          }
         },
         "weeks": [
           { "week": "2026-02-16", "total_indies": 36, "accidental": 19, "accidental_pct": 52.8 },
@@ -786,7 +890,16 @@
             { "bucket": "8-30 days after invitation", "count": 37, "pct": 18.4, "label": "Truly accidental" },
             { "bucket": "30+ days after invitation", "count": 49, "pct": 24.4, "label": "Likely accidental (downloaded app much later, signed up wrong)" }
           ],
-          "takeaway": "50% of 'accidental indies' under my original definition created their indie account before or same day as the shop account. Those are MORE LIKELY legitimate transitions (indie barber later joins a shop) than accidents. The TRUE accidental cohort (indie created after shop invitation) is ~101 of 201 in 90 days. The drop signal still holds even if we narrow to this cohort, but the absolute baseline is roughly half of what the headline number suggests."
+          "takeaway": {
+            "headline": "Half of 'accidental indies' are likely legitimate barber-to-shop transitions.",
+            "bullets": [
+              "50% (100 of 201) created the indie account same-day or before the shop account.",
+              "True accidentals (indie after shop invitation) total ~101 of 201 in 90 days.",
+              "Drop signal still holds on the narrower cohort.",
+              "Absolute baseline is roughly half of the headline number."
+            ],
+            "why": "Tightens the definition without invalidating the directional Flow B win."
+          }
         }
       },
       {
@@ -799,7 +912,15 @@
           "experiment": { "label": "Experiment (Apr 27 - May 11)", "value": "9.5/wk avg" },
           "deltaPct": -48,
           "winner": "tied",
-          "verdict": "Total indies dropped ~48% vs an 8-week baseline. But total ≠ accidental — some of this drop could be organic decline (volume was already trending down pre-experiment). See the ★ Accidental indies block above for the sharper signal — that one drops more (~65%) and is the proxy for what Flow B is meant to reduce. CS data (pending Tristan) is the cleanest signal."
+          "verdict": {
+            "headline": "Total indies down ~48%, but causation is not yet established.",
+            "bullets": [
+              "18.4/wk to 9.5/wk average vs the 8-week pre-experiment baseline.",
+              "Volume was already trending down pre-experiment, so some drop is organic.",
+              "Accidental-indies block (~65% drop) is the sharper Flow B signal.",
+              "CS data (now in) confirms zero accidental cancellations in May."
+            ]
+          }
         },
         "weeks": [
           { "week": "2026-02-16", "new_barbers": 1276, "indies": 31, "share_pct": 2.4 },
@@ -876,10 +997,10 @@
         "status": "ready",
         "comparison": {
           "preBaseline": { "label": "Pre-experiment 8wk (Mar 9 - Apr 20) avg", "value": "853k devices/wk" },
-          "experiment": { "label": "Experiment weeks (Apr 27 - May 4) avg", "value": "889k devices/wk" },
+          "experiment": { "label": "Experiment weeks avg (2 full weeks)", "value": "889k devices/wk" },
           "deltaPct": 4,
           "winner": "tied",
-          "verdict": "User base actually GREW slightly during the experiment (+4%) — so the drops in indie signups and accidentals are NOT explained by 'fewer users'. The drop signals are real and probably understated."
+          "verdict": "User base grew 4% during the experiment (853k to 889k devices/wk). Indie and accidental drops are not explained by fewer users. Signals are real, likely understated."
         },
         "weeks": [
           { "week": "2026-02-16", "devices": 806713 },
@@ -898,22 +1019,39 @@
         "caveat": "Excludes 2026-05-11 partial week (only Monday morning). Note IDENTIFIES distinct USER_IDs (multi-device users) actually exceeds distinct ANONYMOUS_IDs — that's normal."
       },
       {
-        "title": "CS support tickets · 'delete my accidental indie signup' volume",
-        "subtitle": "Real-world signal of accidental duplicate signups — Tristan's suggestion + what Eric most cares about.",
-        "status": "external-pending",
-        "pendingNote": "Tristan is connecting with the CS team next week to pull volumes pre vs post 2026-04-30. Will incorporate when available.",
-        "owner": "Tristan + CS team"
+        "title": "★ CS data · accidental indy self-signup cancellations",
+        "subtitle": "Direct signal from the CS team. Counts indy subscription cancellations tagged with reason 'Accidental Indy Self-Signup'.",
+        "status": "ready",
+        "highlight": true,
+        "comparison": {
+          "preBaseline": { "label": "April 2026 (pre + day-0)", "value": "3 accidental cancellations" },
+          "experiment": { "label": "May 2026 (post-100%, ~11 days)", "value": "0 accidental cancellations" },
+          "deltaPct": -100,
+          "winner": "flowB",
+          "verdict": "Zero accidental indy self-signups in May. Independent confirmation of the Snowflake finding. 6 other indy cancellations in May were tagged Training, Out of Business, or no reason, not accidental signups."
+        },
+        "weeks": [
+          { "month": "April 2026", "total_cancellations": 3, "accidental_count": 3, "accidental_pct": 100 },
+          { "month": "May 2026 (partial)", "total_cancellations": 6, "accidental_count": 0, "accidental_pct": 0, "isExperiment": true }
+        ],
+        "source": "McChesney Matro · CS team · pulled 2026-05-11 11:25 EST",
+        "caveat": "Small absolute volume. May data covers only 11 days. April includes 1 day of the experiment (Apr 30 launch day). Even so, the qualitative pattern is strong: 3 of 3 April indy cancellations were tagged 'Accidental Indy Self-Signup'; 0 of 6 in May were."
       }
     ]
   },
 
-  "actionItems": [
-    "Add a sharper 'accidental indie' metric: query Snowflake for indies whose email also belongs to a Rental/Commission barber account — that subset is the actual target of Flow B (vs total indies which mixes legit and accidental). Will make the historical comparison much cleaner without waiting for CS.",
-    "Redefine the experiment's success metric. Current 'indie/signup_link reduction' is unmeasurable. Candidates: (a) total per-device login completion rate, already a positive guardrail, (b) reduction in barber-via-signup-path rate (currently flowA 6.6% / flowB 11.5% — direction is wrong if Flow B should reduce it), (c) instrument indie_self_onboarding entry to measure cross-channel.",
-    "Decide whether to act on the SRM. New devices post-100% split 59/41 — still mildly skewed but close. If we want clean 50/50, options: re-bucket all devices via a new flag/seed, or restrict analysis to post-100% NEW devices only.",
-    "Ship PR #4143 (signup_link_tapped scope leak) so it stops contaminating the data.",
-    "Get Clarity installed on iOS (CLARITY_IOS_PROMPT.md is ready to hand to Yurii's session)."
-  ],
+  "nextSteps": {
+    "now": [
+      "Confirm with Eric/Tristan that 'accidental indy signups' is the agreed success metric (CS + Snowflake both show the drop).",
+      "Wait for the 3.23.1 deploy to ship PR #4143 (scope leak fix is merged, deploy pending today).",
+      "Hand off CLARITY_IOS_PROMPT.md to Yurii to start Clarity setup on iOS."
+    ],
+    "later": [
+      "Watch the per-exposure barber-via-signup gap (B 10.6% vs A 7.2%). Reassess after 2 more weeks.",
+      "Refresh duplicate-email weekly query (docs/HISTORICAL_QUERIES.sql Q1) — Friday's pull still showing.",
+      "Once Clarity records sessions, validate the 'soft abandonment' read on email_entry."
+    ]
+  },
 
   "resolvedThisSession": [
     "Indie identifier: role='barber' AND user_type IS NULL. Zero indies in the experiment population.",

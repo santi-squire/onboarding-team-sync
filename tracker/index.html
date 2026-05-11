@@ -76,9 +76,9 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1440px;
       margin: 0 auto;
-      padding: 3rem 2rem 6rem;
+      padding: 3rem 2.5rem 6rem;
       position: relative;
       z-index: 1;
     }
@@ -234,15 +234,14 @@
       font-size: 0.92rem;
       color: var(--text-muted);
       margin: 0;
-      max-width: 80ch;
       line-height: 1.55;
     }
 
-    /* Comparison grid — sized to fit 4 columns at 1200px container */
+    /* Comparison grid — sized to fit 4 columns at 1440px container with comfortable spacing */
     .comparison-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 0.8rem;
+      grid-template-columns: repeat(auto-fit, minmax(285px, 1fr));
+      gap: 1rem;
       margin-bottom: 1.4rem;
     }
     .comparison-grid > * { min-width: 0; }
@@ -812,6 +811,8 @@
     ul.next-steps-list li:last-child { border-bottom: 0; }
     .ns-marker { flex-shrink: 0; width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: var(--font-mono); font-size: 0.78rem; }
     .ns-marker-action { background: var(--warning); color: var(--bg-deep); }
+    .ns-marker-now { background: var(--danger); color: var(--bg-deep); }
+    .ns-marker-later { background: var(--warning); color: var(--bg-deep); }
     .ns-marker-open { background: var(--info); color: var(--bg-deep); border-radius: 50%; }
 
     /* Conclusion cards — TL;DR + bullets */
@@ -1008,9 +1009,15 @@
     }
 
     /* Intermediate breakpoint for tablet-landscape and laptop-narrow */
-    @media (max-width: 1100px) {
+    @media (max-width: 1280px) {
       .comparison-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 0.9rem;
+      }
+    }
+    @media (max-width: 1024px) {
+      .comparison-grid {
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
         gap: 0.7rem;
       }
       .compare-cell { padding: 0.9rem 1rem; }
@@ -1083,9 +1090,11 @@
       const post = week2.windows.postRollout;
       const postNew = week2.windows.postRolloutNew;
 
-      // Last-updated badge — show latest snapshot date
-      const latestDate = snapshots.map(s => s.date).sort().pop();
-      const formatted = new Date(latestDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      // Last-updated badge — show the refresh date (today) rather than the snapshot file date
+      const refreshDate = week2.rolloutContext && week2.rolloutContext.today
+        ? week2.rolloutContext.today
+        : snapshots.map(s => s.date).sort().pop();
+      const formatted = new Date(refreshDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
       document.getElementById('last-updated-date').textContent = formatted;
 
       // Meta strip — 4 windows
@@ -1159,8 +1168,8 @@
       // === 12. Scope leak (4 cols) ===
       sections.push(renderScopeLeak(cum, post, postNew, week2.deltas.vsWeek1Snapshot.notes[6]));
 
-      // === 13. Next steps — merged action items + open questions ===
-      if (week2.actionItems || week2.openQuestions) sections.push(renderNextSteps(week2.actionItems, week2.openQuestions));
+      // === 13. Next steps — merged action items (now/later) + open questions ===
+      if (week2.nextSteps || week2.actionItems || week2.openQuestions) sections.push(renderNextSteps(week2.nextSteps || { now: week2.actionItems, later: [] }, week2.openQuestions));
 
       const content = document.getElementById('content');
       content.classList.remove('loading');
@@ -1184,7 +1193,7 @@
           <div class="section-header">
             <div class="section-eyebrow">Health check · SRM</div>
             <h2 class="section-title">Variant balance — should be 50/50</h2>
-            <p class="section-sub">Distinct devices LaunchDarkly assigned to each variant. The "post-100% NEW only" column filters out pre-experiment legacy devices stuck on their original LD bucket — the cleanest experiment read.</p>
+            <p class="section-sub">Distinct devices per variant. The NEW-only column filters out sticky legacy buckets and is the cleanest read.</p>
           </div>
           <div class="comparison-grid">
             ${variantCell('Week 1 · ramp', w1.variantBalance.snowflake.flowA, w1.variantBalance.snowflake.flowB, w1A, w1B, false)}
@@ -1220,7 +1229,7 @@
           <div class="section-header">
             <div class="section-eyebrow">Guardrail · overall_login_success_rate</div>
             <h2 class="section-title">Login completion funnel</h2>
-            <p class="section-sub">Distinct devices through assigned → welcome viewed → login succeeded. Bars are scaled per variant (% of that variant's "assigned"), so the SRM doesn't visually distort the comparison. The NEW-only column removes legacy users who already have accounts → cleanest conversion read.</p>
+            <p class="section-sub">Distinct devices through assigned → welcome → succeeded. Bars are per-variant percentages so the SRM doesn't distort the picture.</p>
           </div>
           <div class="comparison-grid">
             ${funnelCell('Week 1 · ramp', w1.funnel.steps, w1.funnel.flowA, w1.funnel.flowB, deriveRates(w1.funnel.flowA, w1.funnel.flowB), false)}
@@ -1273,14 +1282,17 @@
         <div class="compare-cell ${isLatest ? 'is-latest' : ''}">
           <div class="compare-cell-label">${label}</div>
           <div class="funnel-rows">${rows}</div>
-          <div class="funnel-rates" style="margin-top: 0.7rem; padding-top: 0.6rem; border-top: 1px solid var(--border); flex-direction: column; gap: 0.3rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.6rem;">
-              <span style="font-size: 0.74rem; color: var(--text-muted);">Conv (succ÷welcome)</span>
-              <span><span style="color: var(--flow-a); font-family: var(--font-mono);">${fmtPct(rates.flowA.conversion)}</span> <span style="color: var(--text-dim);">·</span> <span style="color: var(--flow-b); font-family: var(--font-mono);">${fmtPct(rates.flowB.conversion)}</span></span>
+          <div class="funnel-rates" style="margin-top: 0.7rem; padding-top: 0.6rem; border-top: 1px solid var(--border); flex-direction: column; gap: 0.55rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.2rem;">
+              <span style="font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.02em;">Conv (succ÷welcome)</span>
+              <span style="font-family: var(--font-mono); font-size: 0.86rem;"><span style="color: var(--flow-a);">${fmtPct(rates.flowA.conversion)}</span> <span style="color: var(--text-dim);">·</span> <span style="color: var(--flow-b);">${fmtPct(rates.flowB.conversion)}</span></span>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.6rem;">
-              <span style="font-size: 0.74rem; color: var(--text-muted);">Overall (succ÷assigned)</span>
-              <span><span style="color: var(--flow-a); font-family: var(--font-mono);">${aOverall.toFixed(1)}%</span> <span style="color: var(--text-dim);">·</span> <span style="color: var(--flow-b); font-family: var(--font-mono);">${bOverall.toFixed(1)}%</span> ${winnerBadge(winsB ? 'flowB' : 'flowA')}</span>
+            <div style="display: flex; flex-direction: column; gap: 0.2rem;">
+              <span style="font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.02em;">Overall (succ÷assigned)</span>
+              <span style="font-family: var(--font-mono); font-size: 0.86rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <span><span style="color: var(--flow-a);">${aOverall.toFixed(1)}%</span> <span style="color: var(--text-dim);">·</span> <span style="color: var(--flow-b);">${bOverall.toFixed(1)}%</span></span>
+                ${winnerBadge(winsB ? 'flowB' : 'flowA')}
+              </span>
             </div>
           </div>
         </div>
@@ -1293,7 +1305,7 @@
           <div class="section-header">
             <div class="section-eyebrow">Flow B · the money signal</div>
             <h2 class="section-title">Email check distribution</h2>
-            <p class="section-sub">When a Flow B user types email, the API returns: returning, temp_password (invited barber), or new_user. The NEW-only column reveals that the apparent post-100% drop in temp_password was sample contamination — the steady-state catch rate is ~35%, consistent with the ramp.</p>
+            <p class="section-sub">Flow B email check returns: returning, temp_password, or new_user. NEW-only column is the clean lens.</p>
           </div>
           <div class="comparison-grid">
             ${emailCheckCell('Week 1 · ramp', w1.emailCheck.totals, false)}
@@ -1388,7 +1400,7 @@
           <div class="section-header">
             <div class="section-eyebrow">Counterintuitive · early signal</div>
             <h2 class="section-title">Per-exposure barber signup rate</h2>
-            <p class="section-sub">Barber accounts created via the signup path, divided by distinct devices in each variant. We'd want this to drop in Flow B if the experiment is redirecting invited barbers to login. Gap narrows substantially on the clean NEW-only sample.</p>
+            <p class="section-sub">Barber accounts via signup path per variant device. We want this lower in Flow B.</p>
           </div>
           <div class="comparison-grid">
             ${perExposureCell('Week 1 · ramp', ...cellArgs(w1.perExposure), false)}
@@ -1423,7 +1435,7 @@
           <div class="section-header">
             <div class="section-eyebrow">Guardrails · login_failed + forgot_password + login_abandoned</div>
             <h2 class="section-title">Friction signals — rate per device</h2>
-            <p class="section-sub">Events normalized to "% of variant devices that triggered the event" so the SRM doesn't distort the comparison. Flow A login_failed is 0 because legacy versions don't emit variant — known data quality issue.</p>
+            <p class="section-sub">Events normalized per variant device. Flow A login_failed shows 0 due to a known data quality issue (legacy versions don't emit variant).</p>
           </div>
           <div class="comparison-grid">
             ${frictionCell('Week 1 · ramp', w1.friction.events, w1.friction.flowA, w1.friction.flowB, w1Devices, false)}
@@ -1553,7 +1565,17 @@
           <div class="verdict-box">
             <div class="verdict-eyebrow">⚖ Overall verdict</div>
             <h3 class="verdict-headline">${sc.verdict.headline}</h3>
-            <p class="verdict-body">${sc.verdict.body}</p>
+            ${sc.verdict.bullets ? `
+              <ul style="margin: 0.8rem 0 0; padding-left: 1.2rem; list-style: none;">
+                ${sc.verdict.bullets.map(b => `<li style="position: relative; font-size: 0.95rem; color: var(--text); line-height: 1.55; margin-bottom: 0.5rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--success); font-weight: 700;">✓</span>${b}</li>`).join('')}
+              </ul>
+              ${sc.verdict.caveats ? `
+                <p style="font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; font-family: var(--font-mono); margin: 1rem 0 0.4rem; font-weight: 600;">Caveats to watch</p>
+                <ul style="margin: 0; padding-left: 1.2rem; list-style: none;">
+                  ${sc.verdict.caveats.map(c => `<li style="position: relative; font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.4rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--warning);">⚠</span>${c}</li>`).join('')}
+                </ul>
+              ` : ''}
+            ` : `<p class="verdict-body">${sc.verdict.body || ''}</p>`}
           </div>
         </section>
       `;
@@ -1570,22 +1592,27 @@
       return `<span class="winner-badge ${m.cls}">${m.label}</span>`;
     }
 
-    function renderNextSteps(actionItems, openQuestions) {
-      const actions = (actionItems || []).map(t => `<li class="ns-action"><span class="ns-marker ns-marker-action">→</span><span>${t}</span></li>`).join('');
+    function renderNextSteps(ns, openQuestions) {
+      const now = (ns.now || []).map(t => `<li class="ns-action"><span class="ns-marker ns-marker-now">!</span><span>${t}</span></li>`).join('');
+      const later = (ns.later || []).map(t => `<li class="ns-action"><span class="ns-marker ns-marker-later">→</span><span>${t}</span></li>`).join('');
       const opens = (openQuestions || []).map(t => `<li class="ns-open"><span class="ns-marker ns-marker-open">?</span><span>${t}</span></li>`).join('');
       return `
         <section class="metric-section">
-          <div class="section-header">
+          <div class="section-header section-header-wide">
             <div class="section-eyebrow">→ Next steps</div>
             <h2 class="section-title">What to do next</h2>
-            <p class="section-sub">Concrete follow-ups (action items) and the one thing we don't yet know (open question).</p>
+            <p class="section-sub section-sub-wide">Items split into things to do this week vs things to watch for later.</p>
           </div>
-          <div class="comparison-grid" style="grid-template-columns: 1fr;">
-            <div class="compare-cell">
-              <div class="compare-cell-label" style="color: var(--warning);">→ Action items · ${(actionItems||[]).length}</div>
-              <ul class="next-steps-list" style="margin-top: 0.5rem;">${actions}</ul>
+          <div class="comparison-grid">
+            <div class="compare-cell" style="border-left: 3px solid var(--danger);">
+              <div class="compare-cell-label" style="color: var(--danger);">! This week · ${(ns.now||[]).length}</div>
+              <ul class="next-steps-list" style="margin-top: 0.5rem;">${now}</ul>
             </div>
-            ${opens ? `<div class="compare-cell"><div class="compare-cell-label">? Open · ${(openQuestions||[]).length}</div><ul class="next-steps-list" style="margin-top: 0.5rem;">${opens}</ul></div>` : ''}
+            <div class="compare-cell" style="border-left: 3px solid var(--warning);">
+              <div class="compare-cell-label" style="color: var(--warning);">→ Later · ${(ns.later||[]).length}</div>
+              <ul class="next-steps-list" style="margin-top: 0.5rem;">${later}</ul>
+            </div>
+            ${opens ? `<div class="compare-cell" style="border-left: 3px solid var(--info);"><div class="compare-cell-label" style="color: var(--info);">? Open · ${(openQuestions||[]).length}</div><ul class="next-steps-list" style="margin-top: 0.5rem;">${opens}</ul></div>` : ''}
           </div>
         </section>
       `;
@@ -1597,7 +1624,7 @@
           <div class="section-header">
             <div class="section-eyebrow" style="color: var(--warning);">→ Action items · what to do next</div>
             <h2 class="section-title">Decisions and follow-ups</h2>
-            <p class="section-sub">Things to discuss with Tristan / Eric / Yurii based on the conclusions above.</p>
+            <p class="section-sub">Items to discuss with Tristan, Eric, and Yurii.</p>
           </div>
           <ul class="questions-list" style="margin: 0;">
             ${items.map(t => `<li style="padding-left: 2.6rem;"><span style="position: absolute; left: 1rem; top: 1rem; width: 22px; height: 22px; border-radius: 4px; background: var(--warning); color: var(--bg-deep); font-weight: 700; font-size: 0.82rem; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono);">→</span><span style="display: block;">${t}</span></li>`).join('')}
@@ -1641,7 +1668,7 @@
             <div class="section-eyebrow" style="color: var(--info);">↺ Historical comparison · vs current experience</div>
             <h2 class="section-title">Pre-experiment baseline</h2>
             <p class="section-sub">${hc.headline}</p>
-            ${hc.statusNote ? `<p class="section-sub" style="margin-top: 0.4rem; font-size: 0.82rem; opacity: 0.8;">${hc.statusNote}</p>` : ''}
+            ${hc.statusNote ? (typeof hc.statusNote === 'string' ? `<p class="section-sub" style="margin-top: 0.4rem; font-size: 0.82rem; opacity: 0.8;">${hc.statusNote}</p>` : `<div style="margin-top: 0.6rem;">${renderStructuredText(hc.statusNote, { bulletColor: 'var(--info)' })}</div>`) : ''}
           </div>
           <div class="hist-blocks">${blocks}</div>
         </section>
@@ -1662,7 +1689,7 @@
               <tbody>${rows}</tbody>
             </table>
           </div>
-          <p class="compare-cell-detail" style="margin-top: 0.7rem;">${st.takeaway}</p>
+          <div style="margin-top: 0.7rem;">${renderStructuredText(st.takeaway)}</div>
         </details>
       `;
     }
@@ -1685,7 +1712,7 @@
             <div class="hist-comp-value">${c.experiment.value}</div>
           </div>
         </div>
-        ${c.verdict ? `<div class="hist-verdict">${c.verdict}</div>` : ''}
+        ${c.verdict ? (typeof c.verdict === 'string' ? `<div class="hist-verdict">${c.verdict}</div>` : `<div class="hist-verdict">${renderStructuredText(c.verdict, { bulletColor: 'var(--info)' })}</div>`) : ''}
       `;
     }
 
@@ -1696,8 +1723,12 @@
       const hasDup = 'duplicate_pct' in weeks[0];
       const hasBreakdown = 'rental' in weeks[0];
       const hasDevicesOnly = 'devices' in weeks[0] && !hasBreakdown && !hasAccidental && !hasIndies && !hasDup;
+      const hasCsTickets = 'accidental_count' in weeks[0];
       let head, body;
-      if (hasDevicesOnly) {
+      if (hasCsTickets) {
+        head = `<th>Month</th><th>Total cancellations</th><th>Accidental</th><th>%</th>`;
+        body = weeks.map(w => `<tr class="${w.isExperiment ? 'is-experiment-row' : ''}"><td>${w.month}</td><td>${fmtInt(w.total_cancellations)}</td><td><strong>${fmtInt(w.accidental_count)}</strong></td><td>${w.accidental_pct}%</td></tr>`).join('');
+      } else if (hasDevicesOnly) {
         head = `<th>Week</th><th>Devices</th>`;
         body = weeks.map(w => `<tr class="${w.isExperiment ? 'is-experiment-row' : ''}"><td>${w.week}</td><td>${fmtInt(w.devices)}</td></tr>`).join('');
       } else if (hasAccidental) {
@@ -1717,17 +1748,25 @@
         head = `<th>Week</th><th>New barbers</th><th>Indies</th><th>Share</th>`;
         body = weeks.map(w => `<tr class="${w.isExperiment ? 'is-experiment-row' : ''}"><td>${w.week}</td><td>${fmtInt(w.new_barbers)}</td><td>${fmtInt(w.indies)}</td><td>${w.share_pct}%</td></tr>`).join('');
       }
-      return `<details class="hist-details" ${weeks.find(w => w.isExperiment) ? 'open' : ''}><summary>Weekly data (${weeks.length} weeks)</summary><div class="table-scroll"><table class="compare-table hist-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div></details>`;
+      return `<details class="hist-details"><summary>Weekly data (${weeks.length} ${weeks.length === 1 ? 'row' : 'rows'}) · click to expand</summary><div class="table-scroll"><table class="compare-table hist-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div></details>`;
     }
 
     function renderAbandonFollowup(af) {
       const r = af.results;
+      const bullets = (af.implicationBullets || []).map(b => `<li>${b}</li>`).join('');
+      const implicationBlock = af.implicationHeadline ? `
+        <p style="font-size: 0.92rem; color: var(--text); font-weight: 600; line-height: 1.45; margin: 0.4rem 0 0.6rem;">${af.implicationHeadline}</p>
+        <ul style="margin: 0 0 0.8rem; padding-left: 1.1rem; list-style: none;">
+          ${af.implicationBullets.map(b => `<li style="position: relative; font-size: 0.84rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.35rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--accent);">▸</span>${b}</li>`).join('')}
+        </ul>
+        ${af.implicationWhy ? `<p style="font-size: 0.78rem; color: var(--text-dim); margin: 0 0 0.6rem; font-style: italic;"><strong style="color: var(--text-muted); font-style: normal;">Why this matters:</strong> ${af.implicationWhy}</p>` : ''}
+      ` : `<p style="font-size: 0.88rem; color: var(--text); line-height: 1.55; margin: 0.4rem 0 0.8rem;">${af.implication || ''}</p>`;
       return `
         <section class="metric-section">
-          <div class="section-header">
+          <div class="section-header section-header-wide">
             <div class="section-eyebrow" style="color: var(--success);">⚡ Investigation followup · ${af.headline}</div>
             <h2 class="section-title">Did Flow B's email_entry abandoners actually leave?</h2>
-            <p class="section-sub">${af.subtitle}</p>
+            <p class="section-sub section-sub-wide">${af.subtitle}</p>
           </div>
           <div class="comparison-grid" style="grid-template-columns: 1fr 1fr;">
             <div class="compare-cell" style="border-left: 3px solid var(--success);">
@@ -1742,7 +1781,7 @@
             </div>
             <div class="compare-cell">
               <div class="compare-cell-label">Implication</div>
-              <p style="font-size: 0.88rem; color: var(--text); line-height: 1.55; margin: 0.4rem 0 0.8rem;">${af.implication}</p>
+              ${implicationBlock}
               <div class="hypothesis-card" style="margin-top: 0.7rem;">
                 <div class="hypothesis-header">
                   <span class="hypothesis-badge" style="background: var(--success);">Verdict</span>
@@ -1787,7 +1826,7 @@
           <div class="section-header">
             <div class="section-eyebrow" style="color: var(--success);">✓ Conclusions · investigation outcomes</div>
             <h2 class="section-title">What we now know</h2>
-            <p class="section-sub">Questions investigated this session, with evidence. Click through the deep-dive sections below for the underlying data.</p>
+            <p class="section-sub">Questions investigated, with evidence. Deep-dive sections below.</p>
           </div>
           <div class="conclusion-grid">${cards}</div>
         </section>
@@ -1801,7 +1840,7 @@
       return `
         <section class="metric-section">
           <div class="section-header">
-            <div class="section-eyebrow">⚙ Forgot password investigation · May 8</div>
+            <div class="section-eyebrow">⚙ Forgot password investigation</div>
             <h2 class="section-title">Is the Flow A frustration tapping a legacy artifact?</h2>
             <p class="section-sub">${fp.headline}</p>
           </div>
@@ -1812,7 +1851,7 @@
                 <thead><tr><th>Window</th><th>Events</th><th>Users</th><th>Taps / user</th></tr></thead>
                 <tbody>${rows}</tbody>
               </table>
-              <p class="compare-cell-detail" style="margin-top: 0.7rem;">${fp.takeaway}</p>
+              <div style="margin-top: 0.7rem;">${renderStructuredText(fp.takeaway)}</div>
             </div>
           </div>
         </section>
@@ -1827,7 +1866,7 @@
       return `
         <section class="metric-section">
           <div class="section-header">
-            <div class="section-eyebrow">⚙ Indie channel investigation · May 8</div>
+            <div class="section-eyebrow">⚙ Indie channel investigation</div>
             <h2 class="section-title">Where do indies actually sign up?</h2>
             <p class="section-sub">${ic.headline}</p>
           </div>
@@ -1848,7 +1887,7 @@
           </div>
           <div class="delta-block" style="border-left-color: var(--warning);">
             <div class="delta-block-label" style="color: var(--warning);">Implication for the experiment</div>
-            <p>${ic.takeaway}</p>
+            ${typeof ic.takeaway === 'string' ? `<p>${ic.takeaway}</p>` : renderStructuredText(ic.takeaway, { bulletColor: 'var(--warning)' })}
           </div>
         </section>
       `;
@@ -1888,7 +1927,7 @@
       return `
         <section class="metric-section">
           <div class="section-header">
-            <div class="section-eyebrow" style="color: var(--success);">✓ SRM root-caused · May 8</div>
+            <div class="section-eyebrow" style="color: var(--success);">✓ SRM root-caused</div>
             <h2 class="section-title">Why is the split 73/27 in post-100%?</h2>
             <p class="section-sub">${srm.headline}</p>
           </div>
@@ -1903,18 +1942,28 @@
                   <tbody>${fs}</tbody>
                 </table>
               </div>
-              <p class="compare-cell-detail" style="margin-top: 0.8rem;">${srm.byFirstSeen.takeaway}</p>
+              <div style="margin-top: 0.8rem;">${renderStructuredText(srm.byFirstSeen.takeaway, { bulletColor: 'var(--accent)' })}</div>
             </div>
           </div>
 
           <div class="comparison-grid">
             <div class="compare-cell">
               <div class="compare-cell-label">iOS code review · firing site</div>
-              <p style="font-size: 0.85rem; color: var(--text); margin: 0.3rem 0 0.5rem;">${ctx.headline}</p>
-              <p class="compare-cell-detail" style="font-family: var(--font-mono); font-size: 0.72rem;"><code>${ctx.filePath}</code></p>
-              <p class="compare-cell-detail" style="margin-top: 0.5rem;"><strong>Fires when AuthorizationFlowCoordinator starts in:</strong></p>
+              <p style="font-size: 0.85rem; color: var(--text); margin: 0.3rem 0 0.7rem;">${ctx.headline}</p>
+              ${(function(){
+                const parts = (ctx.filePath || '').split('/');
+                const last = parts.pop() || '';
+                const dir = parts.length > 2 ? '.../' + parts.slice(-2).join('/') : parts.join('/');
+                return `
+                  <div style="padding: 0.55rem 0.7rem; background: var(--bg-elevated); border-radius: 5px; margin-bottom: 0.7rem;">
+                    <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-bright); word-break: break-word;">${last}</div>
+                    <div style="font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-dim); margin-top: 0.2rem; word-break: break-all;">in ${dir}</div>
+                  </div>
+                `;
+              })()}
+              <p class="compare-cell-detail" style="margin-top: 0.3rem;"><strong>Fires when AuthorizationFlowCoordinator starts in:</strong></p>
               <ul style="margin: 0.3rem 0 0.7rem; padding-left: 1.2rem; color: var(--text-muted);">${ctxList}</ul>
-              <p class="compare-cell-detail">${ctx.takeaway}</p>
+              <div>${renderStructuredText(ctx.takeaway)}</div>
             </div>
             <div class="compare-cell">
               <div class="compare-cell-label">Stability + version + login_rate · supporting data</div>
@@ -1940,21 +1989,29 @@
       const itRows = tp.inputTypeMix.rows.map(r => `
         <tr><td>${r.window}</td><td>${r.input_type}</td><td>${fmtInt(r.events)}</td><td><strong>${r.pct}%</strong></td></tr>
       `).join('');
-      // Hypothesis card — bullets extracted from row data
-      const tempRamp = ramp.find(r => r.result === 'temp_password');
-      const tempPost = post.find(r => r.result === 'temp_password');
-      const retRamp = ramp.find(r => r.result === 'returning');
-      const retPost = post.find(r => r.result === 'returning');
-      const hypothesisBullets = [
-        `Ramp temp_password: <strong>${tempRamp.pct}%</strong> (${tempRamp.events} events / ${tempRamp.users} users)`,
-        `Post-100% temp_password: <strong>${tempPost.pct}%</strong> (${tempPost.events} events / ${tempPost.users} users) — drop of ${(tempRamp.pct - tempPost.pct).toFixed(1)} pp`,
-        `Returning share rose <strong>${retRamp.pct}% → ${retPost.pct}%</strong> (consistent with backlog being consumed)`,
-        `Sample post-100% is small (${tempPost.users} users in 1.5 days) — confirm at week 3`
-      ];
+      // Hypothesis card — use structured takeaway if provided, else compute from rows
+      const tt = tp.rampVsPost100.takeaway;
+      let hypothesisTldr, hypothesisBullets;
+      if (tt && typeof tt === 'object') {
+        hypothesisTldr = tt.headline || '';
+        hypothesisBullets = tt.bullets || [];
+      } else {
+        const tempRamp = ramp.find(r => r.result === 'temp_password');
+        const tempPost = post.find(r => r.result === 'temp_password');
+        const retRamp = ramp.find(r => r.result === 'returning');
+        const retPost = post.find(r => r.result === 'returning');
+        hypothesisTldr = 'The ramp caught a backlog. Post-100% reflects steady-state.';
+        hypothesisBullets = [
+          `Ramp temp_password: <strong>${tempRamp.pct}%</strong> (${tempRamp.events} events / ${tempRamp.users} users)`,
+          `Post-100% temp_password: <strong>${tempPost.pct}%</strong> (${tempPost.events} events / ${tempPost.users} users)`,
+          `Returning share rose <strong>${retRamp.pct}% → ${retPost.pct}%</strong>`,
+          `Sample post-100% small (${tempPost.users} users) — confirm at week 3`
+        ];
+      }
       return `
         <section class="metric-section">
           <div class="section-header">
-            <div class="section-eyebrow">⚙ temp_password investigation · May 8</div>
+            <div class="section-eyebrow">⚙ temp_password investigation</div>
             <h2 class="section-title">Why did temp_password share drop?</h2>
             <p class="section-sub">${tp.headline}</p>
           </div>
@@ -1988,7 +2045,7 @@
               <p class="compare-cell-detail" style="margin-top: 0.7rem;">${tp.inputTypeMix.takeaway}</p>
             </div>
           </div>
-          ${renderHypothesisCard('Backlog catch-up', 'The ramp caught a backlog of invited barbers who had been holding temp_password emails for days/weeks before exposure to Flow B. Post-100% reflects steady-state organic mix.', hypothesisBullets)}
+          ${renderHypothesisCard('Backlog catch-up', hypothesisTldr, hypothesisBullets)}
         </section>
       `;
     }
@@ -2014,7 +2071,7 @@
       return `
         <section class="metric-section indie-callout">
           <div class="section-header">
-            <div class="section-eyebrow" style="color: var(--success);">⚡ Findings from May 8 · investigation</div>
+            <div class="section-eyebrow" style="color: var(--success);">⚡ Indie classification · investigation</div>
             <h2 class="section-title">How are indies tagged? — answer to Tristan's question</h2>
             <p class="section-sub">${ic.headline}</p>
           </div>
@@ -2029,7 +2086,7 @@
               <p class="compare-cell-detail">Rental and Commission are explicit user_types for shop-employed barbers. Indies have no shop relationship → no user_type set.</p>
             </div>
             <div class="compare-cell is-latest">
-              <div class="compare-cell-label">Experiment window · Apr 30 → May 8</div>
+              <div class="compare-cell-label">Experiment window · Apr 30 → May 11</div>
               <p class="compare-cell-stat">${total}<span class="compare-cell-stat-suffix">new barbers · 0 indies</span></p>
               <table class="compare-table" style="margin-top: 0.6rem;">
                 <thead><tr><th>Type</th><th class="flowA">Flow A</th><th class="flowB">Flow B</th></tr></thead>
@@ -2047,13 +2104,30 @@
           </div>
           <div class="delta-block">
             <div class="delta-block-label">Global context</div>
-            <p>${ic.globalContext.interpretation}</p>
+            ${typeof ic.globalContext.interpretation === 'string' ? `<p>${ic.globalContext.interpretation}</p>` : renderStructuredText(ic.globalContext.interpretation)}
           </div>
           <ul class="questions-list" style="margin-top: 1rem;">
             ${ic.implications.map(i => `<li>${i}</li>`).join('')}
           </ul>
         </section>
       `;
+    }
+
+    // Render a structured {headline, bullets, why} or fall back to plain string
+    function renderStructuredText(field, opts) {
+      opts = opts || {};
+      const bulletColor = opts.bulletColor || 'var(--accent)';
+      const baseStyle = opts.baseStyle || '';
+      if (!field) return '';
+      if (typeof field === 'string') {
+        return `<p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.55; margin: 0 0 0.4rem; ${baseStyle}">${field}</p>`;
+      }
+      const bullets = (field.bullets || []).map(b =>
+        `<li style="position: relative; font-size: 0.84rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.35rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: ${bulletColor};">▸</span>${b}</li>`
+      ).join('');
+      const headline = field.headline ? `<p style="font-size: 0.9rem; color: var(--text); font-weight: 600; line-height: 1.45; margin: 0 0 0.55rem;">${field.headline}</p>` : '';
+      const why = field.why ? `<p style="font-size: 0.76rem; color: var(--text-dim); margin: 0.5rem 0 0; line-height: 1.5;"><strong style="color: var(--text-muted); letter-spacing: 0.04em;">Why this matters:</strong> ${field.why}</p>` : '';
+      return `${headline}<ul style="margin: 0; padding-left: 1.1rem; list-style: none;">${bullets}</ul>${why}`;
     }
 
     function deltaBlock(d) {
