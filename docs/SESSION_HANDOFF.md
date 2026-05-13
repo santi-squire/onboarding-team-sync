@@ -1,471 +1,424 @@
-# Session Handoff — Snowflake MCP + Analytics
+# Session Handoff — Onboarding Experiment Tracker
 
-**Last updated**: 2026-05-08
-**Session ended at**: ~70% complete on Snowflake MCP setup, 100% complete on weekly deck + experiment report.
-
----
-
-## TL;DR — where we are
-
-**Done**:
-- ✅ Weekly deck (`onboarding-team-sync` repo) live at https://santi-squire.github.io/onboarding-team-sync/
-- ✅ External report (`email-first-login-report` repo) live at https://santi-squire.github.io/email-first-login-report/
-- ✅ iOS PR for `signup_link_tapped` scope leak: [PR #4143](https://github.com/squire-technologies/ios-commander/pull/4143) and release branch [PR #4144](https://github.com/squire-technologies/ios-commander/pull/4144)
-- ✅ All 8 Snowflake queries executed and integrated into the deck
-- ✅ Squire marketplace plugins installed (pm-tools, engineering-tools, design-tools, qa-tools, skill-dev)
-- ✅ `snowflake-cortex-code` plugin installed
-- ✅ `snow` + `cortex` CLIs installed (via `snowflake-ai-kit/install.sh`)
-- ✅ Snowflake config at `~/.snowflake/config.toml`
-- ✅ RSA key pair generated at `~/.snowflake/keys/`
-
-**Pending**:
-- 🔴 Snowflake auth blocked — externalbrowser SSO loops, key-pair pending admin (Denis K) registering public key
-- 🟡 PR #4143 / #4144 awaiting Yurii review + merge + 3.23.1 release
-- 🟡 First weekly cycle with full-rollout (May 7+) data — to be done next week with fresh queries
+**Last updated:** 2026-05-13 (morning)
+**For the next session:** read this first, then continue work on the tracker / today's deck refresh.
 
 ---
 
-## How to resume Snowflake MCP setup next session
+## TL;DR — where things stand
 
-### Option 1: Key-pair auth (recommended, blocked on admin)
+**Login experiment (Flow A vs Flow B):**
+- SRM **resolved** on clean NEW-device data: 50.7 / 49.3
+- Flow B winning overall completion by **+14pp** (40.5% vs 54.7%)
+- Accidental indie signups down **~69%** vs 8-week pre-experiment baseline
+- **CS team confirmed**: 0 accidental indy self-signup cancellations in May vs 3 in April
+- Flow B has higher login_abandoned at the new email_entry step, but 69% of abandoners return and complete (concern downgraded)
 
-1. **Check if Denis K ran the ALTER USER** I sent in Slack. If yes:
-   ```bash
-   # Switch config back to JWT
-   cat > ~/.snowflake/config.toml <<'EOF'
-   default_connection_name = "default"
+**RN migration:**
+- Auth moving to **Descope** (auth-as-a-service). The flow can be configured as Flow A or Flow B.
+- Tristan handles final styling, I handle functionality.
 
-   [connections.default]
-   account = "mhazqgd-dja79986"
-   user = "C_SANTIAGO_ANAYA"
-   authenticator = "SNOWFLAKE_JWT"
-   private_key_file = "/Users/santianaya/.snowflake/keys/snowflake_key.pem"
-   role = "FULL_READ_ACCESS"
-   warehouse = "COMPUTE_WH"
-   database = "RAW"
-   schema = "RUDDER_EVENTS"
-   EOF
-
-   snow connection test --connection default
-   ```
-
-2. **If success**: register the snow MCP in Claude
-   ```bash
-   claude mcp remove snowflake 2>/dev/null
-   # The cortex plugin handles snow CLI usage automatically — no MCP add needed.
-   # Test by asking Claude: "What tables are in RAW.RUDDER_EVENTS?"
-   ```
-
-### Option 2: Try fixing externalbrowser SSO again
-
-If Denis hasn't responded:
-- Try Safari browser instead of Chrome
-- Try Chrome incognito
-- Manual paste of SSO URL after Ctrl+C
-
-### Option 3: Plain Bash with `snow` CLI
-
-If MCP setup keeps being a problem, just use Bash from Claude:
-```bash
-snow sql -q "SELECT VARIANT, COUNT(*) FROM RAW.RUDDER_EVENTS.LOGIN_EXPERIMENT_ASSIGNED WHERE TIMESTAMP >= '2026-04-30' GROUP BY VARIANT" --connection default
-```
-
-Claude can pipe through Bash tool. Less elegant but reliable once auth works.
-
-### Option 4: Chrome DevTools MCP — fallback if Snowflake auth keeps blocking
-
-If `snow` auth is permanently stuck, this lets Claude **read your Snowsight web UI directly** — you stay logged in via SSO in Chrome (which already works for you), and Claude reads the query results from the rendered page. No Snowflake auth needed on Claude's side.
-
-#### Install (single message in next session)
-
-```bash
-# Install the MCP package globally via npm
-npm install -g chrome-devtools-mcp
-
-# Register it with Claude (single-line, no backslashes — zsh quirk)
-claude mcp add chrome --scope user -- npx -y chrome-devtools-mcp@latest
-```
-
-#### Start Chrome with debugging port (one-time setup)
-
-The MCP attaches to your existing Chrome via the DevTools Protocol. You need to launch Chrome with the debugging port exposed.
-
-Add an alias to `~/.zshrc`:
-```bash
-alias chrome-debug='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-mcp-profile &'
-```
-
-Then:
-```bash
-source ~/.zshrc
-chrome-debug
-```
-
-That opens Chrome with a SEPARATE profile (`.chrome-mcp-profile`) on port 9222. **Log into Snowsight** in this Chrome instance once — cookies persist in that profile.
-
-#### How to use
-
-In a Claude session:
-```
-"Open https://app.snowflake.com in Chrome and run this query, then read the results back:
-SELECT VARIANT, COUNT(*) FROM RAW.RUDDER_EVENTS.LOGIN_EXPERIMENT_ASSIGNED ..."
-```
-
-Claude → uses chrome-devtools MCP → opens tab → pastes SQL into Snowsight worksheet → reads grid → returns results.
-
-#### Tradeoffs vs Snowflake MCP
-
-| | Snowflake MCP (preferred) | Chrome DevTools MCP (fallback) |
-|---|---|---|
-| Auth | Needs key-pair (admin step) | Uses your existing Snowsight login |
-| Speed | Direct SQL, fast | Slower (browser automation) |
-| Reliability | Once auth works, rock solid | Brittle to UI changes |
-| Setup complexity | High (this whole saga) | Low (3 commands) |
-| Multi-tasking | Can run while you do other things | Browser is "in use" while Claude works |
-
-#### Recommended order in next session
-
-1. **First** — check if Denis ran the ALTER USER. If yes → Option 1 (key-pair).
-2. **If still blocked** — install Chrome DevTools MCP per this section.
-3. **Use Chrome MCP for queries** until Snowflake auth gets resolved.
-4. **Eventually** switch to Snowflake MCP when auth works (faster + cleaner).
-
-Both can coexist — you can have BOTH MCPs registered. Claude picks the appropriate one per task.
+**Live URLs:**
+- Tracker: https://santi-squire.github.io/onboarding-team-sync/tracker/
+- Today's sync deck (May 13): https://santi-squire.github.io/onboarding-team-sync/weekly/2026-05-13/
 
 ---
 
-## The 8 queries we run weekly + why
+## What to do at the start of the next session
 
-All target the SQR-6510 login A/B experiment. Run with `WHERE VARIANT IN ('flowA','flowB')` and `WHERE TIMESTAMP >= '<start of week>'`.
+1. **Read this file** + read `data/2026-05-08.json` for the current full data state.
+2. **Re-pull data for today** (May 13 or later). Queries are documented below.
+3. **Update the snapshot** `data/2026-05-08.json` with the refreshed numbers.
+4. **Update today's deck** `weekly/2026-05-13/index.html` if there are any newsworthy changes (the deck has hardcoded numbers; review the big number cards and scorecard).
+5. **Commit + push to main** (allowed via `.claude/settings.local.json` permission rule).
+6. **Wait for GitHub Pages build** before reporting "live".
 
-### Query 1 — Variant balance (anonymous_id)
+---
+
+## File map (project structure)
+
+```
+/Users/santianaya/code/onboarding-team-sync/
+├── data/
+│   ├── 2026-05-06.json   — Week 1 snapshot (Friday May 8 historical)
+│   └── 2026-05-08.json   — Main current snapshot (refreshed daily)
+├── tracker/
+│   └── index.html        — The tracker page (renders from data/*.json)
+├── weekly/
+│   └── 2026-05-13/
+│       ├── index.html    — Today's sync deck (single-page scrollable)
+│       └── assets/
+│           ├── current-login.png            — Old production login (no Descope)
+│           ├── descope-flowA.png            — Descope as Flow A
+│           ├── descope-flowB-1-email.png    — Descope as Flow B step 1
+│           └── descope-flowB-2-password.png — Descope as Flow B step 2
+├── docs/
+│   ├── SESSION_HANDOFF.md       — this file
+│   ├── HISTORICAL_QUERIES.sql   — pre-saved historical queries (Q1, Q2, Q3)
+│   └── CLARITY_IOS_PROMPT.md    — prompt for iOS Claude session to install Clarity
+├── index.html            — Week 1 weekly deck (reveal.js, less relevant now)
+├── README.md
+└── .claude/settings.local.json  — has `Bash(git push:*)` and `Bash(snow sql *)` allowed
+```
+
+---
+
+## Methodology — key definitions
+
+**Indie (in IDENTIFIES):** `CONTEXT_TRAITS_ROLE = 'barber'` AND `CONTEXT_TRAITS_USER_TYPE IS NULL`. Rental and Commission are user_type values for shop-employed barbers; indies have no shop relationship.
+
+**Accidental indie (proxy):** an indie whose email also belongs to a separate user_id with `CONTEXT_TRAITS_USER_TYPE IN ('Rental', 'Commission')`. Likely a duplicate created by mistake (invited barber didn't realize they already had a shop account).
+
+**NEW devices post-100% (the clean experiment sample):** devices whose first IDENTIFIES event is on or after `2026-05-07`. Filters out pre-experiment legacy users who are stuck on Flow A via sticky LD bucketing.
+
+**Pre-experiment 8-week baseline:** Mar 9 - Apr 20 (7 full weeks). Wider than 3-week baseline to be more stable.
+
+**Experiment window:** Apr 30 (deploy) onwards. 100% rollout was May 7.
+
+---
+
+## Queries to re-run for daily refresh
+
+All queries use `snow sql --connection default --format json -q "..."`. Inline single-statement form to satisfy the permission hook.
+
+### 1. Variant balance (post-100% ALL + NEW)
+
 ```sql
-SELECT
-  VARIANT,
-  COUNT(DISTINCT ANONYMOUS_ID) AS distinct_devices,
-  COUNT(DISTINCT COALESCE(USER_ID, ANONYMOUS_ID)) AS distinct_actors,
-  COUNT(*) AS total_events,
-  ROUND(100.0 * COUNT(DISTINCT ANONYMOUS_ID)
-        / SUM(COUNT(DISTINCT ANONYMOUS_ID)) OVER (), 2) AS pct_devices
+WITH new_devices AS (
+  SELECT ANONYMOUS_ID FROM RAW.RUDDER_EVENTS.IDENTIFIES
+  WHERE TIMESTAMP >= DATEADD(day, -90, CURRENT_DATE())
+  GROUP BY ANONYMOUS_ID HAVING MIN(TIMESTAMP) >= '2026-05-07'
+)
+SELECT 'all' AS pool, VARIANT,
+  COUNT(DISTINCT ANONYMOUS_ID) AS devices,
+  COUNT(DISTINCT USER_ID) AS logged_in,
+  COUNT(DISTINCT COALESCE(USER_ID, ANONYMOUS_ID)) AS actors,
+  COUNT(*) AS events
 FROM RAW.RUDDER_EVENTS.LOGIN_EXPERIMENT_ASSIGNED
-WHERE TIMESTAMP >= '2026-04-30'
-  AND VARIANT IN ('flowA', 'flowB')
+WHERE TIMESTAMP >= '2026-05-07' AND VARIANT IN ('flowA','flowB')
 GROUP BY VARIANT
-ORDER BY VARIANT;
+UNION ALL
+SELECT 'new_only', VARIANT,
+  COUNT(DISTINCT ANONYMOUS_ID), COUNT(DISTINCT USER_ID),
+  COUNT(DISTINCT COALESCE(USER_ID, ANONYMOUS_ID)), COUNT(*)
+FROM RAW.RUDDER_EVENTS.LOGIN_EXPERIMENT_ASSIGNED
+WHERE TIMESTAMP >= '2026-05-07' AND VARIANT IN ('flowA','flowB')
+  AND ANONYMOUS_ID IN (SELECT ANONYMOUS_ID FROM new_devices)
+GROUP BY VARIANT
+ORDER BY pool, VARIANT;
 ```
-**Purpose**: SRM check. Should be ~50/50. We observed 63/37.
 
-### Query 2 — Funnel (consistent ANONYMOUS_ID across all 3 steps)
+### 2. Funnel (NEW only)
+
 ```sql
-WITH steps AS (
+WITH new_devices AS (SELECT ANONYMOUS_ID FROM RAW.RUDDER_EVENTS.IDENTIFIES WHERE TIMESTAMP >= DATEADD(day, -90, CURRENT_DATE()) GROUP BY ANONYMOUS_ID HAVING MIN(TIMESTAMP) >= '2026-05-07'),
+steps AS (
   SELECT 'a_assigned' AS step, VARIANT, ANONYMOUS_ID
   FROM RAW.RUDDER_EVENTS.LOGIN_EXPERIMENT_ASSIGNED
-  WHERE TIMESTAMP >= '2026-04-30' AND VARIANT IN ('flowA','flowB')
+  WHERE TIMESTAMP >= '2026-05-07' AND VARIANT IN ('flowA','flowB') AND ANONYMOUS_ID IN (SELECT ANONYMOUS_ID FROM new_devices)
   UNION ALL
-  SELECT 'b_welcome', VARIANT, ANONYMOUS_ID
-  FROM RAW.RUDDER_EVENTS.WELCOME_SCREEN_VIEWED
-  WHERE TIMESTAMP >= '2026-04-30' AND VARIANT IN ('flowA','flowB')
+  SELECT 'b_welcome', VARIANT, ANONYMOUS_ID FROM RAW.RUDDER_EVENTS.WELCOME_SCREEN_VIEWED
+  WHERE TIMESTAMP >= '2026-05-07' AND VARIANT IN ('flowA','flowB') AND ANONYMOUS_ID IN (SELECT ANONYMOUS_ID FROM new_devices)
   UNION ALL
-  SELECT 'c_succeeded', VARIANT, ANONYMOUS_ID
-  FROM RAW.RUDDER_EVENTS.LOGIN_SUCCEEDED
-  WHERE TIMESTAMP >= '2026-04-30' AND VARIANT IN ('flowA','flowB')
+  SELECT 'c_succeeded', VARIANT, ANONYMOUS_ID FROM RAW.RUDDER_EVENTS.LOGIN_SUCCEEDED
+  WHERE TIMESTAMP >= '2026-05-07' AND VARIANT IN ('flowA','flowB') AND ANONYMOUS_ID IN (SELECT ANONYMOUS_ID FROM new_devices)
 )
-SELECT VARIANT, step,
-       COUNT(DISTINCT ANONYMOUS_ID) AS distinct_devices,
-       COUNT(*) AS total_events
-FROM steps
-GROUP BY VARIANT, step
-ORDER BY VARIANT, step;
+SELECT VARIANT, step, COUNT(DISTINCT ANONYMOUS_ID) AS devices
+FROM steps GROUP BY VARIANT, step ORDER BY VARIANT, step;
 ```
-**Purpose**: Login completion guardrail (`overall_login_success_rate`). Conversion = succeeded ÷ welcome.
 
-### Query 3 — North star (account creation breakdown)
-```sql
-SELECT
-  VARIANT, ACCOUNT_TYPE, CAME_FROM,
-  COUNT(DISTINCT USER_ID) AS distinct_users,
-  COUNT(*) AS total_events
-FROM RAW.RUDDER_EVENTS.ACCOUNT_CREATED
-WHERE TIMESTAMP >= '2026-04-30'
-  AND VARIANT IN ('flowA','flowB')
-GROUP BY VARIANT, ACCOUNT_TYPE, CAME_FROM
-ORDER BY VARIANT, ACCOUNT_TYPE, CAME_FROM;
-```
-**Purpose**: Indie via signup_link is THE primary metric. Currently 0 in both variants — instrumentation gap to validate with QA.
+### 3. Email check (NEW only, Flow B)
 
-### Query 4 — Email check distribution (Flow B only)
 ```sql
-SELECT
-  RESULT, INPUT_TYPE,
-  COUNT(DISTINCT COALESCE(USER_ID, ANONYMOUS_ID)) AS distinct_users,
-  COUNT(*) AS total_events,
-  ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS pct
+WITH new_devices AS (SELECT ANONYMOUS_ID FROM RAW.RUDDER_EVENTS.IDENTIFIES WHERE TIMESTAMP >= DATEADD(day, -90, CURRENT_DATE()) GROUP BY ANONYMOUS_ID HAVING MIN(TIMESTAMP) >= '2026-05-07')
+SELECT RESULT, INPUT_TYPE, COUNT(*) AS events,
+  COUNT(DISTINCT COALESCE(USER_ID, ANONYMOUS_ID)) AS users,
+  ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 1) AS pct
 FROM RAW.RUDDER_EVENTS.EMAIL_CHECK_RESULT
-WHERE TIMESTAMP >= '2026-04-30'
-  AND VARIANT = 'flowB'
-GROUP BY RESULT, INPUT_TYPE
-ORDER BY total_events DESC;
+WHERE TIMESTAMP >= '2026-05-07' AND VARIANT = 'flowB'
+  AND ANONYMOUS_ID IN (SELECT ANONYMOUS_ID FROM new_devices)
+GROUP BY RESULT, INPUT_TYPE ORDER BY events DESC;
 ```
-**Purpose**: The "money signal". 33.5% temp_password = catching invited barbers. Flow B exclusive.
 
-### Query 5a — Login failed by reason
-```sql
-SELECT
-  VARIANT, REASON,
-  COUNT(DISTINCT COALESCE(USER_ID, ANONYMOUS_ID)) AS distinct_users,
-  COUNT(*) AS total_events
-FROM RAW.RUDDER_EVENTS.LOGIN_FAILED
-WHERE TIMESTAMP >= '2026-04-30'
-  AND VARIANT IN ('flowA','flowB')
-GROUP BY VARIANT, REASON
-ORDER BY VARIANT, total_events DESC;
-```
-**Purpose**: Failure reasons. We discovered Flow A absence is due to legacy app versions (3.16.4-3.22.0) not emitting variant property.
+### 4. Per-exposure account creation (NEW only)
 
-### Query 5b — Forgot password by state
 ```sql
-SELECT
-  VARIANT, FROM_STATE,
-  COUNT(DISTINCT COALESCE(USER_ID, ANONYMOUS_ID)) AS distinct_users,
-  COUNT(*) AS total_events
-FROM RAW.RUDDER_EVENTS.FORGOT_PASSWORD_TAPPED
-WHERE TIMESTAMP >= '2026-04-30'
-  AND VARIANT IN ('flowA','flowB')
-GROUP BY VARIANT, FROM_STATE
-ORDER BY VARIANT, total_events DESC;
-```
-**Purpose**: Forgot password as friction signal. Flow A had high counts (196 events) — finding: frustration tapping pattern from non-dismissible sheet.
-
-### Query 5c — Login abandoned by step
-```sql
-SELECT
-  VARIANT, LAST_STEP_REACHED,
-  COUNT(DISTINCT COALESCE(USER_ID, ANONYMOUS_ID)) AS distinct_users,
-  COUNT(*) AS total_events
-FROM RAW.RUDDER_EVENTS.LOGIN_ABANDONED
-WHERE TIMESTAMP >= '2026-04-30'
-  AND VARIANT IN ('flowA','flowB')
-GROUP BY VARIANT, LAST_STEP_REACHED
-ORDER BY VARIANT, total_events DESC;
-```
-**Purpose**: Where users drop off. Found 57 events at the new email_entry step in Flow B.
-
-### Query 6 — Sanity: signup_link_tapped scope leak
-```sql
-SELECT
-  ANONYMOUS_ID, COALESCE(USER_ID, 'anon') AS user_id,
-  TIMESTAMP, CONTEXT_APP_VERSION, VARIANT
-FROM RAW.RUDDER_EVENTS.SIGNUP_LINK_TAPPED
-WHERE TIMESTAMP >= '2026-04-30'
-  AND VARIANT = 'flowB'
-ORDER BY TIMESTAMP;
-```
-**Purpose**: Discovered scope leak — 5 events from 3 iOS devices on v3.23.0. Root caused. Fix in PR #4143.
-
-### Query A — Indie validation
-```sql
-SELECT ACCOUNT_TYPE, COUNT(*) AS total_events,
-  COUNT(DISTINCT USER_ID) AS distinct_users,
-  MIN(TIMESTAMP) AS first_seen, MAX(TIMESTAMP) AS last_seen
+WITH new_devices AS (SELECT ANONYMOUS_ID FROM RAW.RUDDER_EVENTS.IDENTIFIES WHERE TIMESTAMP >= DATEADD(day, -90, CURRENT_DATE()) GROUP BY ANONYMOUS_ID HAVING MIN(TIMESTAMP) >= '2026-05-07')
+SELECT VARIANT, ACCOUNT_TYPE, CAME_FROM, COUNT(DISTINCT USER_ID) AS users
 FROM RAW.RUDDER_EVENTS.ACCOUNT_CREATED
-WHERE TIMESTAMP >= DATEADD(day, -60, CURRENT_DATE())
-GROUP BY ACCOUNT_TYPE
-ORDER BY total_events DESC;
+WHERE TIMESTAMP >= '2026-05-07' AND VARIANT IN ('flowA','flowB')
+  AND ANONYMOUS_ID IN (SELECT ANONYMOUS_ID FROM new_devices)
+GROUP BY VARIANT, ACCOUNT_TYPE, CAME_FROM ORDER BY VARIANT, users DESC;
 ```
-**Purpose**: Validates if the `account_type='indie'` property emits at all. Found: 73 barber + 2 shop + 0 indie in 7 days. Inconclusive — needs QA validation.
 
-### Query B — Login_failed by app version
+### 5. Friction (NEW only)
+
 ```sql
-SELECT CONTEXT_APP_VERSION, VARIANT, COUNT(*) AS events
-FROM RAW.RUDDER_EVENTS.LOGIN_FAILED
-WHERE TIMESTAMP >= '2026-04-30'
-GROUP BY CONTEXT_APP_VERSION, VARIANT
-ORDER BY CONTEXT_APP_VERSION DESC, VARIANT;
+WITH new_devices AS (SELECT ANONYMOUS_ID FROM RAW.RUDDER_EVENTS.IDENTIFIES WHERE TIMESTAMP >= DATEADD(day, -90, CURRENT_DATE()) GROUP BY ANONYMOUS_ID HAVING MIN(TIMESTAMP) >= '2026-05-07'),
+all_friction AS (
+  SELECT 'login_failed' AS event, VARIANT FROM RAW.RUDDER_EVENTS.LOGIN_FAILED
+    WHERE TIMESTAMP >= '2026-05-07' AND VARIANT IN ('flowA','flowB') AND ANONYMOUS_ID IN (SELECT ANONYMOUS_ID FROM new_devices)
+  UNION ALL
+  SELECT 'forgot_password', VARIANT FROM RAW.RUDDER_EVENTS.FORGOT_PASSWORD_TAPPED
+    WHERE TIMESTAMP >= '2026-05-07' AND VARIANT IN ('flowA','flowB') AND ANONYMOUS_ID IN (SELECT ANONYMOUS_ID FROM new_devices)
+  UNION ALL
+  SELECT 'login_abandoned', VARIANT FROM RAW.RUDDER_EVENTS.LOGIN_ABANDONED
+    WHERE TIMESTAMP >= '2026-05-07' AND VARIANT IN ('flowA','flowB') AND ANONYMOUS_ID IN (SELECT ANONYMOUS_ID FROM new_devices)
+)
+SELECT event, VARIANT, COUNT(*) AS events FROM all_friction GROUP BY event, VARIANT ORDER BY event, VARIANT;
 ```
-**Purpose**: Confirms login_failed asymmetry — versions <3.23.0 don't emit variant property.
+
+### 6. Email_entry abandoners followup (NEW only Flow B)
+
+```sql
+WITH new_devices AS (SELECT ANONYMOUS_ID FROM RAW.RUDDER_EVENTS.IDENTIFIES WHERE TIMESTAMP >= DATEADD(day, -90, CURRENT_DATE()) GROUP BY ANONYMOUS_ID HAVING MIN(TIMESTAMP) >= '2026-05-07'),
+email_abandoners AS (
+  SELECT ANONYMOUS_ID, MIN(TIMESTAMP) AS first_abandon_ts
+  FROM RAW.RUDDER_EVENTS.LOGIN_ABANDONED
+  WHERE TIMESTAMP >= '2026-05-07' AND VARIANT = 'flowB' AND LAST_STEP_REACHED = 'email_entry'
+    AND ANONYMOUS_ID IN (SELECT ANONYMOUS_ID FROM new_devices)
+  GROUP BY ANONYMOUS_ID
+),
+with_outcomes AS (
+  SELECT ea.ANONYMOUS_ID,
+    MAX(CASE WHEN ls.TIMESTAMP > ea.first_abandon_ts THEN 1 ELSE 0 END) AS later_login,
+    MAX(CASE WHEN ac.TIMESTAMP > ea.first_abandon_ts THEN 1 ELSE 0 END) AS later_signup,
+    MAX(CASE WHEN i.TIMESTAMP > ea.first_abandon_ts THEN 1 ELSE 0 END) AS later_identify
+  FROM email_abandoners ea
+  LEFT JOIN RAW.RUDDER_EVENTS.LOGIN_SUCCEEDED ls ON ea.ANONYMOUS_ID = ls.ANONYMOUS_ID
+  LEFT JOIN RAW.RUDDER_EVENTS.ACCOUNT_CREATED ac ON ea.ANONYMOUS_ID = ac.ANONYMOUS_ID
+  LEFT JOIN RAW.RUDDER_EVENTS.IDENTIFIES i ON ea.ANONYMOUS_ID = i.ANONYMOUS_ID
+  GROUP BY ea.ANONYMOUS_ID, ea.first_abandon_ts
+)
+SELECT COUNT(*) AS total_email_abandoners,
+  SUM(later_login) AS later_logged_in,
+  SUM(later_signup) AS later_signed_up,
+  SUM(CASE WHEN later_login = 0 AND later_signup = 0 AND later_identify = 1 THEN 1 ELSE 0 END) AS came_back_no_outcome,
+  SUM(CASE WHEN later_login = 0 AND later_signup = 0 AND later_identify = 0 THEN 1 ELSE 0 END) AS truly_lost
+FROM with_outcomes;
+```
+
+### 7. Accidental indies weekly
+
+```sql
+WITH indie_users AS (
+  SELECT USER_ID, MAX_BY(CONTEXT_TRAITS_EMAIL, TIMESTAMP) AS email,
+    MIN(TIMESTAMP) AS first_seen
+  FROM RAW.RUDDER_EVENTS.IDENTIFIES
+  WHERE TIMESTAMP >= DATEADD(day, -90, CURRENT_DATE()) AND CONTEXT_TRAITS_ROLE = 'barber'
+  GROUP BY USER_ID
+  HAVING MAX_BY(CONTEXT_TRAITS_USER_TYPE, TIMESTAMP) IS NULL
+),
+shop_barber_emails AS (
+  SELECT DISTINCT CONTEXT_TRAITS_EMAIL AS email FROM RAW.RUDDER_EVENTS.IDENTIFIES
+  WHERE TIMESTAMP >= DATEADD(day, -90, CURRENT_DATE())
+    AND CONTEXT_TRAITS_ROLE = 'barber'
+    AND CONTEXT_TRAITS_USER_TYPE IN ('Rental','Commission')
+    AND CONTEXT_TRAITS_EMAIL IS NOT NULL
+)
+SELECT DATE_TRUNC('week', i.first_seen)::DATE AS week_start,
+  COUNT(*) AS total_indies_with_email,
+  SUM(CASE WHEN sbe.email IS NOT NULL THEN 1 ELSE 0 END) AS accidental_indies,
+  ROUND(100.0 * SUM(CASE WHEN sbe.email IS NOT NULL THEN 1 ELSE 0 END) / COUNT(*), 1) AS accidental_pct
+FROM indie_users i
+LEFT JOIN shop_barber_emails sbe ON i.email = sbe.email
+WHERE i.email IS NOT NULL
+GROUP BY week_start ORDER BY week_start;
+```
+
+### 8. Barber breakdown weekly (Rental / Commission / Indie)
+
+```sql
+SELECT DATE_TRUNC('week', first_seen)::DATE AS week_start,
+  COUNT(*) AS new_barbers,
+  SUM(CASE WHEN final_user_type = 'Rental' THEN 1 ELSE 0 END) AS rental,
+  SUM(CASE WHEN final_user_type = 'Commission' THEN 1 ELSE 0 END) AS commission,
+  SUM(CASE WHEN final_user_type IS NULL THEN 1 ELSE 0 END) AS indies
+FROM (
+  SELECT USER_ID, MIN(TIMESTAMP) AS first_seen,
+    MAX_BY(CONTEXT_TRAITS_USER_TYPE, TIMESTAMP) AS final_user_type
+  FROM RAW.RUDDER_EVENTS.IDENTIFIES
+  WHERE TIMESTAMP >= DATEADD(day, -90, CURRENT_DATE())
+    AND CONTEXT_TRAITS_ROLE = 'barber'
+  GROUP BY USER_ID
+)
+GROUP BY week_start ORDER BY week_start;
+```
+
+### 9. Active users base weekly
+
+```sql
+SELECT DATE_TRUNC('week', TIMESTAMP)::DATE AS week_start,
+  COUNT(DISTINCT ANONYMOUS_ID) AS distinct_devices
+FROM RAW.RUDDER_EVENTS.IDENTIFIES
+WHERE TIMESTAMP >= DATEADD(day, -90, CURRENT_DATE())
+GROUP BY week_start ORDER BY week_start;
+```
+
+### 10. Duplicate barber accounts per email weekly
+
+```sql
+WITH barber_first_seen AS (
+  SELECT USER_ID, CONTEXT_TRAITS_EMAIL AS email, MIN(TIMESTAMP) AS first_seen
+  FROM RAW.RUDDER_EVENTS.IDENTIFIES
+  WHERE TIMESTAMP >= DATEADD(day, -90, CURRENT_DATE())
+    AND CONTEXT_TRAITS_ROLE = 'barber' AND CONTEXT_TRAITS_EMAIL IS NOT NULL
+  GROUP BY USER_ID, CONTEXT_TRAITS_EMAIL
+),
+enriched AS (
+  SELECT USER_ID, email, first_seen,
+    COUNT(*) OVER (PARTITION BY email ORDER BY first_seen
+                   ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prior_user_ids
+  FROM barber_first_seen
+)
+SELECT DATE_TRUNC('week', first_seen)::DATE AS week_start,
+  COUNT(*) AS new_barber_user_ids,
+  SUM(CASE WHEN prior_user_ids > 0 THEN 1 ELSE 0 END) AS duplicates,
+  ROUND(100.0 * SUM(CASE WHEN prior_user_ids > 0 THEN 1 ELSE 0 END) / COUNT(*), 1) AS duplicate_pct
+FROM enriched
+GROUP BY week_start ORDER BY week_start;
+```
 
 ---
 
-## Current week's data (week of 2026-05-06)
+## Current numbers (as of 2026-05-12 refresh)
 
-| Metric | Flow A | Flow B |
+These are the values currently in `data/2026-05-08.json`. Next refresh should update these.
+
+**Post-100% NEW devices (canonical clean sample):**
+- flowA: 309 devices, 64 logged-in, 158 actors
+- flowB: 300 devices, 5 logged-in, 108 actors
+- Split: **50.7 / 49.3**
+
+**Funnel NEW:**
+- flowA: 309 → 288 → 125 (welcome 93.2%, conv 43.4%, **overall 40.5%**)
+- flowB: 300 → 305 → 164 (welcome 101.7%, conv 53.8%, **overall 54.7%**)
+
+**Email check NEW (Flow B):**
+- 367 total events
+- returning email: 167 (45.5%)
+- temp_password email: 107 (29.2%)
+- new_user email: 64 (17.4%)
+
+**Friction NEW (per-device rates):**
+- forgot_password: A 30.7% / B 20.7%
+- login_abandoned: A 32.4% / B 50.3%
+- login_failed: B 26.3% (A=0 due to legacy version data quality issue)
+
+**Per-exposure barber signup rate NEW:**
+- flowA barber/signup_link: 21/309 = 6.8%
+- flowB barber/email_not_found: 30/300 = 10.0%
+
+**Email_entry abandoner followup NEW:**
+- Total: 35 unique
+- Came back & logged in: 12 (34%)
+- Came back & signed up: 6 (17%)
+- Came back no outcome: 8 (23%)
+- **Truly lost: 11 (31%)** — was 24% Monday, watching cohort effect
+
+**Accidental indies weekly:**
+- 8-week pre-experiment baseline (Mar 9 - Apr 20): 12.9/wk avg, ~70% rate
+- Experiment (Apr 27 - May 11): 4/wk avg, ~45% rate
+- **−69% drop**
+
+**Total indies weekly:**
+- Pre-experiment: 18.4/wk
+- Experiment: 9.5/wk
+- **−48% drop**
+
+**Duplicate email rate weekly:**
+- Pre-experiment 8wk: 16.0% avg
+- Experiment: 14.05% avg
+- **−12% (inside noise)**
+
+**CS data (McChesney Matro · pulled 2026-05-11):**
+- April 2026: 3 accidental indy self-signup cancellations
+- May 2026: 0 (through May 11)
+
+---
+
+## People context
+
+| Person | Role | Notes |
 |---|---|---|
-| **Variant balance (devices)** | 418 (63%) | 244 (37%) — SRM real |
-| **Funnel** | 418 → 358 → 210 (welcome 85.6%, conv 58.7%) | 244 → 243 → 164 (welcome 99.6%, conv 67.5%) |
-| **Account created (barber/signup_link)** | 38 | 0 |
-| **Account created (barber/email_not_found)** | 0 | 35 |
-| **Indie/signup_link** | 0 | 0 (instrumentation gap) |
-| **Email check temp_password** | n/a | 33.5% (the headline) |
-| **Login failed events** | 0 (legacy versions filtered) | 14 |
-| **Forgot password events** | 196 (frustration tapping) | 59 |
-| **Login abandoned events** | 202 (password) | 180 (123 password + 57 NEW email) |
-| **Per-exposure barber signup rate** | 9.1% (38/418) | 14.3% (35/244) |
+| Eric (ericp) | Manager, non-technical | Wants story "new flow vs old", not just B vs A. Currently asking about accidental indie identification methodology. |
+| Tristan | PM | Recently moved to 5h offset timezone. OOO last week. Designs for the 4 Onboarding Courses not all done. Owns final styling of Descope screens. Suggested CS data pull, did it via McChesney. |
+| Yurii Petelko | iOS lead, manager | Direct. Recommends estimating in weeks (not hours). Wants to discuss design pace with me. Disagrees with the idea Tristan has heavy load from other teams. |
+| Marti | Suggested hours-per-task estimation in her thread | Yurii pushed back on that; we tabled it as retrospective tracking. |
+| Artur Badretdinov | Backend / cost-aware | Asked about how we connect to Snowflake. We're using `snow` CLI with externalbrowser SSO; NOT using Cortex AI billing services. |
+| Denis K | Snowflake admin | Was supposed to run an ALTER USER for key-pair JWT auth so I don't have to do browser SSO each time. Status unknown, externalbrowser still works. |
+| McChesney Matro | CS team | Pulled the xlsx with accidental indy cancellations. April 3 / May 0. |
+| Frank | Digest project | Blocks me sometimes on queries before I can move forward (Yurii estimation thread context). |
 
 ---
 
-## Pending follow-ups
+## Pending threads / open items
 
-1. **Re-pull all metrics** post-100% rollout (May 7+). Will need 7 days of full traffic.
-2. **Pre-experiment baseline comparison**: pull legacy login funnel for 7 days BEFORE Apr 30. Tristan's plan called for this.
-3. **QA validation of indie property emission**: confirm the property fires when an Indie account is created.
-4. **Investigate SRM root cause**: bucketing logic, cached pre-experiment exposures, or non-uniform LD evaluation. With Tristan.
-5. **Fix scope leak ship**: PR #4143 / #4144 needs Yurii review + 3.23.1 release.
-6. **Audit login_failed Flow A handler** in 3.23.0 — 100 events fire with variant=null.
+**Slack threads to check on:**
+- **Tristan** — sent him the deck link + asked if he wants a sync before today's meeting. No reply yet.
+- **Eric** — answered his "how do we identify accidental indies" question. Awaiting any follow-up.
+- **Yurii** — closed the estimation thread with "fair, will go with weeks". Active conversation about Tristan design pace ongoing.
 
----
+**Action items:**
+1. **Today's weekly sync** — Santi covers experiment metrics, Tristan covers Courses/timeline/RN release planning.
+2. **Clarity install on iOS** — Yurii deploys today. Prompt is at `docs/CLARITY_IOS_PROMPT.md`.
+3. **PR #4143 (scope leak fix)** — merged, awaiting 3.23.1 deploy. Once live, future weeks should show 0 leaked Flow B signup_link_tapped events.
+4. **Per-exposure barber-via-signup gap** — +3.2 pp Flow B over A on NEW devices. Worth watching, re-check after 2 more weeks.
+5. **Truly lost in email_entry** — 24% → 31% week-over-week. Cohort effect likely (recent abandoners haven't had time to return). Watch on next refresh.
 
-## Setup that's saved on disk
-
-- `~/.snowflake/config.toml` — connection config (currently externalbrowser, can switch to JWT)
-- `~/.snowflake/keys/snowflake_key.pem` — RSA private key (chmod 600)
-- `~/.snowflake/keys/snowflake_key.pub` — RSA public key (already shared with Denis)
-- `~/.claude.json` — has snowflake MCP entry registered (currently unhealthy until auth works)
-- Squire marketplace plugins installed (5 plugins, see /plugin list)
-- `~/snowflake-ai-kit/` — cloned repo with snow + cortex CLIs
-
-## What works without Snowflake MCP
-
-Even if Snowflake stays blocked, you can still:
-- Update the deck with manually-pasted query results (the original workflow)
-- Iterate on slides, fix bugs, polish
-- Push deck updates to GitHub Pages
-
-The MCP just removes the manual paste-back step — it's a productivity boost, not a blocker.
+**Investigations done, not need to redo:**
+- ✅ SRM root cause (sticky LD bucketing + gradual rollout)
+- ✅ iOS firing context for LOGIN_EXPERIMENT_ASSIGNED (only at auth flow start)
+- ✅ Indie classification (role=barber + user_type IS NULL)
+- ✅ Indie channel separate from experiment (only 2/69 overlap with LOGIN_EXPERIMENT_ASSIGNED pop)
+- ✅ Shop tenure breakdown of accidental indies (50% same-day-or-earlier = likely legit transitions)
+- ✅ Email_entry abandoner followup methodology
 
 ---
 
-## First-message-of-next-session checklist
+## Slack tone reminders (for drafting messages on Santi's behalf)
 
-When you start the next session, ask Claude:
+- **Casual, lowercase-ish** on Slack
+- Avoid em-dashes ("—") in body. Use periods.
+- Headlines + bullets > paragraphs
+- No hedging ("largely", "essentially", "significantly")
+- Numbers always have context (% + raw count when useful)
+- For Eric: non-technical phrasing. No SQL terms, no schema names.
+- For Tristan: more familiar tone OK, he'll engage with detail.
+- For Yurii: direct, transparent, no pleasing.
 
-```
-Read docs/SESSION_HANDOFF.md. Two parallel paths:
+---
 
-A) If Denis ran the ALTER USER → switch config to JWT, test, register Snowflake MCP.
-B) If Denis hasn't responded → install Chrome DevTools MCP (Option 4 in handoff) so I can use Snowsight via browser. Less elegant but unblocks me.
+## Tools / commands quick reference
 
-Pick the one that's ready. Tell me the concrete commands to run.
-```
-
-That gives the new session enough context to execute either path immediately without re-debugging.
-
-## Quick-start: Chrome DevTools MCP only (skip Snowflake entirely)
-
-If you just want to get unblocked TODAY without waiting for Denis:
-
+**Run a Snowflake query:**
 ```bash
-# 1. Install
-npm install -g chrome-devtools-mcp
-
-# 2. Register
-claude mcp add chrome --scope user -- npx -y chrome-devtools-mcp@latest
-
-# 3. Add Chrome alias (one time)
-echo 'alias chrome-debug='"'"'/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=$HOME/.chrome-mcp-profile &'"'"'' >> ~/.zshrc
-source ~/.zshrc
-
-# 4. Open Chrome (do this once per day)
-chrome-debug
-# → in that Chrome window, log into Snowsight ONCE
-
-# 5. Restart Claude Code so the new MCP loads
+snow sql --connection default --format json -q "SELECT ..."
 ```
 
-After restart, ask Claude:
-```
-Use the chrome MCP to navigate to app.snowflake.com and verify I'm logged in.
-```
-
-If yes — done. From there, you ask Claude to run any query via the Snowsight UI.
-
-## Chrome DevTools MCP — concrete usage recipes
-
-The Chrome MCP exposes tools to navigate, click, type, evaluate JS, and screenshot. Use these patterns to drive Snowsight.
-
-### Pattern 1 — Auto mode (Claude does everything)
-
-Higher friction but no manual steps once it works:
-
-```
-Use the chrome MCP to:
-1. Navigate to https://app.snowflake.com/mhazqgd/dja79986/#/q
-   (this is the new-worksheet URL)
-2. Wait for the editor to load
-3. Use evaluate to set the CodeMirror editor value to:
-   "SELECT VARIANT, COUNT(*) FROM RAW.RUDDER_EVENTS.LOGIN_EXPERIMENT_ASSIGNED WHERE TIMESTAMP >= '2026-04-30' GROUP BY VARIANT"
-4. Click the "Run" button (selector: button[aria-label='Run']
-   or button containing text "Run")
-5. Wait 3-5 seconds for the result grid to render
-6. Extract the table data from the grid (selector: .ag-row inside .ag-body-viewport
-   for ag-Grid, or whatever grid component Snowsight uses today)
-7. Return the result as JSON
+**Local dev server (for tracker + deck):**
+```bash
+python3 -m http.server 8765
+# Then: http://localhost:8765/tracker/ or http://localhost:8765/weekly/2026-05-13/
 ```
 
-**Brittleness note**: Snowsight uses ag-Grid for results. Selectors may shift if Snowflake updates the UI. If selectors break, fall back to Pattern 2.
-
-### Pattern 2 — Hybrid mode (recommended, more robust)
-
-You run the query manually in the browser, Claude reads the result. Less automation, more reliability:
-
-```
-1. Use chrome MCP to navigate to https://app.snowflake.com/mhazqgd/dja79986/#/q
-2. Tell me when the worksheet is loaded.
-3. I'll paste the SQL and hit Run myself.
-4. Once results are visible, take a screenshot or extract the grid contents and tell me what the data shows.
+**Push to deploy (allowed without prompt):**
+```bash
+git add data/2026-05-08.json tracker/index.html weekly/
+git commit -m "..."
+git push origin main
 ```
 
-This is the SAFE path — Claude only READS, you DRIVE. Works around any UI brittleness.
-
-### Pattern 3 — Vision-only (slowest but bulletproof)
-
-If DOM extraction fails:
-```
-Take a screenshot of the result grid. Read the values into a markdown table.
+**Wait for Pages build (background):**
+```bash
+until [[ "$(gh api repos/santi-squire/onboarding-team-sync/pages/builds --jq '.[0].commit')" =~ ^<commit_sha> && "$(gh api repos/santi-squire/onboarding-team-sync/pages/builds --jq '.[0].status')" == "built" ]]; do sleep 4; done
 ```
 
-Claude's vision model handles this fine for small result sets (<50 rows).
+---
 
-### Recipe: running the 8 standard weekly queries
+## Important conventions
 
-For the standard pull, the most reliable pattern is **Pattern 2 (hybrid)**:
-
-```
-Open Snowsight in Chrome. I'll run each of the 8 queries manually
-(they're in this same handoff doc above). After each one, I'll tell
-you it's done — you read the grid and store the result in
-data/<this-week>.json under the appropriate field.
-```
-
-Order to run them in:
-1. Q1 → variant balance → fills `variantBalance.snowflake.{flowA, flowB}`
-2. Q2 → funnel → fills `funnel.{steps, flowA, flowB}`
-3. Q3 → north star → fills `northStarData.{categories, flowA, flowB}`
-4. Q4 → email check → fills `emailCheck.{returning, temp_password, new_user, totals}`
-5. Q5a → login failed → fills part of `friction.{flowA[0], flowB[0]}`
-6. Q5b → forgot password → fills part of `friction.{flowA[1], flowB[1]}`
-7. Q5c → login abandoned → fills part of `friction.{flowA[2], flowB[2]}`
-8. Q6 → signup_link sanity → updates the leak caveat
-
-After each, tell Claude: *"that one is done, here's the data"* and Claude updates the JSON.
-
-### Tools the Chrome MCP exposes (typical)
-
-When the MCP is installed, ask Claude `/mcp` to see the actual tools — but typical names are:
-
-- `navigate(url)` — go to URL
-- `click(selector)` — click an element
-- `type(selector, text)` — type into input
-- `evaluate(js_expression)` — run JS in page context
-- `screenshot()` — capture viewport
-- `get_text(selector)` — extract text from element
-- `get_html(selector)` — extract HTML
-
-If your MCP has different names, the Patterns above still apply conceptually — adapt.
-
-### Gotchas
-
-- **First query opens browser auth dance** — make sure Chrome is launched with the `--user-data-dir=$HOME/.chrome-mcp-profile` flag and you logged into Snowsight ONCE in that profile. Cookies persist.
-- **CodeMirror editor** — needs `evaluate` to set the value (not `type`). The hidden textarea pattern requires JS injection.
-- **Result grid pagination** — Snowsight loads ~100 rows at a time. For large queries, tell Claude to scroll the grid.
-- **Auto-rerun on edit** — be careful: Snowsight may re-run if you edit + tab out. Always paste full SQL then click Run.
-- **Session timeout** — Snowsight idles you out after ~30 min. The chrome-debug profile may need re-login. Re-trigger SSO from inside that Chrome window.
+- **Don't push without explicit user confirmation** in most cases. The user manually approves pushes for live updates.
+- **Validate JSON before committing**: `node -e "JSON.parse(require('fs').readFileSync('data/2026-05-08.json'));console.log('OK')"`
+- **Validate JS in tracker** before push: extract `<script>` and `new Function(code)` to catch syntax errors.
+- **The user is in auto mode often** — they'll tell you when to interrupt vs continue.
