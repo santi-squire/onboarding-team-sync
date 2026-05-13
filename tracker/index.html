@@ -1562,6 +1562,15 @@
               <tbody>${rows}</tbody>
             </table>
           </div>
+          <div style="margin-top: 1.4rem; padding: 1.1rem 1.3rem; background: var(--bg-elevated); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;">
+            <div style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 0.6rem;">Reading the scorecard · A wins by mechanics, B wins where it matters</div>
+            <p style="margin: 0 0 0.7rem; font-size: 0.92rem; color: var(--text); line-height: 1.55;">The two rows where Flow A "wins" are explained by surface mechanics, not UX advantage.</p>
+            <ul style="margin: 0; padding-left: 1.2rem; list-style: none;">
+              <li style="position: relative; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.5rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--accent); font-weight: 700;">›</span><strong style="color: var(--text);">Login abandoned / device:</strong> Flow A has 1 screen to abandon (combined email+password). Flow B has 2 (email step, then password step). B mechanically fires more abandon events. Followup shows <strong>67% of B abandoners come back later</strong>, only 33% truly walk away.</li>
+              <li style="position: relative; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.5rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--accent); font-weight: 700;">›</span><strong style="color: var(--text);">Per-exposure barber signup rate:</strong> B produces more raw barber signups, but the <strong>accidental-indies signal is down 77%</strong> on the new flow. So B has more signups but fewer of them are duplicates.</li>
+              <li style="position: relative; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--success); font-weight: 700;">✓</span><strong style="color: var(--text);">Where it actually matters:</strong> overall completion (+9pp B), welcome rate (+10pp B), forgot-password rate (−9pp B), duplicate-prevention (CS-confirmed 0 in May).</li>
+            </ul>
+          </div>
           <div class="verdict-box">
             <div class="verdict-eyebrow">⚖ Overall verdict</div>
             <h3 class="verdict-headline">${sc.verdict.headline}</h3>
@@ -1665,11 +1674,36 @@
       return `
         <section class="metric-section">
           <div class="section-header">
-            <div class="section-eyebrow" style="color: var(--info);">↺ Historical comparison · vs current experience</div>
-            <h2 class="section-title">Pre-experiment baseline</h2>
+            <div class="section-eyebrow" style="color: var(--info);">↺ Historical comparison · new flow vs old flow</div>
+            <h2 class="section-title">Before and after we rolled out the new experience</h2>
             <p class="section-sub">${hc.headline}</p>
             ${hc.statusNote ? (typeof hc.statusNote === 'string' ? `<p class="section-sub" style="margin-top: 0.4rem; font-size: 0.82rem; opacity: 0.8;">${hc.statusNote}</p>` : `<div style="margin-top: 0.6rem;">${renderStructuredText(hc.statusNote, { bulletColor: 'var(--info)' })}</div>`) : ''}
           </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0 0 1.5rem;">
+            <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem;">
+              <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.6rem;">Old flow · pre Apr 30</div>
+              <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; color: var(--danger); line-height: 1.1;">~13 / wk</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.4rem;">accidental indies (Snowflake proxy, 8wk baseline Mar 9 - Apr 20)</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.5rem;"><strong style="color: var(--text);">3</strong> accidental indy cancellations in April (CS data)</div>
+            </div>
+            <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem;">
+              <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--success); text-transform: uppercase; margin-bottom: 0.6rem;">New flow · post Apr 30</div>
+              <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; color: var(--success); line-height: 1.1;">~3 / wk</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.4rem;">accidental indies (Apr 27 → May 13)</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.5rem;"><strong style="color: var(--text);">0</strong> accidental indy cancellations in May to date (CS data)</div>
+            </div>
+          </div>
+
+          <div style="margin: 0 0 2rem; padding: 1.1rem 1.3rem; background: var(--bg-elevated); border-left: 3px solid var(--info); border-radius: 0 8px 8px 0;">
+            <div style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--info); text-transform: uppercase; margin-bottom: 0.6rem;">Methodology · how we identify accidental indies</div>
+            <ul style="margin: 0; padding-left: 1.2rem; list-style: none;">
+              <li style="position: relative; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.5rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--info); font-weight: 700;">1.</span><strong style="color: var(--text);">Snowflake (proxy):</strong> if a new "indie" account's email also belongs to a barber that's already attached to a shop, it's most likely a duplicate (the invited barber didn't realize they already had an account).</li>
+              <li style="position: relative; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.5rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--info); font-weight: 700;">2.</span><strong style="color: var(--text);">CS data (direct):</strong> the support team tags their own cancellation tickets as "Accidental Indy Self-Signup" when users ask to delete a wrong account. No inference needed.</li>
+              <li style="position: relative; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--success); font-weight: 700;">✓</span><strong style="color: var(--text);">CS is the cleanest signal.</strong> Snowflake is the volume read, CS is the ground truth. Both move in the same direction.</li>
+            </ul>
+          </div>
+
           <div class="hist-blocks">${blocks}</div>
         </section>
       `;

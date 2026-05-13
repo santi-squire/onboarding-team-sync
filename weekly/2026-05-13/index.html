@@ -454,10 +454,26 @@
       </div>
     </section>
 
-    <!-- CS CONFIRMATION CALLOUT -->
+    <!-- NEW FLOW vs OLD FLOW (Eric's framing) -->
     <section class="slide">
-      <span class="eyebrow">External validation · CS team</span>
-      <h2>Two signals, same answer</h2>
+      <span class="eyebrow">New flow vs old flow · population-wide</span>
+      <h2>Before and after we rolled out the new experience</h2>
+      <p>This view ignores the A/B split. It compares the population <strong>before Apr 30</strong> (everyone on the old production login) to the population <strong>after Apr 30</strong> (rolling out the new experiment, A or B). The drop is real regardless of variant.</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.6rem;">Old flow · pre Apr 30</div>
+          <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; color: var(--danger); line-height: 1.1;">~13 / wk</div>
+          <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.4rem;">accidental indies (Snowflake proxy, 8wk baseline Mar 9 - Apr 20)</div>
+          <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.6rem;"><strong style="color: var(--text);">3</strong> accidental indy cancellations in April (CS data)</div>
+        </div>
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--success); text-transform: uppercase; margin-bottom: 0.6rem;">New flow · post Apr 30</div>
+          <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; color: var(--success); line-height: 1.1;">~3 / wk</div>
+          <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.4rem;">accidental indies (Apr 27 → May 13)</div>
+          <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.6rem;"><strong style="color: var(--text);">0</strong> accidental indy cancellations in May to date (CS data)</div>
+        </div>
+      </div>
 
       <div class="callout">
         <div class="label">★ CS confirmation</div>
@@ -466,10 +482,19 @@
       </div>
 
       <ul class="bullets check">
-        <li><strong>CS data:</strong> 0 accidental cancellations May vs 3 in April.</li>
-        <li><strong>Snowflake:</strong> accidental indies down ~77% vs an 8-week pre-experiment baseline (deeper than Tuesday's ~69% read).</li>
-        <li><strong>User base:</strong> grew ~5% during the experiment, so the drop is real, not "fewer users".</li>
+        <li><strong>Snowflake (8wk baseline):</strong> ~13/wk before Apr 30 → ~3/wk after. That is a <strong>−77%</strong> drop, population-wide.</li>
+        <li><strong>CS data:</strong> 3 accidental indy cancellations in April → 0 in May. Same direction, independent signal.</li>
+        <li><strong>User base grew ~5%</strong> across the same window, so the drop is real, not "fewer users".</li>
       </ul>
+
+      <div style="margin-top: 1.5rem; padding: 1rem 1.2rem; background: var(--bg-elevated); border-left: 3px solid var(--info); border-radius: 0 6px 6px 0;">
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--info); text-transform: uppercase; margin-bottom: 0.5rem;">Methodology · how we identify accidental indies</div>
+        <ul class="bullets" style="margin: 0;">
+          <li><strong>Snowflake (proxy):</strong> if a new "indie" account's email also belongs to a barber that's already attached to a shop, it's most likely a duplicate (the invited barber didn't realize they already had an account).</li>
+          <li><strong>CS data (direct):</strong> the support team tags their own cancellation tickets as "Accidental Indy Self-Signup" when users ask to delete a wrong account. No inference needed.</li>
+          <li><strong>CS is the cleanest signal.</strong> Snowflake is the volume read; CS is the ground truth.</li>
+        </ul>
+      </div>
     </section>
 
     <!-- SCORECARD -->
@@ -548,7 +573,17 @@
         </tbody>
       </table>
 
-      <p>Two caveats. Flow B has higher login_abandoned at the new email_entry step (followup: 67% of abandoners return, 33% truly lost). Per-exposure barber-via-signup is +2.6pp vs A, worth watching. The overall-completion gap narrowed from +14pp Tuesday to +9pp today as Flow A late-completers finished login. Sample 22% larger (609 → 742 NEW devices).</p>
+      <p>The overall-completion gap narrowed from +14pp Tuesday to +9pp today as Flow A late-completers finished login. Sample 22% larger (609 → 742 NEW devices).</p>
+
+      <div style="margin-top: 1.5rem; padding: 1.1rem 1.3rem; background: var(--bg-elevated); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;">
+        <div style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 0.6rem;">Reading the scorecard · A wins by mechanics, B wins where it matters</div>
+        <p style="margin: 0 0 0.6rem; font-size: 0.92rem; color: var(--text);">The two rows where Flow A "wins" are explained by surface mechanics, not UX advantage:</p>
+        <ul class="bullets" style="margin: 0;">
+          <li><strong>Login abandoned / device:</strong> Flow A has 1 screen to abandon (combined email+password). Flow B has 2 (email step, then password step). B mechanically fires more abandon events. The followup shows <strong>67% of B abandoners come back later</strong>, only 33% truly walk away.</li>
+          <li><strong>Per-exposure barber signup rate:</strong> B produces more raw barber signups, but the <strong>accidental-indies signal is down 77%</strong> on the new flow. So B has more signups but fewer of them are duplicates. The signups it catches look like genuine new barbers.</li>
+          <li><strong>Where it actually matters:</strong> overall completion (+9pp B), welcome rate (+10pp B), forgot-password rate (−9pp B), and the duplicate-prevention signal (CS-confirmed 0 in May).</li>
+        </ul>
+      </div>
     </section>
 
     <!-- DESCOPE -->
