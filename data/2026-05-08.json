@@ -731,9 +731,9 @@
         "metric": "Traffic split",
         "definition": "Share of users assigned to each flow. Should be even.",
         "direction": "should be 50/50",
-        "flowA": "50.5%",
-        "flowB": "49.5%",
-        "deltaPct": "0.5 pp from even",
+        "flowA": "50.8%",
+        "flowB": "49.2%",
+        "deltaPct": "0.8 pp from even",
         "winner": "tied",
         "note": "★ Steady on the clean sample. Comparison is fair."
       },
@@ -741,9 +741,9 @@
         "metric": "Welcome screen reach rate †",
         "definition": "Share of assigned users who reached the welcome screen, per flow.",
         "direction": "higher better",
-        "flowA": "91.7%",
-        "flowB": "101.4%",
-        "deltaPct": "+9.7 pp",
+        "flowA": "91.8%",
+        "flowB": "101.3%",
+        "deltaPct": "+9.5 pp",
         "winner": "flowB",
         "note": "† Flow B shows >100% from an innocuous ramp-window quirk. Email-first sheet auto-loads, B still wins."
       },
@@ -751,21 +751,21 @@
         "metric": "Login success rate (of users who saw welcome)",
         "definition": "Share of welcome-viewers who completed login, per flow.",
         "direction": "higher better",
-        "flowA": "47.1%",
-        "flowB": "51.1%",
-        "deltaPct": "+4.0 pp",
+        "flowA": "48.1%",
+        "flowB": "51.0%",
+        "deltaPct": "+2.9 pp",
         "winner": "flowB",
-        "note": "Gap narrowed (was +10pp yesterday). Old-flow late-completers landing as the cohort matures."
+        "note": "Gap narrowed steadily (was +10pp yesterday morning, +4pp this morning, +3pp now). Flow A late-completers landing as the cohort matures."
       },
       {
         "metric": "Completion rate (of all users assigned)",
         "definition": "End-to-end conversion through the whole funnel, per flow.",
         "direction": "higher better",
-        "flowA": "43.2%",
-        "flowB": "51.8%",
-        "deltaPct": "+8.6 pp",
+        "flowA": "44.1%",
+        "flowB": "51.7%",
+        "deltaPct": "+7.6 pp",
         "winner": "flowB",
-        "note": "Gap narrowed +14pp yesterday → +9pp today. Old-flow users finishing late. Both moved (A up 2.7pp, B down 2.9pp)."
+        "note": "Gap narrowed +14pp yesterday → +9pp this morning → +8pp now. Flow A users finishing through the day. Story holds (B still winning) but trend worth watching."
       },
       {
         "metric": "Forgot-password taps / device",
@@ -848,42 +848,47 @@
     "blocks": [
       {
         "title": "★ Accidental indies · weekly (sharpest signal)",
-        "subtitle": "Indies whose email ALSO belongs to a Rental/Commission account — strong proxy for 'accidental duplicate signups'. This is what Flow B should specifically reduce.",
+        "subtitle": "Indies whose email ALSO belongs to a Rental/Commission account — strong proxy for 'accidental duplicate signups'. This is what the new flow should specifically reduce.",
         "status": "ready",
         "highlight": true,
         "comparison": {
-          "preBaseline": { "label": "Pre-experiment 8wk (Mar 9 - Apr 20)", "value": "13.0/wk avg · 66% rate" },
-          "experiment": { "label": "Experiment (Apr 27 - May 13)", "value": "3.0/wk avg · 45% rate" },
-          "deltaPct": -77,
+          "preBaseline": { "label": "Pre-experiment (Jan 5 - Apr 26, 16 full weeks)", "value": "11.75/wk avg · 64% rate" },
+          "experiment": { "label": "Experiment (Apr 27 - May 13)", "value": "3.0/wk avg · 50% rate" },
+          "deltaPct": -75,
           "winner": "flowB",
           "verdict": {
-            "headline": "Accidental indies dropped ~77%, much sharper than the ~47% total-indies decline.",
+            "headline": "Accidental signups dropped ~75% on a 16-week pre-experiment baseline.",
             "bullets": [
-              "13.0/wk to 3.0/wk average vs the 8-week pre-experiment baseline.",
-              "Accidental rate among indies fell from 66% to ~45%.",
-              "Drop exceeds total-indies decline. Flow B catches duplicates, not just riding decline.",
-              "Drop deepened from -69% Tuesday to -77% today as Apr 27 week settled at 0 accidentals."
+              "11.75/wk pre to 3.0/wk in the experiment window.",
+              "Accidental rate among indie signups fell from ~64% to ~50%.",
+              "Pre-experiment was stable over 4 months (range 7-22/wk), so this isn't an underlying trend.",
+              "Both the new flow's variants (A and B) are running, so the drop is the population-level effect of the new experience."
             ],
-            "why": "Sharpest in-Snowflake signal that Flow B reduces accidental duplicate signups specifically."
+            "why": "Sharpest in-data signal that the new flow reduces accidental duplicate signups."
           }
         },
         "weeks": [
-          { "week": "2026-02-09", "total_indies": 74, "accidental": 52, "accidental_pct": 70.3, "note": "partial window edge" },
-          { "week": "2026-02-16", "total_indies": 40, "accidental": 21, "accidental_pct": 52.5 },
-          { "week": "2026-02-23", "total_indies": 20, "accidental": 11, "accidental_pct": 55.0 },
-          { "week": "2026-03-02", "total_indies": 31, "accidental": 13, "accidental_pct": 41.9 },
-          { "week": "2026-03-09", "total_indies": 28, "accidental": 13, "accidental_pct": 46.4 },
-          { "week": "2026-03-16", "total_indies": 22, "accidental": 13, "accidental_pct": 59.1 },
-          { "week": "2026-03-23", "total_indies": 22, "accidental": 13, "accidental_pct": 59.1 },
-          { "week": "2026-03-30", "total_indies": 22, "accidental": 16, "accidental_pct": 72.7 },
+          { "week": "2026-01-05", "total_indies": 43, "accidental": 22, "accidental_pct": 51.2 },
+          { "week": "2026-01-12", "total_indies": 25, "accidental": 13, "accidental_pct": 52.0 },
+          { "week": "2026-01-19", "total_indies": 25, "accidental": 15, "accidental_pct": 60.0 },
+          { "week": "2026-01-26", "total_indies": 17, "accidental": 11, "accidental_pct": 64.7 },
+          { "week": "2026-02-02", "total_indies": 14, "accidental": 8,  "accidental_pct": 57.1 },
+          { "week": "2026-02-09", "total_indies": 12, "accidental": 8,  "accidental_pct": 66.7 },
+          { "week": "2026-02-16", "total_indies": 21, "accidental": 10, "accidental_pct": 47.6 },
+          { "week": "2026-02-23", "total_indies": 17, "accidental": 10, "accidental_pct": 58.8 },
+          { "week": "2026-03-02", "total_indies": 22, "accidental": 7,  "accidental_pct": 31.8 },
+          { "week": "2026-03-09", "total_indies": 19, "accidental": 9,  "accidental_pct": 47.4 },
+          { "week": "2026-03-16", "total_indies": 17, "accidental": 14, "accidental_pct": 82.4 },
+          { "week": "2026-03-23", "total_indies": 21, "accidental": 12, "accidental_pct": 57.1 },
+          { "week": "2026-03-30", "total_indies": 18, "accidental": 13, "accidental_pct": 72.2 },
           { "week": "2026-04-06", "total_indies": 14, "accidental": 13, "accidental_pct": 92.9 },
           { "week": "2026-04-13", "total_indies": 14, "accidental": 11, "accidental_pct": 78.6 },
           { "week": "2026-04-20", "total_indies": 15, "accidental": 12, "accidental_pct": 80.0 },
           { "week": "2026-04-27", "total_indies": 7,  "accidental": 0,  "accidental_pct": 0.0,  "isExperiment": true, "rolloutEvent": "Experiment start" },
-          { "week": "2026-05-04", "total_indies": 9,  "accidental": 7,  "accidental_pct": 77.8, "isExperiment": true, "rolloutEvent": "100% rollout" },
-          { "week": "2026-05-11", "total_indies": 4,  "accidental": 2,  "accidental_pct": 50.0, "isExperiment": true, "note": "partial week (3 days)" }
+          { "week": "2026-05-04", "total_indies": 8,  "accidental": 6,  "accidental_pct": 75.0, "isExperiment": true, "rolloutEvent": "100% rollout" },
+          { "week": "2026-05-11", "total_indies": 5,  "accidental": 3,  "accidental_pct": 60.0, "isExperiment": true, "note": "partial week (3 days)" }
         ],
-        "caveat": "Refreshed 2026-05-13. Method: take all 'new indies' (role='barber', final user_type stayed null), cross-check whether their email also exists for any Rental/Commission user_id. Match = likely accidental.",
+        "caveat": "Refreshed 2026-05-13 15:00. Baseline extended to Jan 5 - Apr 26 (16 weeks) for a wider stable reference. Method: take all 'new indies' (role='barber', final user_type stayed null), cross-check whether their email also exists for any Rental/Commission user_id. Match = likely accidental.",
         "shopTenureBreakdown": {
           "title": "Refinement · shop tenure of accidental indies (90d cohort)",
           "rows": [

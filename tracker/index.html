@@ -1700,29 +1700,29 @@
       return `
         <section class="metric-section">
           <div class="section-header">
-            <div class="section-eyebrow" style="color: var(--info);">↺ Historical comparison · new flow vs old flow</div>
-            <h2 class="section-title">Before and after we rolled out the new experience</h2>
+            <div class="section-eyebrow" style="color: var(--info);">↺ Before and after the experiment · population-wide</div>
+            <h2 class="section-title">Pre-experiment vs experiment</h2>
             <p class="section-sub">${hc.headline}</p>
             ${hc.statusNote ? (typeof hc.statusNote === 'string' ? `<p class="section-sub" style="margin-top: 0.4rem; font-size: 0.82rem; opacity: 0.8;">${hc.statusNote}</p>` : `<div style="margin-top: 0.6rem;">${renderStructuredText(hc.statusNote, { bulletColor: 'var(--info)' })}</div>`) : ''}
           </div>
 
-          <p style="font-size: 0.92rem; color: var(--text); margin: 0 0 1rem; line-height: 1.55;">The experiment deployed on <strong>Apr 30</strong>. This view ignores the A/B split and compares the population on the <strong>old production login</strong> (the 7 full weeks before that) to the population on the <strong>new experiment flow</strong> (Apr 27 week onwards, since that week straddles the deploy).</p>
+          <p style="font-size: 0.92rem; color: var(--text); margin: 0 0 1rem; line-height: 1.55;">The experiment deployed on <strong>Apr 30</strong>. This view ignores the A/B split and compares the population on the <strong>old production login</strong> (the weeks before, "pre-experiment") to the population on the <strong>new experiment</strong> (Apr 27 week onwards, where users see either Flow A or Flow B; the Apr 27 week straddles the deploy day).</p>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0 0 0.6rem;">
             <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem;">
-              <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.6rem;">Old flow · 7 weeks before deploy</div>
-              <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; color: var(--danger); line-height: 1.1;">~13 / wk</div>
-              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.4rem;">accidental indies · Snowflake proxy · 7-week baseline (week of Mar 9 → week of Apr 20, ending Apr 26)</div>
-              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.5rem;"><strong style="color: var(--text);">3</strong> accidental indy cancellations in April · CS data</div>
+              <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.6rem;">Pre-experiment · 16 weeks before deploy</div>
+              <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; color: var(--danger); line-height: 1.1;">~12 / wk</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.4rem;">accidental signups · our data · Jan 5 → Apr 26 (16 full weeks, whole year-to-date)</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.5rem;"><strong style="color: var(--text);">3</strong> accidental cancellations in April · support tickets</div>
             </div>
             <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem;">
-              <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--success); text-transform: uppercase; margin-bottom: 0.6rem;">New flow · since deploy</div>
+              <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--success); text-transform: uppercase; margin-bottom: 0.6rem;">Experiment · since deploy</div>
               <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; color: var(--success); line-height: 1.1;">~3 / wk</div>
-              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.4rem;">accidental indies · weeks of Apr 27 → May 13</div>
-              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.5rem;"><strong style="color: var(--text);">0</strong> accidental indy cancellations in May to date · CS data</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.4rem;">accidental signups · weeks of Apr 27 → May 13</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.5rem;"><strong style="color: var(--text);">0</strong> accidental cancellations in May to date · support tickets</div>
             </div>
           </div>
-          <p style="font-size: 0.82rem; color: var(--text-dim); margin: 0 0 1.5rem; line-height: 1.55;">Why the 7-week baseline. Snowflake data goes back further (Feb shows even higher accidental rates, 50-70%), but we chose the 7 weeks immediately before the deploy as a stable, recent reference. CS data is April and May only because that's the window Tristan asked McChesney to pull. Either can be extended if needed.</p>
+          <p style="font-size: 0.82rem; color: var(--text-dim); margin: 0 0 1.5rem; line-height: 1.55;">The pre-experiment baseline now covers the full year-to-date (16 weeks, Jan 5 → Apr 26). The pattern is stable — 7 to 22 accidentals/wk, no underlying downward trend. Support-ticket data is April and May only because that's the window Tristan asked the CS team to pull. Either can be extended further.</p>
 
           <div style="margin: 0 0 2rem; padding: 1.1rem 1.3rem; background: var(--bg-elevated); border-left: 3px solid var(--info); border-radius: 0 8px 8px 0;">
             <div style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--info); text-transform: uppercase; margin-bottom: 0.6rem;">Methodology · how we identify accidental indies</div>

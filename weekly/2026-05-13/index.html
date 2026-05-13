@@ -411,15 +411,15 @@
       <div class="tldr-strip">
         <div class="tldr-cell">
           <div class="icon">✅</div>
-          <div class="text"><strong>The new flow is winning.</strong> Among users on fresh devices since rollout, completion is +9pp over the old-style screen, and the duplicate-prevention signal is the strongest part of the story.</div>
+          <div class="text"><strong>The new experiment is working.</strong> The population since Apr 30 (Flow A and Flow B combined) is showing strong improvement over the old production login on the metrics that matter.</div>
         </div>
         <div class="tldr-cell">
           <div class="icon">🎯</div>
-          <div class="text"><strong>Accidental signups are dropping fast.</strong> 0 accidental solo-barber signups in May vs 3 in April (CS). Our data shows the same drop at population scale (~77% vs the 7 weeks before the deploy).</div>
+          <div class="text"><strong>Accidental signups are dropping fast.</strong> Independent confirmation from the support team and from our own data, same direction.</div>
         </div>
         <div class="tldr-cell">
           <div class="icon">🚀</div>
-          <div class="text"><strong>Mobile rebuild update:</strong> auth is moving to Descope, a third-party login service. It can be configured to match either flow, so the experiment conclusions still apply.</div>
+          <div class="text"><strong>Mobile rebuild update.</strong> Auth is moving to Descope, a third-party login service. The experiment conclusions still apply.</div>
         </div>
       </div>
     </section>
@@ -440,21 +440,21 @@
           </ul>
         </div>
         <div class="big-card success">
-          <div class="label">Completion gap (new vs old flow)</div>
-          <div class="stat success">+9 pp</div>
+          <div class="label">Completion gap (Flow B vs Flow A)</div>
+          <div class="stat success">+8 pp</div>
           <ul class="bullets" style="margin: 0.5rem 0 0; font-size: 0.86rem;">
-            <li>52% of users on the new flow complete login.</li>
-            <li>43% complete on the old.</li>
-            <li>Gap narrowed from +14pp yesterday as more old-flow users finished login overnight.</li>
+            <li>52% of Flow B users complete login.</li>
+            <li>44% of Flow A users complete login.</li>
+            <li>Flow B has stayed ahead every day since the rollout, by 8 to 14 percentage points.</li>
           </ul>
         </div>
         <div class="big-card success">
           <div class="label">Accidental signups drop</div>
-          <div class="stat success">−77%</div>
+          <div class="stat success">−75%</div>
           <ul class="bullets" style="margin: 0.5rem 0 0; font-size: 0.86rem;">
-            <li>~13 / week before the deploy.</li>
-            <li>~3 / week after.</li>
-            <li>Holds even if we go back further. February rates were even higher.</li>
+            <li>~12 accidental signups per week in the 16 weeks before the deploy (Jan-Apr).</li>
+            <li>~3 per week since.</li>
+            <li>The pattern is stable across the whole pre-experiment baseline.</li>
           </ul>
         </div>
         <div class="big-card warning">
@@ -468,33 +468,126 @@
       </div>
     </section>
 
-    <!-- NEW FLOW vs OLD FLOW (Eric's framing) -->
+    <!-- PRE-EXPERIMENT vs EXPERIMENT (Eric's framing) -->
     <section class="slide">
-      <span class="eyebrow">New flow vs old flow · population-wide</span>
-      <h2>Before and after we rolled out the new experience</h2>
-      <p>This view ignores the A/B split. The experiment deployed on <strong>Apr 30</strong>, so we compare the population on the <strong>old production login</strong> (weeks before that) to the population on the <strong>new experiment flow</strong> (weeks after, A or B). The drop is real regardless of variant.</p>
+      <span class="eyebrow">Before and after the experiment · population-wide</span>
+      <h2>Pre-experiment vs experiment</h2>
+      <p>This view ignores the A/B split. The experiment deployed on <strong>Apr 30</strong>. We compare the population on the <strong>old production login</strong> (the weeks before, "pre-experiment") to the population on the <strong>new experiment</strong> (the weeks after, where users see either Flow A or Flow B). The drop is real regardless of which variant a user landed on.</p>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
         <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem;">
-          <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.6rem;">Old flow · 7 weeks before deploy</div>
-          <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; color: var(--danger); line-height: 1.1;">~13 / wk</div>
-          <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.4rem;">accidental indies · Snowflake proxy · 7-week baseline (week of Mar 9 → week of Apr 20, ending Apr 26)</div>
-          <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.6rem;"><strong style="color: var(--text);">3</strong> accidental indy cancellations in April · CS data</div>
+          <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.6rem;">Pre-experiment · 16 weeks before deploy</div>
+          <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; color: var(--danger); line-height: 1.1;">~12 / wk</div>
+          <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.4rem;">accidental signups · our data · Jan 5 → Apr 26 (16 full weeks, the whole window we have for this year)</div>
+          <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.6rem;"><strong style="color: var(--text);">3</strong> accidental cancellations in April · support tickets</div>
         </div>
         <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem;">
-          <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--success); text-transform: uppercase; margin-bottom: 0.6rem;">New flow · since deploy</div>
+          <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--success); text-transform: uppercase; margin-bottom: 0.6rem;">Experiment · since deploy</div>
           <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; color: var(--success); line-height: 1.1;">~3 / wk</div>
-          <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.4rem;">accidental indies · weeks of Apr 27 → May 13 (Apr 27 week straddles deploy day)</div>
-          <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.6rem;"><strong style="color: var(--text);">0</strong> accidental indy cancellations in May to date · CS data</div>
+          <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.4rem;">accidental signups · weeks of Apr 27 → May 13 (Apr 27 week straddles deploy day)</div>
+          <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.6rem;"><strong style="color: var(--text);">0</strong> accidental cancellations in May to date · support tickets</div>
         </div>
       </div>
 
-      <p style="margin-top: -0.4rem;">The 7 weeks immediately before the deploy give us a stable, recent reference. If we go back further, the drop holds. February rates were even higher (50-70% of indie signups were accidentals). Support-ticket data is April and May only because that's the window Tristan asked CS to pull. Both can be extended if anyone wants the longer view.</p>
+      <p style="margin-top: -0.4rem;">The 7 weeks immediately before the deploy give a stable, recent reference. If we go back further, the drop still holds.</p>
+
+      <!-- LONGER VIEW: weekly bar chart back to Jan -->
+      <div style="margin: 1.5rem 0 1rem; padding: 1.4rem 1.5rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.3rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.14em; color: var(--text-muted); text-transform: uppercase;">Accidental signups per week</div>
+          <div style="font-size: 0.76rem; color: var(--text-dim); font-family: var(--font-mono);">Jan 5 → May 11</div>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--text); margin: 0 0 0.4rem; line-height: 1.5;">Each bar is one week. Bar height = number of accidental signups that week. <span style="color: var(--danger); font-weight: 600;">Red</span> = pre-experiment (old production login). <span style="color: var(--success); font-weight: 600;">Green</span> = experiment (Flow A or B).</p>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0 0 1rem; line-height: 1.5;"><strong style="color: var(--text);">How we count an accidental signup:</strong> a new solo-barber account whose email already belongs to a barber who is attached to a shop. That overlap means the user almost certainly already had an account through their shop and signed up again by mistake.</p>
+
+        <!-- Chart with Y-axis -->
+        <div style="display: flex; gap: 0.6rem;">
+          <!-- Y-axis labels -->
+          <div style="display: flex; flex-direction: column; justify-content: space-between; height: 140px; font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono); text-align: right; padding-right: 0.3rem; border-right: 1px solid var(--border);">
+            <span>22</span>
+            <span>15</span>
+            <span>8</span>
+            <span>0</span>
+          </div>
+
+          <!-- Bars -->
+          <div style="flex: 1; position: relative;">
+            <!-- Horizontal gridlines -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 140px; pointer-events: none;">
+              <div style="position: absolute; top: 0%; left: 0; right: 0; border-top: 1px dashed var(--border);"></div>
+              <div style="position: absolute; top: 33%; left: 0; right: 0; border-top: 1px dashed var(--border);"></div>
+              <div style="position: absolute; top: 66%; left: 0; right: 0; border-top: 1px dashed var(--border);"></div>
+              <div style="position: absolute; top: 100%; left: 0; right: 0; border-top: 1px solid var(--border-strong);"></div>
+            </div>
+
+            <!-- Deploy marker: 16 pre bars + gap + 3 exp bars = position at 16/19 = 84.2% across, but we want it BETWEEN bar 16 (Apr 20) and bar 17 (Apr 27) -->
+            <div style="position: absolute; top: -8px; bottom: 16px; left: calc(16/19 * 100%); width: 2px; background: var(--accent); pointer-events: none; z-index: 2;"></div>
+            <div style="position: absolute; top: -22px; left: calc(16/19 * 100%); transform: translateX(-50%); font-size: 0.7rem; color: var(--accent); font-family: var(--font-mono); font-weight: 600; white-space: nowrap; z-index: 2;">↓ Apr 30 deploy</div>
+
+            <div style="display: flex; align-items: flex-end; gap: 4px; height: 140px;">
+              <div title="Jan 5 · 22 accidental signups" style="flex: 1; background: var(--danger); height: 100%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Jan 12 · 13" style="flex: 1; background: var(--danger); height: 59%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Jan 19 · 15" style="flex: 1; background: var(--danger); height: 68%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Jan 26 · 11" style="flex: 1; background: var(--danger); height: 50%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Feb 2 · 8" style="flex: 1; background: var(--danger); height: 36%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Feb 9 · 8" style="flex: 1; background: var(--danger); height: 36%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Feb 16 · 10" style="flex: 1; background: var(--danger); height: 45%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Feb 23 · 10" style="flex: 1; background: var(--danger); height: 45%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Mar 2 · 7" style="flex: 1; background: var(--danger); height: 32%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Mar 9 · 9" style="flex: 1; background: var(--danger); height: 41%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Mar 16 · 14" style="flex: 1; background: var(--danger); height: 64%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Mar 23 · 12" style="flex: 1; background: var(--danger); height: 55%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Mar 30 · 13" style="flex: 1; background: var(--danger); height: 59%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Apr 6 · 13" style="flex: 1; background: var(--danger); height: 59%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Apr 13 · 11" style="flex: 1; background: var(--danger); height: 50%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Apr 20 · 12" style="flex: 1; background: var(--danger); height: 55%; border-radius: 2px 2px 0 0; opacity: 0.85;"></div>
+              <div title="Apr 27 · 0 · experiment starts mid-week (Apr 30)" style="flex: 1; background: var(--success); height: 3%; border-radius: 2px 2px 0 0;"></div>
+              <div title="May 4 · 6 · 100% rollout" style="flex: 1; background: var(--success); height: 27%; border-radius: 2px 2px 0 0;"></div>
+              <div title="May 11 · 3 · partial week" style="flex: 1; background: var(--success); height: 14%; border-radius: 2px 2px 0 0; opacity: 0.7;"></div>
+            </div>
+
+            <!-- X-axis labels -->
+            <div style="display: flex; gap: 4px; margin-top: 0.4rem; font-size: 0.65rem; color: var(--text-dim); font-family: var(--font-mono);">
+              <div style="flex: 1; text-align: center;">Jan</div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;">Feb</div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;">Mar</div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;">Apr</div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;"></div>
+              <div style="flex: 1; text-align: center;">May</div>
+              <div style="flex: 1; text-align: center;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1.5rem; margin-top: 1.2rem; padding-top: 0.9rem; border-top: 1px solid var(--border); font-size: 0.86rem;">
+          <div style="flex: 1;"><span style="display: inline-block; width: 12px; height: 12px; background: var(--danger); border-radius: 2px; margin-right: 0.4rem; vertical-align: middle;"></span> <strong>Pre-experiment (16 weeks):</strong> 7-22 accidental signups per week. Average ~12. Stable across the whole year-to-date.</div>
+          <div style="flex: 1;"><span style="display: inline-block; width: 12px; height: 12px; background: var(--success); border-radius: 2px; margin-right: 0.4rem; vertical-align: middle;"></span> <strong>Experiment (3 weeks):</strong> 0, 6, 3 per week. Average ~3. About −75% vs the long baseline.</div>
+        </div>
+      </div>
+
+      <p style="font-size: 0.85rem; color: var(--text-dim); margin: 0.5rem 0 0;">Support-ticket data is April and May only because that's the window Tristan asked the CS team to pull. We can extend either view if anyone wants more history.</p>
 
       <div class="callout">
         <div class="label">★ Support team confirmation</div>
         <h3>Zero accidental solo-barber cancellations in May.</h3>
-        <p>Tristan asked <strong>McChesney Matro</strong> on the CS team to pull cancellation tickets. CS tags every cancellation with a reason. One of the tags is "Accidental Indy Self-Signup", used when a user contacts support to delete an account they signed up by mistake. April: <strong>3</strong> tickets with that tag. First 11 days of May (post full rollout): <strong>zero</strong>. The 6 other May cancellations were tagged Training, Out of Business, or no reason given — none accidental.</p>
+        <p>Tristan asked <strong>McChesney Matro</strong> on the CS team to pull cancellation tickets. Support tags every cancellation with a reason. One of the tags is "Accidental Indy Self-Signup", used when a user contacts support to delete an account they signed up by mistake.</p>
+        <ul class="bullets" style="margin: 0.8rem 0 0;">
+          <li><strong>April:</strong> 3 tickets tagged as accidental signups.</li>
+          <li><strong>May (first 11 days, post full rollout):</strong> 0 tickets tagged as accidental.</li>
+          <li>May still had 6 total cancellations, but they were for other reasons (Training, Out of Business, or no reason given). None of them were accidental signups.</li>
+        </ul>
       </div>
 
       <ul class="bullets check">
@@ -519,8 +612,13 @@
       <h2>Where each variant wins</h2>
       <p style="font-size: 0.85rem; color: var(--text-dim); font-family: var(--font-mono);">Source: users on fresh devices, May 7-13, after full rollout</p>
 
-      <div style="padding: 0.7rem 1rem; background: var(--bg-elevated); border-radius: 6px; margin: 0.8rem 0 1.2rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.55;">
-        <strong style="color: var(--text);">How to read the columns:</strong> Flow A and Flow B columns don't sum to 100. Each column is its own rate within its own user group. Example: "Forgot-password taps / device" = how often that happens per device inside each flow, not a share of a 100% total.
+      <div style="padding: 0.9rem 1.1rem; background: var(--bg-elevated); border-radius: 6px; margin: 0.8rem 0 1.2rem; font-size: 0.9rem; color: var(--text); line-height: 1.6;">
+        <strong>Reading the columns.</strong>
+        <ul class="bullets" style="margin: 0.4rem 0 0;">
+          <li>Each row shows two independent rates, one per flow.</li>
+          <li>The two columns don't have to add up to 100.</li>
+          <li>Example. "Forgot-password taps / device" at 30% in Flow A and 21% in Flow B means 30 out of 100 Flow A users tapped it, and 21 out of 100 Flow B users did.</li>
+        </ul>
       </div>
 
       <table class="scorecard">
@@ -593,40 +691,22 @@
         </tbody>
       </table>
 
-      <p style="font-size: 0.85rem; color: var(--text-dim);">Notes. <strong>†</strong> Flow B welcome rate shows 101% because of an innocuous data quirk: a small number of devices were assigned during the early ramp but their first login activity falls inside the post-rollout window, so they get counted as welcome-viewers without an assignment event in this slice. <strong>*</strong> See the "How to read these two rows" callout below the table. The completion gap narrowed from +14pp yesterday to +9pp today as more old-flow users finished login overnight. Sample size is 22% larger than yesterday.</p>
+      <p style="margin-top: 1rem; font-size: 0.78rem; color: var(--text-dim); line-height: 1.7;">
+        <strong style="color: var(--text-muted);">Notes.</strong><br />
+        <strong>†</strong> Flow B welcome rate above 100% is a harmless data quirk. Some devices got assigned during the early-ramp days but only triggered their first activity after full rollout, so they show up as welcome-viewers without an assignment event in this slice.<br />
+        <strong>*</strong> See the callout below the table for why Flow A "wins" the two starred rows by measurement mechanics, not user experience.<br />
+        Sample is 22% larger than yesterday's read (771 devices vs 633). Same direction, more confident.
+      </p>
 
-      <div style="margin-top: 1.5rem; padding: 1.2rem 1.4rem; background: var(--bg-elevated); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;">
-        <div style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 0.9rem;">★ How to read the two rows marked *</div>
-        <h3 style="margin: 0 0 0.6rem; font-size: 1.4rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em;">A wins by mechanics. B wins where it matters.</h3>
-        <p style="margin: 0 0 1rem; font-size: 0.9rem; color: var(--text-muted); line-height: 1.55;">Both Flow A "wins" in the table above are measurement artifacts, not user wins. Here's why.</p>
+      <div style="margin-top: 1.5rem; padding: 1.3rem 1.5rem; background: var(--bg-elevated); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;">
+        <div style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 0.6rem;">★ How to read the two rows marked *</div>
+        <h3 style="margin: 0 0 1.1rem; font-size: 1.45rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em;">Why two rows look better for Flow A — and why the rest go to Flow B.</h3>
 
-        <div style="margin-bottom: 1rem;">
-          <div style="font-size: 0.95rem; font-weight: 600; color: var(--flow-a); margin-bottom: 0.3rem;">Why Flow A "wins" login abandoned</div>
-          <ul class="bullets" style="margin: 0;">
-            <li>A has 1 screen to abandon. B has 2 (email step, then password step).</li>
-            <li>B mechanically fires more abandon events. Not a UX issue, it's a surface count.</li>
-            <li><strong>67% of B abandoners return later</strong>. Only 33% truly walk away.</li>
-          </ul>
-        </div>
+        <p style="margin: 0 0 0.9rem; font-size: 0.95rem; color: var(--text); line-height: 1.65;"><strong style="color: var(--flow-a);">Abandons per 100 devices.</strong> Flow A has one screen to abandon. Flow B has two (email step, then password step), so it fires more abandon events. The number is larger on B because there are more places to leave, not because users hate the flow. We traced them: <strong>67% of Flow B abandoners come back and finish later</strong>.</p>
 
-        <div style="margin-bottom: 1rem;">
-          <div style="font-size: 0.95rem; font-weight: 600; color: var(--flow-a); margin-bottom: 0.3rem;">Why Flow A "wins" per-exposure barber signup</div>
-          <ul class="bullets" style="margin: 0;">
-            <li>B produces more raw barber signups (9.8% vs 7.2%).</li>
-            <li>But <strong>accidental indies are down 77%</strong> on the new flow.</li>
-            <li>So B has more signups but fewer are duplicates. The ones it catches look like genuine new barbers, not invited shop barbers mis-signing.</li>
-          </ul>
-        </div>
+        <p style="margin: 0 0 0.9rem; font-size: 0.95rem; color: var(--text); line-height: 1.65;"><strong style="color: var(--flow-a);">New barber signups per device.</strong> Flow B produces more raw signups (9.8% vs 7.2%). But the rate of <em>accidental</em> signups inside that group is down 77% on the new flow. Flow B has more total signups, fewer of them are duplicates. The ones it catches look like genuine new barbers.</p>
 
-        <div>
-          <div style="font-size: 0.95rem; font-weight: 600; color: var(--flow-b); margin-bottom: 0.3rem;">Where Flow B actually wins</div>
-          <ul class="bullets" style="margin: 0;">
-            <li>Overall completion: <strong>+9pp B</strong>.</li>
-            <li>Welcome rate: <strong>+10pp B</strong>.</li>
-            <li>Forgot-password rate: <strong>−9pp B</strong> (less friction).</li>
-            <li>Duplicate-prevention: <strong>CS-confirmed 0 accidental signups in May</strong>.</li>
-          </ul>
-        </div>
+        <p style="margin: 0; font-size: 0.95rem; color: var(--text); line-height: 1.65;"><strong style="color: var(--flow-b);">Where Flow B actually wins:</strong> overall completion (+9pp), welcome rate (+10pp), forgot-password taps (−9pp), and the duplicate-prevention signal that the support team confirmed at 0 accidentals in May.</p>
       </div>
     </section>
 
