@@ -386,7 +386,7 @@
     <section class="slide cover">
       <span class="eyebrow">Weekly Sync · May 13</span>
       <h1>Onboarding <em>Sync</em></h1>
-      <p class="lede">Login experiment status + what's coming with the RN migration.</p>
+      <p class="lede">Login experiment status + what's coming with the mobile rebuild.</p>
       <div class="meta">
         <div>
           <span class="meta-label">Date</span>
@@ -411,45 +411,45 @@
       <div class="tldr-strip">
         <div class="tldr-cell">
           <div class="icon">✅</div>
-          <div class="text"><strong>Flow B still wins on conversion.</strong> +9pp overall completion vs A on clean NEW-device data (was +14pp Tuesday as Flow A late-completers catch up).</div>
+          <div class="text"><strong>The new flow is winning.</strong> Among users on fresh devices since rollout, completion is +9pp over the old-style screen, and the duplicate-prevention signal is the strongest part of the story.</div>
         </div>
         <div class="tldr-cell">
           <div class="icon">🎯</div>
-          <div class="text"><strong>Duplicate-prevention signal deepened.</strong> 0 accidental indy signups in May (CS) and Snowflake drop widened to ~77% vs the 8-week baseline.</div>
+          <div class="text"><strong>Accidental signups are dropping fast.</strong> 0 accidental solo-barber signups in May vs 3 in April (CS). Our data shows the same drop at population scale (~77% vs the 7 weeks before the deploy).</div>
         </div>
         <div class="tldr-cell">
           <div class="icon">🚀</div>
-          <div class="text"><strong>RN migration:</strong> the team is using Descope for auth. The flow can still be configured as A or B.</div>
+          <div class="text"><strong>Mobile rebuild update:</strong> auth is moving to Descope, a third-party login service. It can be configured to match either flow, so the experiment conclusions still apply.</div>
         </div>
       </div>
     </section>
 
     <!-- BIG NUMBERS -->
     <section class="slide">
-      <span class="eyebrow">Experiment status · post-100% NEW devices</span>
+      <span class="eyebrow">Experiment status · users on fresh devices, May 7-13</span>
       <h2>The clean-data numbers</h2>
-      <p>After filtering out legacy users with sticky LD buckets, the experiment reads clean. SRM is essentially 50/50 and Flow B is winning where it counts.</p>
+      <p>We focus on users on fresh devices since the rollout. That excludes users whose phones were already locked into one version from earlier testing, so the split is an even 50/50 and the comparison reads clean.</p>
 
       <div class="big-cards">
         <div class="big-card success">
-          <div class="label">SRM (sample ratio)</div>
+          <div class="label">Traffic split · even</div>
           <div class="stat success">50.5 / 49.5</div>
-          <div class="sub">Was 73/27 contaminated by legacy. Sticky-bucket fix confirmed, steady on clean sample.</div>
+          <div class="sub">Steady. Each flow is reaching the same share of users, so the comparison is fair.</div>
         </div>
         <div class="big-card success">
-          <div class="label">Overall completion gap</div>
+          <div class="label">Completion gap (new vs old flow)</div>
           <div class="stat success">+9 pp</div>
-          <div class="sub">Flow B 51.8% vs Flow A 43.2% on NEW devices. Gap narrowed (was +14pp Tuesday) as Flow A users finish late.</div>
+          <div class="sub">52% of users on the new flow complete login vs 43% on the old. Gap narrowed from +14pp Tuesday as more old-flow users finished login.</div>
         </div>
         <div class="big-card success">
-          <div class="label">Accidental indies drop</div>
+          <div class="label">Accidental signups drop</div>
           <div class="stat success">−77%</div>
-          <div class="sub">13/wk pre-experiment to 3/wk experiment weeks. Drop deepened from -69% Tuesday.</div>
+          <div class="sub">~13/wk before the deploy → ~3/wk after. The deeper the data, the stronger the drop.</div>
         </div>
         <div class="big-card warning">
-          <div class="label">Email_entry truly lost</div>
+          <div class="label">Email step · truly abandoned</div>
           <div class="stat warning">33%</div>
-          <div class="sub">Steady around a third (was 31% Tuesday). Two thirds of abandoners return.</div>
+          <div class="sub">Steady around a third (was 31% Tuesday). Two thirds of users who pause at the email step come back later.</div>
         </div>
       </div>
     </section>
@@ -490,11 +490,11 @@
       </ul>
 
       <div style="margin-top: 1.5rem; padding: 1rem 1.2rem; background: var(--bg-elevated); border-left: 3px solid var(--info); border-radius: 0 6px 6px 0;">
-        <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--info); text-transform: uppercase; margin-bottom: 0.5rem;">Methodology · how we identify accidental indies</div>
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--info); text-transform: uppercase; margin-bottom: 0.5rem;">How we know someone signed up by accident</div>
         <ul class="bullets" style="margin: 0;">
-          <li><strong>Snowflake (proxy):</strong> if a new "indie" account's email also belongs to a barber that's already attached to a shop, it's most likely a duplicate (the invited barber didn't realize they already had an account).</li>
-          <li><strong>CS data (direct):</strong> the support team tags their own cancellation tickets as "Accidental Indy Self-Signup" when users ask to delete a wrong account. No inference needed.</li>
-          <li><strong>CS is the cleanest signal.</strong> Snowflake is the volume read; CS is the ground truth.</li>
+          <li><strong>From our data (volume read):</strong> if a new solo-barber account uses the same email as a barber who's already attached to a shop, it's almost certainly a duplicate. The invited barber didn't realize they already had an account.</li>
+          <li><strong>From support tickets (ground truth):</strong> the support team tags every cancellation ticket with a reason. "Accidental Indy Self-Signup" is one of those reason tags. No inference needed, the user literally told CS they signed up by mistake.</li>
+          <li><strong>Support tickets are the cleanest signal.</strong> Our data shows the volume of likely duplicates; tickets show the ones users actually flagged as wrong.</li>
         </ul>
       </div>
     </section>
@@ -503,7 +503,7 @@
     <section class="slide">
       <span class="eyebrow">Scorecard · Flow A vs Flow B head to head</span>
       <h2>Where each variant wins</h2>
-      <p style="font-size: 0.85rem; color: var(--text-dim); font-family: var(--font-mono);">Source: post-100% NEW devices only · May 7-13</p>
+      <p style="font-size: 0.85rem; color: var(--text-dim); font-family: var(--font-mono);">Source: users on fresh devices, May 7-13, after full rollout</p>
 
       <table class="scorecard">
         <thead>
@@ -517,56 +517,56 @@
         </thead>
         <tbody>
           <tr>
-            <td class="metric">SRM (LD assignment)</td>
+            <td class="metric">Traffic split</td>
             <td class="value">50.5%</td>
             <td class="value">49.5%</td>
-            <td class="value">0.5 pp from 50/50</td>
+            <td class="value">0.5 pp from even</td>
             <td class="value"><span class="badge tied">Tied</span></td>
           </tr>
           <tr>
-            <td class="metric">Welcome rate</td>
+            <td class="metric">Welcome screen reach rate</td>
             <td class="value">91.7%</td>
             <td class="value win">101.4%</td>
             <td class="value">+9.7 pp</td>
             <td class="value"><span class="badge flowB">Flow B</span></td>
           </tr>
           <tr>
-            <td class="metric">Login conversion (succ÷welcome)</td>
+            <td class="metric">Login success rate <span style="font-size: 0.7rem; color: var(--text-dim);">(of users who saw welcome)</span></td>
             <td class="value">47.1%</td>
             <td class="value win">51.1%</td>
             <td class="value">+4.0 pp</td>
             <td class="value"><span class="badge flowB">Flow B</span></td>
           </tr>
           <tr>
-            <td class="metric">Overall completion (succ÷assigned)</td>
+            <td class="metric">Completion rate <span style="font-size: 0.7rem; color: var(--text-dim);">(of all users assigned)</span></td>
             <td class="value">43.2%</td>
             <td class="value win">51.8%</td>
             <td class="value">+8.6 pp</td>
             <td class="value"><span class="badge flowB">Flow B</span></td>
           </tr>
           <tr>
-            <td class="metric">Forgot password / device</td>
+            <td class="metric">Forgot-password taps / device</td>
             <td class="value">30.1%</td>
             <td class="value win">21.5%</td>
             <td class="value">−8.6 pp</td>
             <td class="value"><span class="badge flowB">Flow B</span></td>
           </tr>
           <tr>
-            <td class="metric">Login abandoned / device</td>
+            <td class="metric">Abandons / device <span style="font-size: 0.7rem; color: var(--text-dim);">*</span></td>
             <td class="value win">32.8%</td>
             <td class="value">52.0%</td>
             <td class="value">+19.2 pp</td>
             <td class="value"><span class="badge flowA">Flow A</span></td>
           </tr>
           <tr>
-            <td class="metric">Per-exposure barber signup rate</td>
+            <td class="metric">New barber signups / device <span style="font-size: 0.7rem; color: var(--text-dim);">*</span></td>
             <td class="value win">7.2%</td>
             <td class="value">9.8%</td>
             <td class="value">+2.6 pp</td>
             <td class="value"><span class="badge flowA">Flow A</span></td>
           </tr>
           <tr>
-            <td class="metric">temp_password catch (Flow B only)</td>
+            <td class="metric">Caught invited barbers before duplicate signup <span style="font-size: 0.7rem; color: var(--text-dim);">(B only)</span></td>
             <td class="value">—</td>
             <td class="value">27.6%</td>
             <td class="value">n/a</td>
@@ -575,11 +575,12 @@
         </tbody>
       </table>
 
-      <p>The overall-completion gap narrowed from +14pp Tuesday to +9pp today as Flow A late-completers finished login. Sample 22% larger (609 → 742 NEW devices).</p>
+      <p style="font-size: 0.85rem; color: var(--text-dim);">Note. The completion gap narrowed from +14pp Tuesday to +9pp today as more old-flow users finished login over the last day. Sample size is 22% larger than Tuesday.</p>
 
       <div style="margin-top: 1.5rem; padding: 1.2rem 1.4rem; background: var(--bg-elevated); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;">
-        <div style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 0.9rem;">How to read the scorecard</div>
-        <h3 style="margin: 0 0 0.9rem; font-size: 1.15rem; font-weight: 600; color: var(--text);">A wins by mechanics. B wins where it matters.</h3>
+        <div style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 0.9rem;">★ How to read the two rows marked *</div>
+        <h3 style="margin: 0 0 0.6rem; font-size: 1.4rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em;">A wins by mechanics. B wins where it matters.</h3>
+        <p style="margin: 0 0 1rem; font-size: 0.9rem; color: var(--text-muted); line-height: 1.55;">Both Flow A "wins" in the table above are measurement artifacts, not user wins. Here's why.</p>
 
         <div style="margin-bottom: 1rem;">
           <div style="font-size: 0.95rem; font-weight: 600; color: var(--flow-a); margin-bottom: 0.3rem;">Why Flow A "wins" login abandoned</div>
@@ -613,14 +614,14 @@
 
     <!-- DESCOPE -->
     <section class="slide">
-      <span class="eyebrow">What's next · RN migration</span>
+      <span class="eyebrow">What's next · mobile rebuild</span>
       <h2>Auth is moving to <em>Descope</em></h2>
-      <p class="lede">Instead of me building the login flow custom in React Native, the team is integrating <strong>Descope</strong>, an auth-as-a-service product. The good news: <strong>the Descope flow can be configured to match either Flow A or Flow B</strong>, so our experiment's conclusions still apply.</p>
+      <p class="lede">Auth is moving to <strong>Descope</strong>, a third-party login service. It can be configured to match either Flow A or Flow B, so the experiment conclusions still apply.</p>
 
       <ul class="bullets">
-        <li><strong>What changes:</strong> auth backend + UI provided by Descope, not custom code.</li>
-        <li><strong>What doesn't:</strong> the visual flow we A/B tested can be replicated in Descope.</li>
-        <li><strong>What we keep:</strong> Flow B winning conclusion → configure Descope as Flow B.</li>
+        <li><strong>What changes:</strong> login backend and UI come from Descope, not custom code.</li>
+        <li><strong>What doesn't:</strong> the visual flow we tested can be replicated inside Descope.</li>
+        <li><strong>What we keep:</strong> the Flow B verdict carries over. We configure Descope as Flow B.</li>
       </ul>
 
       <h3 style="margin-top: 2.4rem;">Three views, side by side</h3>
@@ -676,10 +677,10 @@
       <h2>What's on the table</h2>
 
       <ul class="bullets">
-        <li><strong>Wait for the 3.23.1 deploy</strong> (PR #4143 scope-leak fix merged, deploys today).</li>
-        <li><strong>Microsoft Clarity install on iOS</strong> with Yurii — about to deploy. Will let us record sessions on the email_entry friction.</li>
-        <li><strong>Confirm success metric</strong> with Eric and Tristan: accidental indies reduction (CS-confirmed) is the agreed signal.</li>
-        <li><strong>Coordinate with RN team</strong> on configuring Descope to match Flow B.</li>
+        <li><strong>Wait for today's iOS 3.23.1 release</strong> (fixes a bug where a few users got bucketed into both flows).</li>
+        <li><strong>Microsoft Clarity install on iOS</strong> with Yurii, about to deploy. Will let us record sessions and see what users do at the email step.</li>
+        <li><strong>Confirm success metric</strong> with Eric and Tristan: reducing accidental signups (support-ticket-confirmed) is the agreed signal.</li>
+        <li><strong>Coordinate with mobile-rebuild team</strong> on configuring Descope to match Flow B.</li>
       </ul>
     </section>
 
