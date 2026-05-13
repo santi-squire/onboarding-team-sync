@@ -1562,14 +1562,37 @@
               <tbody>${rows}</tbody>
             </table>
           </div>
-          <div style="margin-top: 1.4rem; padding: 1.1rem 1.3rem; background: var(--bg-elevated); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;">
-            <div style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 0.6rem;">Reading the scorecard · A wins by mechanics, B wins where it matters</div>
-            <p style="margin: 0 0 0.7rem; font-size: 0.92rem; color: var(--text); line-height: 1.55;">The two rows where Flow A "wins" are explained by surface mechanics, not UX advantage.</p>
-            <ul style="margin: 0; padding-left: 1.2rem; list-style: none;">
-              <li style="position: relative; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.5rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--accent); font-weight: 700;">›</span><strong style="color: var(--text);">Login abandoned / device:</strong> Flow A has 1 screen to abandon (combined email+password). Flow B has 2 (email step, then password step). B mechanically fires more abandon events. Followup shows <strong>67% of B abandoners come back later</strong>, only 33% truly walk away.</li>
-              <li style="position: relative; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.5rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--accent); font-weight: 700;">›</span><strong style="color: var(--text);">Per-exposure barber signup rate:</strong> B produces more raw barber signups, but the <strong>accidental-indies signal is down 77%</strong> on the new flow. So B has more signups but fewer of them are duplicates.</li>
-              <li style="position: relative; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--success); font-weight: 700;">✓</span><strong style="color: var(--text);">Where it actually matters:</strong> overall completion (+9pp B), welcome rate (+10pp B), forgot-password rate (−9pp B), duplicate-prevention (CS-confirmed 0 in May).</li>
-            </ul>
+          <div style="margin-top: 1.4rem; padding: 1.2rem 1.4rem; background: var(--bg-elevated); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0;">
+            <div style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; margin-bottom: 0.9rem;">How to read the scorecard</div>
+            <h3 style="margin: 0 0 0.9rem; font-size: 1.1rem; font-weight: 600; color: var(--text);">A wins by mechanics. B wins where it matters.</h3>
+
+            <div style="margin-bottom: 1rem;">
+              <div style="font-size: 0.92rem; font-weight: 600; color: var(--flow-a); margin-bottom: 0.4rem;">Why Flow A "wins" login abandoned</div>
+              <ul style="margin: 0; padding-left: 1.2rem; list-style: none;">
+                <li style="position: relative; font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.3rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--flow-a); font-weight: 700;">›</span>A has 1 screen to abandon. B has 2 (email step, then password step).</li>
+                <li style="position: relative; font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.3rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--flow-a); font-weight: 700;">›</span>B mechanically fires more abandon events. Not a UX issue, just a surface count.</li>
+                <li style="position: relative; font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--flow-a); font-weight: 700;">›</span><strong style="color: var(--text);">67% of B abandoners return later.</strong> Only 33% truly walk away.</li>
+              </ul>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+              <div style="font-size: 0.92rem; font-weight: 600; color: var(--flow-a); margin-bottom: 0.4rem;">Why Flow A "wins" per-exposure barber signup</div>
+              <ul style="margin: 0; padding-left: 1.2rem; list-style: none;">
+                <li style="position: relative; font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.3rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--flow-a); font-weight: 700;">›</span>B produces more raw barber signups (9.8% vs 7.2%).</li>
+                <li style="position: relative; font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.3rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--flow-a); font-weight: 700;">›</span>But <strong style="color: var(--text);">accidental indies are down 77%</strong> on the new flow.</li>
+                <li style="position: relative; font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--flow-a); font-weight: 700;">›</span>So B has more signups but fewer are duplicates. The ones it catches look like genuine new barbers.</li>
+              </ul>
+            </div>
+
+            <div>
+              <div style="font-size: 0.92rem; font-weight: 600; color: var(--flow-b); margin-bottom: 0.4rem;">Where Flow B actually wins</div>
+              <ul style="margin: 0; padding-left: 1.2rem; list-style: none;">
+                <li style="position: relative; font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.3rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--flow-b); font-weight: 700;">›</span>Overall completion: <strong style="color: var(--text);">+9pp B</strong>.</li>
+                <li style="position: relative; font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.3rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--flow-b); font-weight: 700;">›</span>Welcome rate: <strong style="color: var(--text);">+10pp B</strong>.</li>
+                <li style="position: relative; font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.3rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--flow-b); font-weight: 700;">›</span>Forgot-password rate: <strong style="color: var(--text);">−9pp B</strong> (less friction).</li>
+                <li style="position: relative; font-size: 0.86rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--success); font-weight: 700;">✓</span>Duplicate-prevention: <strong style="color: var(--text);">CS-confirmed 0 in May</strong>.</li>
+              </ul>
+            </div>
           </div>
           <div class="verdict-box">
             <div class="verdict-eyebrow">⚖ Overall verdict</div>
@@ -1680,20 +1703,23 @@
             ${hc.statusNote ? (typeof hc.statusNote === 'string' ? `<p class="section-sub" style="margin-top: 0.4rem; font-size: 0.82rem; opacity: 0.8;">${hc.statusNote}</p>` : `<div style="margin-top: 0.6rem;">${renderStructuredText(hc.statusNote, { bulletColor: 'var(--info)' })}</div>`) : ''}
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0 0 1.5rem;">
+          <p style="font-size: 0.92rem; color: var(--text); margin: 0 0 1rem; line-height: 1.55;">The experiment deployed on <strong>Apr 30</strong>. This view ignores the A/B split and compares the population on the <strong>old production login</strong> (the 7 full weeks before that) to the population on the <strong>new experiment flow</strong> (Apr 27 week onwards, since that week straddles the deploy).</p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0 0 0.6rem;">
             <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem;">
-              <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.6rem;">Old flow · pre Apr 30</div>
+              <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.6rem;">Old flow · 7 weeks before deploy</div>
               <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; color: var(--danger); line-height: 1.1;">~13 / wk</div>
-              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.4rem;">accidental indies (Snowflake proxy, 8wk baseline Mar 9 - Apr 20)</div>
-              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.5rem;"><strong style="color: var(--text);">3</strong> accidental indy cancellations in April (CS data)</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.4rem;">accidental indies · Snowflake proxy · 7-week baseline (week of Mar 9 → week of Apr 20, ending Apr 26)</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.5rem;"><strong style="color: var(--text);">3</strong> accidental indy cancellations in April · CS data</div>
             </div>
             <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem;">
-              <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--success); text-transform: uppercase; margin-bottom: 0.6rem;">New flow · post Apr 30</div>
+              <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; color: var(--success); text-transform: uppercase; margin-bottom: 0.6rem;">New flow · since deploy</div>
               <div style="font-family: var(--font-display); font-size: 2.4rem; font-weight: 600; color: var(--success); line-height: 1.1;">~3 / wk</div>
-              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.4rem;">accidental indies (Apr 27 → May 13)</div>
-              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.5rem;"><strong style="color: var(--text);">0</strong> accidental indy cancellations in May to date (CS data)</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.4rem;">accidental indies · weeks of Apr 27 → May 13</div>
+              <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 0.5rem;"><strong style="color: var(--text);">0</strong> accidental indy cancellations in May to date · CS data</div>
             </div>
           </div>
+          <p style="font-size: 0.82rem; color: var(--text-dim); margin: 0 0 1.5rem; line-height: 1.55;">Why the 7-week baseline. Snowflake data goes back further (Feb shows even higher accidental rates, 50-70%), but we chose the 7 weeks immediately before the deploy as a stable, recent reference. CS data is April and May only because that's the window Tristan asked McChesney to pull. Either can be extended if needed.</p>
 
           <div style="margin: 0 0 2rem; padding: 1.1rem 1.3rem; background: var(--bg-elevated); border-left: 3px solid var(--info); border-radius: 0 8px 8px 0;">
             <div style="font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--info); text-transform: uppercase; margin-bottom: 0.6rem;">Methodology · how we identify accidental indies</div>
