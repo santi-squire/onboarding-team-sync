@@ -1,6 +1,6 @@
 # Session Handoff — Onboarding Experiment Tracker
 
-**Last updated:** 2026-05-13 (morning)
+**Last updated:** 2026-05-13 (midday refresh)
 **For the next session:** read this first, then continue work on the tracker / today's deck refresh.
 
 ---
@@ -281,55 +281,56 @@ GROUP BY week_start ORDER BY week_start;
 
 ---
 
-## Current numbers (as of 2026-05-12 refresh)
+## Current numbers (as of 2026-05-13 refresh)
 
 These are the values currently in `data/2026-05-08.json`. Next refresh should update these.
 
 **Post-100% NEW devices (canonical clean sample):**
-- flowA: 309 devices, 64 logged-in, 158 actors
-- flowB: 300 devices, 5 logged-in, 108 actors
-- Split: **50.7 / 49.3**
+- flowA: 375 devices, 86 logged-in, 193 actors
+- flowB: 367 devices, 6 logged-in, 135 actors
+- Split: **50.5 / 49.5**
 
 **Funnel NEW:**
-- flowA: 309 → 288 → 125 (welcome 93.2%, conv 43.4%, **overall 40.5%**)
-- flowB: 300 → 305 → 164 (welcome 101.7%, conv 53.8%, **overall 54.7%**)
+- flowA: 375 → 344 → 162 (welcome 91.7%, conv 47.1%, **overall 43.2%**)
+- flowB: 367 → 372 → 190 (welcome 101.4%, conv 51.1%, **overall 51.8%**)
+- Gap narrowed from +14pp Tuesday to **+9pp** today (Flow A late-completers caught up).
 
 **Email check NEW (Flow B):**
-- 367 total events
-- returning email: 167 (45.5%)
-- temp_password email: 107 (29.2%)
-- new_user email: 64 (17.4%)
+- 450 total events
+- returning email: 210 (46.7%)
+- temp_password email: 124 (27.6%)
+- new_user email: 80 (17.8%)
 
 **Friction NEW (per-device rates):**
-- forgot_password: A 30.7% / B 20.7%
-- login_abandoned: A 32.4% / B 50.3%
-- login_failed: B 26.3% (A=0 due to legacy version data quality issue)
+- forgot_password: A 30.1% / B 21.5%
+- login_abandoned: A 32.8% / B 52.0%
+- login_failed: B 24.5% (A=0 due to legacy version data quality issue)
 
 **Per-exposure barber signup rate NEW:**
-- flowA barber/signup_link: 21/309 = 6.8%
-- flowB barber/email_not_found: 30/300 = 10.0%
+- flowA barber/signup_link: 27/375 = 7.2%
+- flowB barber/email_not_found: 36/367 = 9.8%
 
 **Email_entry abandoner followup NEW:**
-- Total: 35 unique
-- Came back & logged in: 12 (34%)
-- Came back & signed up: 6 (17%)
-- Came back no outcome: 8 (23%)
-- **Truly lost: 11 (31%)** — was 24% Monday, watching cohort effect
+- Total: 46 unique
+- Came back & logged in: 16 (35%)
+- Came back & signed up: 9 (20%)
+- Came back no outcome: 9 (20%)
+- **Truly lost: 15 (33%)** — was 31% Tuesday, 24% last Monday. Stabilizing.
 
 **Accidental indies weekly:**
-- 8-week pre-experiment baseline (Mar 9 - Apr 20): 12.9/wk avg, ~70% rate
-- Experiment (Apr 27 - May 11): 4/wk avg, ~45% rate
-- **−69% drop**
+- 8-week pre-experiment baseline (Mar 9 - Apr 20): 13.0/wk avg, ~66% rate
+- Experiment (Apr 27 - May 13): 3.0/wk avg, ~45% rate
+- **−77% drop** (was -69% Tuesday — Apr 27 week settled at 0 accidentals)
 
 **Total indies weekly:**
-- Pre-experiment: 18.4/wk
-- Experiment: 9.5/wk
-- **−48% drop**
+- Pre-experiment: 19.6/wk
+- Experiment: 10.4/wk
+- **−47% drop**
 
 **Duplicate email rate weekly:**
-- Pre-experiment 8wk: 16.0% avg
-- Experiment: 14.05% avg
-- **−12% (inside noise)**
+- Pre-experiment 8wk: 15.9% avg
+- Experiment: 14.1% avg
+- **−11% (inside noise)**
 
 **CS data (McChesney Matro · pulled 2026-05-11):**
 - April 2026: 3 accidental indy self-signup cancellations

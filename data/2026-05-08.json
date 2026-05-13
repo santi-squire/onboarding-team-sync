@@ -6,32 +6,32 @@
 
   "rolloutContext": {
     "fullRolloutDate": "2026-05-07",
-    "today": "2026-05-12",
-    "daysAtFullRollout": 5.5,
-    "note": "100% rollout went live 2026-05-07. Refreshed 2026-05-12 with ~5.5 days of post-rollout data. SRM has resolved on NEW devices to 50.7/49.3 — essentially 50/50."
+    "today": "2026-05-13",
+    "daysAtFullRollout": 6.5,
+    "note": "100% rollout went live 2026-05-07. Refreshed 2026-05-13 with ~6.5 days of post-rollout data. SRM still effectively 50/50 on NEW devices (50.5/49.5). Sample grew 22% vs Tuesday."
   },
 
   "abandonFollowup": {
-    "headline": "69% of Flow B email_entry abandoners come back — most 'abandonment' is soft, not friction.",
+    "headline": "67% of Flow B email_entry abandoners come back — most 'abandonment' is soft, not friction.",
     "subtitle": "Friday's concern was Flow B's 52% login_abandoned rate vs Flow A's 28%. We traced each abandoner's anonymous_id to see if they returned.",
     "method": "Took all distinct ANONYMOUS_IDs that fired login_abandoned with last_step_reached='email_entry' in Flow B (NEW devices, post-100%). For each, checked whether they had any LOGIN_SUCCEEDED, ACCOUNT_CREATED, or IDENTIFIES event AFTER their first abandon timestamp.",
     "results": {
-      "total_email_abandoners": 35,
-      "later_logged_in": { "count": 12, "pct": 34 },
-      "later_signed_up": { "count": 6, "pct": 17 },
-      "came_back_no_outcome": { "count": 8, "pct": 23 },
-      "truly_lost": { "count": 11, "pct": 31 }
+      "total_email_abandoners": 46,
+      "later_logged_in": { "count": 16, "pct": 35 },
+      "later_signed_up": { "count": 9, "pct": 20 },
+      "came_back_no_outcome": { "count": 9, "pct": 20 },
+      "truly_lost": { "count": 15, "pct": 33 }
     },
-    "implicationHeadline": "Most 'abandonment' is users retrying, but truly-lost share is climbing.",
+    "implicationHeadline": "Most 'abandonment' is users retrying. Truly-lost share is steady around a third.",
     "implicationBullets": [
-      "51% (18/35) completed login or signup after abandoning.",
-      "23% (8/35) returned but haven't finished yet.",
-      "31% (11/35) are truly lost (was 24% on Monday).",
-      "Truly-lost share rising as cohort matures — re-check next refresh."
+      "54% (25/46) completed login or signup after abandoning.",
+      "20% (9/46) returned but haven't finished yet.",
+      "33% (15/46) are truly lost (steady — was 31% Tuesday, 24% last Monday).",
+      "Cohort matures; truly-lost number stabilizing near ~33%."
     ],
     "implicationWhy": "Flow B has more measurable abandon surfaces than Flow A, which inflates the rate.",
-    "verdict": "Concern still downgraded but truly-lost trend worth watching. Clarity recordings will show what users do.",
-    "caveat": "Sample is small (25 unique abandoners). Refresh weekly. The 7 'came back but no outcome' bucket is a wait-and-see — could complete later."
+    "verdict": "Concern still downgraded. Two thirds of abandoners return. Clarity recordings will show what the rest do.",
+    "caveat": "Sample grew from 35 to 46 abandoners. Refresh weekly. The 9 'came back but no outcome' bucket is a wait-and-see — could complete later."
   },
 
   "indieClassification": {
@@ -277,89 +277,89 @@
     "postRolloutNew": {
       "label": "Post-100% NEW devices only · cleanest experiment read",
       "windowStart": "2026-05-07",
-      "windowEnd": "2026-05-12",
-      "approxDays": 5.5,
+      "windowEnd": "2026-05-13",
+      "approxDays": 6.5,
       "filterDescription": "Devices whose first IDENTIFIES event is on or after 2026-05-07 — i.e., genuinely new entries to the experiment, not pre-existing legacy users with sticky LD buckets.",
-      "refreshNote": "Refreshed 2026-05-12 with 4 additional days of data. Sample grew 4x (143 → 609 devices). SRM essentially 50/50 on clean pool.",
+      "refreshNote": "Refreshed 2026-05-13. Sample grew 22% (609 → 742 devices). SRM still 50/50. Flow A conversion is catching up as more devices in that cohort age out; gap narrowed from +14pp to +9pp on overall completion.",
 
       "variantBalance": {
         "expected": { "flowA": 50, "flowB": 50 },
         "snowflake": {
-          "flowA": 309,
-          "flowB": 300,
-          "actorsFlowA": 158,
-          "actorsFlowB": 108,
-          "loggedInFlowA": 64,
-          "loggedInFlowB": 5,
-          "totalEventsFlowA": 511,
-          "totalEventsFlowB": 377,
+          "flowA": 375,
+          "flowB": 367,
+          "actorsFlowA": 193,
+          "actorsFlowB": 135,
+          "loggedInFlowA": 86,
+          "loggedInFlowB": 6,
+          "totalEventsFlowA": 632,
+          "totalEventsFlowB": 466,
           "unit": "distinct devices"
         },
-        "splitPct": { "flowA": 50.7, "flowB": 49.3 },
-        "srmStatus": "50.7/49.3 — effectively 50/50. SRM fully resolved on clean sample. Confirms the 73/27 in all-data was sticky-bucket artifact."
+        "splitPct": { "flowA": 50.5, "flowB": 49.5 },
+        "srmStatus": "50.5/49.5 — effectively 50/50. SRM stable across the refresh. Confirms the 73/27 in all-data was sticky-bucket artifact."
       },
 
       "funnel": {
         "steps": ["Assigned", "Welcome viewed", "Login succeeded"],
-        "flowA": [309, 288, 125],
-        "flowB": [300, 305, 164],
+        "flowA": [375, 344, 162],
+        "flowB": [367, 372, 190],
         "rates": {
-          "flowA": { "welcome": 93.2, "conversion": 43.4, "overall": 40.5 },
-          "flowB": { "welcome": 101.7, "conversion": 53.8, "overall": 54.7 }
+          "flowA": { "welcome": 91.7, "conversion": 47.1, "overall": 43.2 },
+          "flowB": { "welcome": 101.4, "conversion": 51.1, "overall": 51.8 }
         },
         "note": "Flow B welcome > assigned because some devices were assigned during the ramp but their first IDENTIFIES event is May 7+. Trivial data-quirk."
       },
 
       "northStarData": {
         "categories": ["barber/signup_link", "barber/email_not_found", "shop/signup_link", "shop/email_not_found", "indie/signup_link"],
-        "flowA": [21, 0, 0, 0, 0],
-        "flowB": [1, 30, 0, 1, 0],
+        "flowA": [27, 0, 1, 0, 0],
+        "flowB": [1, 36, 0, 2, 0],
         "note": "On clean sample, 0 indie account_created. The conclusion that indies don't pass through this channel holds across more data."
       },
 
       "emailCheck": {
         "events": {
-          "returning_email": 167,
-          "temp_password_email": 107,
-          "new_user_email": 64,
-          "new_user_username": 21,
-          "returning_username": 8,
+          "returning_email": 210,
+          "temp_password_email": 124,
+          "new_user_email": 80,
+          "new_user_username": 25,
+          "returning_username": 11,
           "temp_password_username": 0
         },
         "totals": {
-          "totalEvents": 367,
-          "returning_email_pct": 45.5,
-          "temp_password_email_pct": 29.2,
-          "new_user_email_pct": 17.4,
-          "temp_password_total_pct": 29.2,
-          "username_total_pct": 7.9
+          "totalEvents": 450,
+          "returning_email_pct": 46.7,
+          "temp_password_email_pct": 27.6,
+          "new_user_email_pct": 17.8,
+          "temp_password_total_pct": 27.6,
+          "username_total_pct": 8.0
         }
       },
 
       "loginFailed": {
         "flowA": { "total": 0, "byReason": {} },
-        "flowB": { "total": 79, "byReason": {} }
+        "flowB": { "total": 90, "byReason": {} }
       },
 
       "forgotPassword": {
-        "flowA": { "total": 95, "byState": {} },
-        "flowB": { "total": 62, "byState": {} }
+        "flowA": { "total": 113, "byState": {} },
+        "flowB": { "total": 79, "byState": {} }
       },
 
       "loginAbandoned": {
-        "flowA": { "total": 100, "byStep": {} },
-        "flowB": { "total": 151, "byStep": {} }
+        "flowA": { "total": 123, "byStep": {} },
+        "flowB": { "total": 191, "byStep": {} }
       },
 
       "friction": {
         "events": ["Login attempt failed", "Forgot password", "Login abandoned"],
-        "flowA": [0, 95, 100],
-        "flowB": [79, 62, 151]
+        "flowA": [0, 113, 123],
+        "flowB": [90, 79, 191]
       },
 
       "perExposure": {
-        "flowA": { "rate": 6.8, "numerator": 21, "denominator": 309, "label": "Flow A · barber via signup_link" },
-        "flowB": { "rate": 10.0, "numerator": 30, "denominator": 300, "label": "Flow B · barber via email_not_found" }
+        "flowA": { "rate": 7.2, "numerator": 27, "denominator": 375, "label": "Flow A · barber via signup_link" },
+        "flowB": { "rate": 9.8, "numerator": 36, "denominator": 367, "label": "Flow B · barber via email_not_found" }
       },
 
       "scopeLeak": {
@@ -724,26 +724,26 @@
   ],
 
   "scorecard": {
-    "headline": "Refreshed 2026-05-12. SRM resolved at 50.7/49.3 on NEW devices. Flow B still wins on conversion with stable +14pp gap.",
-    "sourceWindow": "post-100% NEW devices only · May 7-12",
+    "headline": "Refreshed 2026-05-13. SRM steady at 50.5/49.5. Flow B still wins overall completion, gap narrowed to +9pp as Flow A late-completers catch up.",
+    "sourceWindow": "post-100% NEW devices only · May 7-13",
     "rows": [
       {
         "metric": "Sample ratio (LD assignment)",
         "definition": "Distinct devices flowA vs flowB",
         "direction": "should be 50/50",
-        "flowA": "50.7%",
-        "flowB": "49.3%",
-        "deltaPct": "0.7 pp from 50/50",
+        "flowA": "50.5%",
+        "flowB": "49.5%",
+        "deltaPct": "0.5 pp from 50/50",
         "winner": "tied",
-        "note": "★ SRM fully resolved on clean sample (was 73/27 contaminated). Confirms sticky-bucket hypothesis."
+        "note": "★ SRM stable on clean sample (was 73/27 contaminated). Sticky-bucket hypothesis confirmed."
       },
       {
         "metric": "Welcome rate",
         "definition": "% of assigned devices that view the welcome screen",
         "direction": "higher better",
-        "flowA": "93.2%",
-        "flowB": "100.0%",
-        "deltaPct": "+6.8 pp",
+        "flowA": "91.7%",
+        "flowB": "101.4%",
+        "deltaPct": "+9.7 pp",
         "winner": "flowB",
         "note": "Email-first sheet auto-loads — B still wins"
       },
@@ -751,61 +751,61 @@
         "metric": "Login conversion (succeeded ÷ welcome)",
         "definition": "% of welcome-viewers who complete login",
         "direction": "higher better",
-        "flowA": "43.4%",
-        "flowB": "53.8%",
-        "deltaPct": "+10.4 pp",
+        "flowA": "47.1%",
+        "flowB": "51.1%",
+        "deltaPct": "+4.0 pp",
         "winner": "flowB",
-        "note": "Stable across windows. Flow B still winning by double digits"
+        "note": "Gap narrowed (was +10pp Tuesday). Flow A late-completers landing as the cohort matures"
       },
       {
         "metric": "Overall completion (succeeded ÷ assigned)",
         "definition": "End-to-end conversion through the whole funnel",
         "direction": "higher better",
-        "flowA": "40.5%",
-        "flowB": "54.7%",
-        "deltaPct": "+14.2 pp",
+        "flowA": "43.2%",
+        "flowB": "51.8%",
+        "deltaPct": "+8.6 pp",
         "winner": "flowB",
-        "note": "Stable +14pp gap (was +15pp Monday, +31pp Friday). Sample 4x bigger now"
+        "note": "Gap narrowed: +14pp Tue → +9pp today. Flow A users finishing late. Both moved (A up 2.7pp, B down 2.9pp)"
       },
       {
         "metric": "Forgot password rate per device",
         "definition": "Events ÷ devices in the variant",
         "direction": "lower better",
-        "flowA": "30.7%",
-        "flowB": "20.7%",
-        "deltaPct": "−10.0 pp",
+        "flowA": "30.1%",
+        "flowB": "21.5%",
+        "deltaPct": "−8.6 pp",
         "winner": "flowB",
-        "note": "Gap widened in favor of B (10pp)"
+        "note": "Gap stable at ~9pp in favor of B"
       },
       {
         "metric": "Login abandoned rate per device",
         "definition": "Events ÷ devices",
         "direction": "lower better",
-        "flowA": "32.4%",
-        "flowB": "50.3%",
-        "deltaPct": "+17.9 pp",
+        "flowA": "32.8%",
+        "flowB": "52.0%",
+        "deltaPct": "+19.2 pp",
         "winner": "flowA",
-        "note": "Flow B's email_entry surface continues to be a drop point. Followup shows 69% return rate."
+        "note": "Flow B's email_entry surface continues to be a drop point. Followup shows 67% return rate."
       },
       {
         "metric": "Per-exposure barber-via-signup-path rate",
         "definition": "Barbers via signup_link or email_not_found ÷ devices",
         "direction": "lower better (we want them to login, not signup)",
-        "flowA": "6.8%",
-        "flowB": "10.0%",
-        "deltaPct": "+3.2 pp",
+        "flowA": "7.2%",
+        "flowB": "9.8%",
+        "deltaPct": "+2.6 pp",
         "winner": "flowA",
-        "note": "Gap stable at ~3pp across windows. Worth watching — could be Flow B routing confused users to signup"
+        "note": "Gap narrowing slightly (was +3.2pp). Worth watching — could be Flow B routing confused users to signup"
       },
       {
         "metric": "temp_password catch (Flow B exclusive)",
         "definition": "% of email checks that match an invited barber",
         "direction": "higher = more invited barbers caught before duplicate signup",
         "flowA": "n/a",
-        "flowB": "29.2%",
+        "flowB": "27.6%",
         "deltaPct": "n/a",
         "winner": "na",
-        "note": "Steady-state around ~28-29% on clean NEW data."
+        "note": "Steady-state around ~27-29% on clean NEW data."
       },
       {
         "metric": "★ Accidental indies / week (sharpest signal)",
@@ -813,35 +813,36 @@
         "direction": "lower better",
         "flowA": "see note",
         "flowB": "see note",
-        "deltaPct": "−69%",
+        "deltaPct": "−77%",
         "winner": "flowB",
-        "note": "Pre-experiment baseline ~12.9/wk → experiment ~4/wk. CS data confirms: 0 accidental cancellations in May."
+        "note": "Pre-experiment baseline ~13.0/wk → experiment ~3.0/wk. CS data confirms: 0 accidental cancellations in May. Drop deepened from -69% to -77%."
       }
     ],
     "verdict": {
-      "headline": "Flow B wins. CS confirms zero accidental indy signups in May.",
+      "headline": "Flow B still wins. Conversion gap narrowed, duplicate-prevention signal deepened.",
       "bullets": [
         "CS: 0 accidental indy self-signup cancellations in May vs 3 in April.",
-        "Snowflake: accidental indies down ~65%, total indies down ~48%.",
-        "SRM cleared at 52/48 on NEW devices (was 73/27 contaminated by legacy).",
-        "Flow B beats A on overall completion by +15pp, welcome rate, forgot-password rate."
+        "Snowflake: accidental indies down ~77% (was -69%), total indies down ~47%.",
+        "SRM steady at 50.5/49.5 on NEW devices (was 73/27 contaminated by legacy).",
+        "Flow B beats A on overall completion by +9pp (was +14pp), welcome rate, forgot-password rate."
       ],
       "caveats": [
-        "Flow B has higher login_abandoned, but 76% of abandoners return and complete (concern downgraded).",
-        "Per-exposure barber-via-signup is +3.4pp vs A, worth watching."
+        "Conversion gap narrowed from +14 to +9pp as Flow A cohort matures and late users complete.",
+        "Flow B has higher login_abandoned, but 67% of abandoners return (concern downgraded).",
+        "Per-exposure barber-via-signup is +2.6pp vs A, worth watching."
       ]
     }
   },
 
   "historicalComparison": {
-    "headline": "CS confirms: zero accidental indy self-signups in May. Snowflake shows accidental indies down ~65%. Two independent signals agree.",
+    "headline": "CS confirms: zero accidental indy self-signups in May. Snowflake shows accidental indies down ~77% (deeper than Tuesday's -69% read). Two independent signals agree.",
     "status": "partial",
     "statusNote": {
-      "headline": "Baseline widened to 8 weeks. CS data now confirms the Snowflake signal.",
+      "headline": "Baseline widened to 8 weeks. CS data confirms the Snowflake signal.",
       "bullets": [
         "Pre-experiment baseline now spans Mar 9 to Apr 20 for stability.",
         "Accidental-indies block is the closest in-Snowflake proxy for duplicates.",
-        "Duplicate-email block uses Friday's pull. Refresh via docs/HISTORICAL_QUERIES.sql Q1."
+        "All historical blocks refreshed 2026-05-13."
       ]
     },
     "blocks": [
@@ -851,38 +852,38 @@
         "status": "ready",
         "highlight": true,
         "comparison": {
-          "preBaseline": { "label": "Pre-experiment 8wk (Mar 9 - Apr 20)", "value": "12.9/wk avg · 70% rate" },
-          "experiment": { "label": "Experiment (Apr 27 - May 12)", "value": "4/wk avg · 45% rate" },
-          "deltaPct": -69,
+          "preBaseline": { "label": "Pre-experiment 8wk (Mar 9 - Apr 20)", "value": "13.0/wk avg · 66% rate" },
+          "experiment": { "label": "Experiment (Apr 27 - May 13)", "value": "3.0/wk avg · 45% rate" },
+          "deltaPct": -77,
           "winner": "flowB",
           "verdict": {
-            "headline": "Accidental indies dropped ~69%, much sharper than the ~45% total-indies decline.",
+            "headline": "Accidental indies dropped ~77%, much sharper than the ~47% total-indies decline.",
             "bullets": [
-              "12.9/wk to 4/wk average vs the 8-week pre-experiment baseline.",
-              "Accidental rate among indies fell from 70% to ~45%.",
+              "13.0/wk to 3.0/wk average vs the 8-week pre-experiment baseline.",
+              "Accidental rate among indies fell from 66% to ~45%.",
               "Drop exceeds total-indies decline. Flow B catches duplicates, not just riding decline.",
-              "Apr 27 week dropped to 1 accidental as user_type classification stabilized."
+              "Drop deepened from -69% Tuesday to -77% today as Apr 27 week settled at 0 accidentals."
             ],
             "why": "Sharpest in-Snowflake signal that Flow B reduces accidental duplicate signups specifically."
           }
         },
         "weeks": [
-          { "week": "2026-02-09", "total_indies": 79, "accidental": 53, "accidental_pct": 67.1, "note": "partial window edge" },
-          { "week": "2026-02-16", "total_indies": 36, "accidental": 19, "accidental_pct": 52.8 },
+          { "week": "2026-02-09", "total_indies": 74, "accidental": 52, "accidental_pct": 70.3, "note": "partial window edge" },
+          { "week": "2026-02-16", "total_indies": 40, "accidental": 21, "accidental_pct": 52.5 },
           { "week": "2026-02-23", "total_indies": 20, "accidental": 11, "accidental_pct": 55.0 },
-          { "week": "2026-03-02", "total_indies": 31, "accidental": 14, "accidental_pct": 45.2 },
-          { "week": "2026-03-09", "total_indies": 27, "accidental": 12, "accidental_pct": 44.4 },
-          { "week": "2026-03-16", "total_indies": 21, "accidental": 12, "accidental_pct": 57.1 },
+          { "week": "2026-03-02", "total_indies": 31, "accidental": 13, "accidental_pct": 41.9 },
+          { "week": "2026-03-09", "total_indies": 28, "accidental": 13, "accidental_pct": 46.4 },
+          { "week": "2026-03-16", "total_indies": 22, "accidental": 13, "accidental_pct": 59.1 },
           { "week": "2026-03-23", "total_indies": 22, "accidental": 13, "accidental_pct": 59.1 },
-          { "week": "2026-03-30", "total_indies": 21, "accidental": 15, "accidental_pct": 71.4 },
+          { "week": "2026-03-30", "total_indies": 22, "accidental": 16, "accidental_pct": 72.7 },
           { "week": "2026-04-06", "total_indies": 14, "accidental": 13, "accidental_pct": 92.9 },
-          { "week": "2026-04-13", "total_indies": 16, "accidental": 13, "accidental_pct": 81.3 },
+          { "week": "2026-04-13", "total_indies": 14, "accidental": 11, "accidental_pct": 78.6 },
           { "week": "2026-04-20", "total_indies": 15, "accidental": 12, "accidental_pct": 80.0 },
-          { "week": "2026-04-27", "total_indies": 8,  "accidental": 1,  "accidental_pct": 12.5, "isExperiment": true, "rolloutEvent": "Experiment start" },
+          { "week": "2026-04-27", "total_indies": 7,  "accidental": 0,  "accidental_pct": 0.0,  "isExperiment": true, "rolloutEvent": "Experiment start" },
           { "week": "2026-05-04", "total_indies": 9,  "accidental": 7,  "accidental_pct": 77.8, "isExperiment": true, "rolloutEvent": "100% rollout" },
-          { "week": "2026-05-11", "total_indies": 2,  "accidental": 1,  "accidental_pct": 50.0, "isExperiment": true, "note": "partial week (2 days)" }
+          { "week": "2026-05-11", "total_indies": 4,  "accidental": 2,  "accidental_pct": 50.0, "isExperiment": true, "note": "partial week (3 days)" }
         ],
-        "caveat": "Refreshed 2026-05-12. Method: take all 'new indies' (role='barber', final user_type stayed null), cross-check whether their email also exists for any Rental/Commission user_id. Match = likely accidental.",
+        "caveat": "Refreshed 2026-05-13. Method: take all 'new indies' (role='barber', final user_type stayed null), cross-check whether their email also exists for any Rental/Commission user_id. Match = likely accidental.",
         "shopTenureBreakdown": {
           "title": "Refinement · shop tenure of accidental indies (90d cohort)",
           "rows": [
@@ -910,34 +911,34 @@
         "subtitle": "Indies (final user_type stayed NULL) first appearing in IDENTIFIES, weekly. Drop observed during experiment weeks but the inference 'this is Flow B preventing accidental signups' is NOT yet established — could be organic.",
         "status": "ready",
         "comparison": {
-          "preBaseline": { "label": "Pre-experiment 8wk (Mar 9 - Apr 20)", "value": "18.4/wk avg" },
-          "experiment": { "label": "Experiment (Apr 27 - May 12)", "value": "9.5/wk avg" },
-          "deltaPct": -48,
+          "preBaseline": { "label": "Pre-experiment 8wk (Mar 9 - Apr 20)", "value": "19.6/wk avg" },
+          "experiment": { "label": "Experiment (Apr 27 - May 13)", "value": "10.4/wk avg" },
+          "deltaPct": -47,
           "winner": "tied",
           "verdict": {
-            "headline": "Total indies down ~48%, but causation is not yet established.",
+            "headline": "Total indies down ~47%, but causation is not yet established.",
             "bullets": [
-              "18.4/wk to 9.5/wk average vs the 8-week pre-experiment baseline.",
+              "19.6/wk to 10.4/wk average vs the 8-week pre-experiment baseline.",
               "Volume was already trending down pre-experiment, so some drop is organic.",
-              "Accidental-indies block (~65% drop) is the sharper Flow B signal.",
+              "Accidental-indies block (~77% drop) is the sharper Flow B signal.",
               "CS data (now in) confirms zero accidental cancellations in May."
             ]
           }
         },
         "weeks": [
-          { "week": "2026-02-16", "new_barbers": 1276, "indies": 31, "share_pct": 2.4 },
-          { "week": "2026-02-23", "new_barbers": 917,  "indies": 22, "share_pct": 2.4 },
-          { "week": "2026-03-02", "new_barbers": 837,  "indies": 31, "share_pct": 3.7 },
-          { "week": "2026-03-09", "new_barbers": 731,  "indies": 27, "share_pct": 3.7 },
-          { "week": "2026-03-16", "new_barbers": 616,  "indies": 21, "share_pct": 3.4 },
-          { "week": "2026-03-23", "new_barbers": 629,  "indies": 22, "share_pct": 3.5 },
-          { "week": "2026-03-30", "new_barbers": 537,  "indies": 22, "share_pct": 4.1 },
-          { "week": "2026-04-06", "new_barbers": 492,  "indies": 14, "share_pct": 2.8 },
-          { "week": "2026-04-13", "new_barbers": 520,  "indies": 16, "share_pct": 3.1 },
+          { "week": "2026-02-16", "new_barbers": 1827, "indies": 40, "share_pct": 2.2 },
+          { "week": "2026-02-23", "new_barbers": 1090, "indies": 20, "share_pct": 1.8 },
+          { "week": "2026-03-02", "new_barbers": 859,  "indies": 31, "share_pct": 3.6 },
+          { "week": "2026-03-09", "new_barbers": 741,  "indies": 28, "share_pct": 3.8 },
+          { "week": "2026-03-16", "new_barbers": 625,  "indies": 22, "share_pct": 3.5 },
+          { "week": "2026-03-23", "new_barbers": 633,  "indies": 22, "share_pct": 3.5 },
+          { "week": "2026-03-30", "new_barbers": 542,  "indies": 22, "share_pct": 4.1 },
+          { "week": "2026-04-06", "new_barbers": 496,  "indies": 14, "share_pct": 2.8 },
+          { "week": "2026-04-13", "new_barbers": 525,  "indies": 14, "share_pct": 2.7 },
           { "week": "2026-04-20", "new_barbers": 474,  "indies": 15, "share_pct": 3.2 },
-          { "week": "2026-04-27", "new_barbers": 444,  "indies": 8,  "share_pct": 1.8, "isExperiment": true, "rolloutEvent": "Experiment start (1% → 50%)" },
+          { "week": "2026-04-27", "new_barbers": 445,  "indies": 7,  "share_pct": 1.6, "isExperiment": true, "rolloutEvent": "Experiment start (1% → 50%)" },
           { "week": "2026-05-04", "new_barbers": 488,  "indies": 9,  "share_pct": 1.8, "isExperiment": true, "rolloutEvent": "100% rollout" },
-          { "week": "2026-05-11", "new_barbers": 115,  "indies": 3,  "share_pct": 2.6, "isExperiment": true, "note": "partial week" }
+          { "week": "2026-05-11", "new_barbers": 178,  "indies": 4,  "share_pct": 2.2, "isExperiment": true, "note": "partial week (3 days)" }
         ],
         "caveat": "Pre-experiment had a mild declining trend (~5/week). Even after correcting for trend, the experiment-window indie volume is well below extrapolation."
       },
@@ -946,28 +947,28 @@
         "subtitle": "% of new barber USER_IDs whose email already belongs to another USER_ID. Most direct prevention signal Flow B should move.",
         "status": "ready",
         "comparison": {
-          "preBaseline": { "label": "Pre-experiment 8wk (Mar 9 - Apr 20)", "value": "16.0% avg" },
-          "experiment": { "label": "Experiment (Apr 27 - May 11)", "value": "14.05% avg" },
-          "deltaPct": -12,
+          "preBaseline": { "label": "Pre-experiment 8wk (Mar 9 - Apr 20)", "value": "15.9% avg" },
+          "experiment": { "label": "Experiment (Apr 27 - May 13)", "value": "14.1% avg" },
+          "deltaPct": -11,
           "winner": "tied",
-          "verdict": "Slight downward drift (~12% relative) but inside week-to-week noise. Wait for 4+ weeks of post-rollout to call."
+          "verdict": "Slight downward drift (~11% relative) but inside week-to-week noise. Wait for 4+ weeks of post-rollout to call."
         },
         "weeks": [
-          { "week": "2026-02-16", "new_barber_user_ids": 1711, "duplicates": 162, "duplicate_pct": 9.5 },
-          { "week": "2026-02-23", "new_barber_user_ids": 1150, "duplicates": 132, "duplicate_pct": 11.5 },
-          { "week": "2026-03-02", "new_barber_user_ids": 961,  "duplicates": 134, "duplicate_pct": 13.9 },
-          { "week": "2026-03-09", "new_barber_user_ids": 829,  "duplicates": 114, "duplicate_pct": 13.8 },
-          { "week": "2026-03-16", "new_barber_user_ids": 711,  "duplicates": 109, "duplicate_pct": 15.3 },
-          { "week": "2026-03-23", "new_barber_user_ids": 716,  "duplicates": 107, "duplicate_pct": 14.9 },
-          { "week": "2026-03-30", "new_barber_user_ids": 623,  "duplicates": 116, "duplicate_pct": 18.6 },
-          { "week": "2026-04-06", "new_barber_user_ids": 580,  "duplicates": 108, "duplicate_pct": 18.6 },
-          { "week": "2026-04-13", "new_barber_user_ids": 579,  "duplicates": 83,  "duplicate_pct": 14.3 },
-          { "week": "2026-04-20", "new_barber_user_ids": 544,  "duplicates": 89,  "duplicate_pct": 16.4 },
-          { "week": "2026-04-27", "new_barber_user_ids": 495,  "duplicates": 68,  "duplicate_pct": 13.7, "isExperiment": true, "rolloutEvent": "Experiment start" },
+          { "week": "2026-02-16", "new_barber_user_ids": 2013, "duplicates": 196, "duplicate_pct": 9.7 },
+          { "week": "2026-02-23", "new_barber_user_ids": 1212, "duplicates": 135, "duplicate_pct": 11.1 },
+          { "week": "2026-03-02", "new_barber_user_ids": 987,  "duplicates": 137, "duplicate_pct": 13.9 },
+          { "week": "2026-03-09", "new_barber_user_ids": 840,  "duplicates": 115, "duplicate_pct": 13.7 },
+          { "week": "2026-03-16", "new_barber_user_ids": 720,  "duplicates": 108, "duplicate_pct": 15.0 },
+          { "week": "2026-03-23", "new_barber_user_ids": 721,  "duplicates": 108, "duplicate_pct": 15.0 },
+          { "week": "2026-03-30", "new_barber_user_ids": 628,  "duplicates": 116, "duplicate_pct": 18.5 },
+          { "week": "2026-04-06", "new_barber_user_ids": 584,  "duplicates": 108, "duplicate_pct": 18.5 },
+          { "week": "2026-04-13", "new_barber_user_ids": 584,  "duplicates": 83,  "duplicate_pct": 14.2 },
+          { "week": "2026-04-20", "new_barber_user_ids": 546,  "duplicates": 91,  "duplicate_pct": 16.7 },
+          { "week": "2026-04-27", "new_barber_user_ids": 496,  "duplicates": 68,  "duplicate_pct": 13.7, "isExperiment": true, "rolloutEvent": "Experiment start" },
           { "week": "2026-05-04", "new_barber_user_ids": 554,  "duplicates": 80,  "duplicate_pct": 14.4, "isExperiment": true, "rolloutEvent": "100% rollout" },
-          { "week": "2026-05-11", "new_barber_user_ids": 139,  "duplicates": 20,  "duplicate_pct": 14.4, "isExperiment": true, "note": "partial week" }
+          { "week": "2026-05-11", "new_barber_user_ids": 197,  "duplicates": 28,  "duplicate_pct": 14.2, "isExperiment": true, "note": "partial week (3 days)" }
         ],
-        "caveat": "Older weeks under-count duplicates because we don't have history before the 90-day window. Refreshed 2026-05-12. Re-check after 4+ weeks of post-rollout data."
+        "caveat": "Older weeks under-count duplicates because we don't have history before the 90-day window. Refreshed 2026-05-13. Re-check after 4+ weeks of post-rollout data."
       },
       {
         "title": "New barber breakdown · Rental / Commission / Indie weekly",
@@ -975,23 +976,24 @@
         "status": "ready",
         "comparison": {
           "preBaseline": { "label": "Pre-experiment 8wk indie share (Mar 9 - Apr 20)", "value": "3.4% avg" },
-          "experiment": { "label": "Experiment indie share (Apr 27 - May 12)", "value": "2.05% avg" },
-          "deltaPct": -40,
+          "experiment": { "label": "Experiment indie share (Apr 27 - May 13)", "value": "1.8% avg" },
+          "deltaPct": -47,
           "winner": "tied",
-          "verdict": "Indie share dropped from 3.4% to 2.05% — directional support for Flow B's effect. The ★ Accidental indies block above is the sharper version of this same signal."
+          "verdict": "Indie share dropped from 3.4% to 1.8% — directional support for Flow B's effect. The ★ Accidental indies block above is the sharper version of this same signal."
         },
         "weeks": [
-          { "week": "2026-02-23", "rental": 537, "commission": 358, "indies": 22 },
-          { "week": "2026-03-02", "rental": 478, "commission": 328, "indies": 31 },
-          { "week": "2026-03-09", "rental": 406, "commission": 298, "indies": 27 },
-          { "week": "2026-03-16", "rental": 371, "commission": 224, "indies": 21 },
-          { "week": "2026-03-23", "rental": 406, "commission": 201, "indies": 22 },
-          { "week": "2026-03-30", "rental": 298, "commission": 217, "indies": 22 },
-          { "week": "2026-04-06", "rental": 297, "commission": 181, "indies": 14 },
-          { "week": "2026-04-13", "rental": 291, "commission": 213, "indies": 16 },
+          { "week": "2026-02-23", "rental": 627, "commission": 443, "indies": 20 },
+          { "week": "2026-03-02", "rental": 494, "commission": 334, "indies": 31 },
+          { "week": "2026-03-09", "rental": 413, "commission": 300, "indies": 28 },
+          { "week": "2026-03-16", "rental": 374, "commission": 229, "indies": 22 },
+          { "week": "2026-03-23", "rental": 410, "commission": 201, "indies": 22 },
+          { "week": "2026-03-30", "rental": 301, "commission": 219, "indies": 22 },
+          { "week": "2026-04-06", "rental": 299, "commission": 183, "indies": 14 },
+          { "week": "2026-04-13", "rental": 297, "commission": 214, "indies": 14 },
           { "week": "2026-04-20", "rental": 253, "commission": 206, "indies": 15 },
-          { "week": "2026-04-27", "rental": 245, "commission": 191, "indies": 8, "isExperiment": true },
-          { "week": "2026-05-04", "rental": 284, "commission": 195, "indies": 9, "isExperiment": true }
+          { "week": "2026-04-27", "rental": 246, "commission": 192, "indies": 7, "isExperiment": true },
+          { "week": "2026-05-04", "rental": 284, "commission": 195, "indies": 9, "isExperiment": true },
+          { "week": "2026-05-11", "rental": 113, "commission": 61,  "indies": 4, "isExperiment": true, "note": "partial week (3 days)" }
         ]
       },
       {
@@ -999,25 +1001,25 @@
         "subtitle": "Total distinct devices in IDENTIFIES per week. Important denominator: if user base shrank during experiment, signup drops could be 'fewer users' rather than 'Flow B working'.",
         "status": "ready",
         "comparison": {
-          "preBaseline": { "label": "Pre-experiment 8wk (Mar 9 - Apr 20) avg", "value": "853k devices/wk" },
-          "experiment": { "label": "Experiment weeks avg (2 full weeks)", "value": "889k devices/wk" },
-          "deltaPct": 4,
+          "preBaseline": { "label": "Pre-experiment 8wk (Mar 9 - Apr 20) avg", "value": "849k devices/wk" },
+          "experiment": { "label": "Experiment weeks avg (2 full weeks)", "value": "890k devices/wk" },
+          "deltaPct": 5,
           "winner": "tied",
-          "verdict": "User base grew 4% during the experiment (853k to 889k devices/wk). Indie and accidental drops are not explained by fewer users. Signals are real, likely understated."
+          "verdict": "User base grew 5% during the experiment (849k to 890k devices/wk). Indie and accidental drops are not explained by fewer users. Signals are real, likely understated."
         },
         "weeks": [
-          { "week": "2026-02-16", "devices": 806713 },
-          { "week": "2026-02-23", "devices": 831088 },
-          { "week": "2026-03-02", "devices": 842207 },
-          { "week": "2026-03-09", "devices": 855461 },
-          { "week": "2026-03-16", "devices": 849334 },
-          { "week": "2026-03-23", "devices": 914757 },
-          { "week": "2026-03-30", "devices": 845197 },
-          { "week": "2026-04-06", "devices": 831661 },
-          { "week": "2026-04-13", "devices": 826742 },
-          { "week": "2026-04-20", "devices": 822731 },
-          { "week": "2026-04-27", "devices": 871651, "isExperiment": true },
-          { "week": "2026-05-04", "devices": 907819, "isExperiment": true }
+          { "week": "2026-02-16", "devices": 806737 },
+          { "week": "2026-02-23", "devices": 831128 },
+          { "week": "2026-03-02", "devices": 842221 },
+          { "week": "2026-03-09", "devices": 855477 },
+          { "week": "2026-03-16", "devices": 849361 },
+          { "week": "2026-03-23", "devices": 914798 },
+          { "week": "2026-03-30", "devices": 845262 },
+          { "week": "2026-04-06", "devices": 831760 },
+          { "week": "2026-04-13", "devices": 826888 },
+          { "week": "2026-04-20", "devices": 822937 },
+          { "week": "2026-04-27", "devices": 871931, "isExperiment": true },
+          { "week": "2026-05-04", "devices": 908478, "isExperiment": true }
         ],
         "caveat": "Excludes 2026-05-11 partial week (still mid-week). Note IDENTIFIES distinct USER_IDs (multi-device users) actually exceeds distinct ANONYMOUS_IDs — that's normal."
       },
