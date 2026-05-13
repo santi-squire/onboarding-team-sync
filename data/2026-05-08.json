@@ -728,84 +728,84 @@
     "sourceWindow": "post-100% NEW devices only · May 7-13",
     "rows": [
       {
-        "metric": "Sample ratio (LD assignment)",
-        "definition": "Distinct devices flowA vs flowB",
+        "metric": "Traffic split",
+        "definition": "Share of users assigned to each flow. Should be even.",
         "direction": "should be 50/50",
         "flowA": "50.5%",
         "flowB": "49.5%",
-        "deltaPct": "0.5 pp from 50/50",
+        "deltaPct": "0.5 pp from even",
         "winner": "tied",
-        "note": "★ SRM stable on clean sample (was 73/27 contaminated). Sticky-bucket hypothesis confirmed."
+        "note": "★ Steady on the clean sample. Comparison is fair."
       },
       {
-        "metric": "Welcome rate",
-        "definition": "% of assigned devices that view the welcome screen",
+        "metric": "Welcome screen reach rate †",
+        "definition": "Share of assigned users who reached the welcome screen, per flow.",
         "direction": "higher better",
         "flowA": "91.7%",
         "flowB": "101.4%",
         "deltaPct": "+9.7 pp",
         "winner": "flowB",
-        "note": "Email-first sheet auto-loads — B still wins"
+        "note": "† Flow B shows >100% from an innocuous ramp-window quirk. Email-first sheet auto-loads, B still wins."
       },
       {
-        "metric": "Login conversion (succeeded ÷ welcome)",
-        "definition": "% of welcome-viewers who complete login",
+        "metric": "Login success rate (of users who saw welcome)",
+        "definition": "Share of welcome-viewers who completed login, per flow.",
         "direction": "higher better",
         "flowA": "47.1%",
         "flowB": "51.1%",
         "deltaPct": "+4.0 pp",
         "winner": "flowB",
-        "note": "Gap narrowed (was +10pp Tuesday). Flow A late-completers landing as the cohort matures"
+        "note": "Gap narrowed (was +10pp yesterday). Old-flow late-completers landing as the cohort matures."
       },
       {
-        "metric": "Overall completion (succeeded ÷ assigned)",
-        "definition": "End-to-end conversion through the whole funnel",
+        "metric": "Completion rate (of all users assigned)",
+        "definition": "End-to-end conversion through the whole funnel, per flow.",
         "direction": "higher better",
         "flowA": "43.2%",
         "flowB": "51.8%",
         "deltaPct": "+8.6 pp",
         "winner": "flowB",
-        "note": "Gap narrowed: +14pp Tue → +9pp today. Flow A users finishing late. Both moved (A up 2.7pp, B down 2.9pp)"
+        "note": "Gap narrowed +14pp yesterday → +9pp today. Old-flow users finishing late. Both moved (A up 2.7pp, B down 2.9pp)."
       },
       {
-        "metric": "Forgot password rate per device",
-        "definition": "Events ÷ devices in the variant",
+        "metric": "Forgot-password taps / device",
+        "definition": "Forgot-password tap events per device, per flow.",
         "direction": "lower better",
         "flowA": "30.1%",
         "flowB": "21.5%",
         "deltaPct": "−8.6 pp",
         "winner": "flowB",
-        "note": "Gap stable at ~9pp in favor of B"
+        "note": "Gap stable at ~9pp in favor of B. Less friction on the new flow."
       },
       {
-        "metric": "Login abandoned rate per device",
-        "definition": "Events ÷ devices",
+        "metric": "Abandon events per 100 devices *",
+        "definition": "Login-abandon events ÷ devices × 100, per flow. Each device can fire multiple.",
         "direction": "lower better",
-        "flowA": "32.8%",
-        "flowB": "52.0%",
-        "deltaPct": "+19.2 pp",
+        "flowA": "33",
+        "flowB": "52",
+        "deltaPct": "+19 events / 100",
         "winner": "flowA",
-        "note": "Flow B's email_entry surface continues to be a drop point. Followup shows 67% return rate."
+        "note": "* B has 2 abandon surfaces (email + password), A has 1. Followup: 67% of B abandoners return later."
       },
       {
-        "metric": "Per-exposure barber-via-signup-path rate",
-        "definition": "Barbers via signup_link or email_not_found ÷ devices",
-        "direction": "lower better (we want them to login, not signup)",
+        "metric": "New barber signups / device *",
+        "definition": "New barber accounts created via signup path ÷ devices, per flow.",
+        "direction": "lower better (we'd rather existing barbers log in than create duplicates)",
         "flowA": "7.2%",
         "flowB": "9.8%",
         "deltaPct": "+2.6 pp",
         "winner": "flowA",
-        "note": "Gap narrowing slightly (was +3.2pp). Worth watching — could be Flow B routing confused users to signup"
+        "note": "* Accidental-signup rate among these is down 77% on the new flow. B has more signups but fewer are duplicates."
       },
       {
-        "metric": "temp_password catch (Flow B exclusive)",
-        "definition": "% of email checks that match an invited barber",
-        "direction": "higher = more invited barbers caught before duplicate signup",
+        "metric": "Caught invited barbers before duplicate signup (B only)",
+        "definition": "Share of email checks that match an existing invited barber, caught before they create a duplicate.",
+        "direction": "higher = more duplicates prevented",
         "flowA": "n/a",
         "flowB": "27.6%",
         "deltaPct": "n/a",
         "winner": "na",
-        "note": "Steady-state around ~27-29% on clean NEW data."
+        "note": "Steady around 27-29% on clean data. Flow B catches ~1 in 4."
       },
       {
         "metric": "★ Accidental indies / week (sharpest signal)",

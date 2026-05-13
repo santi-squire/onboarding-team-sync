@@ -1548,6 +1548,9 @@
             <p class="section-sub">${sc.headline}</p>
             ${sc.sourceWindow ? `<p style="margin: 0.5rem 0 0; font-size: 0.78rem; font-family: var(--font-mono); color: var(--accent);">Source: ${sc.sourceWindow}</p>` : ''}
           </div>
+          <div style="padding: 0.8rem 1rem; background: var(--bg-elevated); border-radius: 6px; margin: 0.8rem 0 1rem; font-size: 0.86rem; color: var(--text-muted); line-height: 1.55;">
+            <strong style="color: var(--text);">How to read the columns:</strong> Flow A and Flow B columns don't sum to 100. Each column is its own rate within its own user group. Example: "Forgot-password taps / device" = how often that happens per device inside each flow, not a share of a 100% total.
+          </div>
           <div style="overflow-x: auto;">
             <table class="scorecard-table">
               <thead>
