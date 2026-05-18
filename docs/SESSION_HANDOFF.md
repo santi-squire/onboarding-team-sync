@@ -1,7 +1,7 @@
 # Session Handoff — Onboarding Experiment Tracker
 
-**Last updated:** 2026-05-13 (midday refresh)
-**For the next session:** read this first, then continue work on the tracker / today's deck refresh.
+**Last updated:** 2026-05-18 (Monday refresh, new week)
+**For the next session:** read this first, then continue work on the tracker / next deck if needed.
 
 ---
 
@@ -281,60 +281,70 @@ GROUP BY week_start ORDER BY week_start;
 
 ---
 
-## Current numbers (as of 2026-05-13 refresh)
+## Current numbers (as of 2026-05-18 refresh)
 
 These are the values currently in `data/2026-05-08.json`. Next refresh should update these.
 
 **Post-100% NEW devices (canonical clean sample):**
-- flowA: 375 devices, 86 logged-in, 193 actors
-- flowB: 367 devices, 6 logged-in, 135 actors
-- Split: **50.5 / 49.5**
+- flowA: 716 devices, 167 logged-in, 384 actors
+- flowB: 704 devices, 11 logged-in, 299 actors
+- Split: **50.4 / 49.6**
 
 **Funnel NEW:**
-- flowA: 375 → 344 → 162 (welcome 91.7%, conv 47.1%, **overall 43.2%**)
-- flowB: 367 → 372 → 190 (welcome 101.4%, conv 51.1%, **overall 51.8%**)
-- Gap narrowed from +14pp Tuesday to **+9pp** today (Flow A late-completers caught up).
+- flowA: 716 → 663 → 320 (welcome 92.6%, conv 48.3%, **overall 44.7%**)
+- flowB: 697 → 706 → 370 (welcome 101.3%, conv 52.4%, **overall 53.1%**)
+- Gap: **+8.4pp** for Flow B (stable around 8pp across the week).
 
 **Email check NEW (Flow B):**
-- 450 total events
-- returning email: 210 (46.7%)
-- temp_password email: 124 (27.6%)
-- new_user email: 80 (17.8%)
+- 827 total events
+- returning email: 419 (50.7%)
+- temp_password email: 216 (26.1%)
+- new_user email: 136 (16.4%)
 
 **Friction NEW (per-device rates):**
-- forgot_password: A 30.1% / B 21.5%
-- login_abandoned: A 32.8% / B 52.0%
-- login_failed: B 24.5% (A=0 due to legacy version data quality issue)
+- forgot_password: A 37.4% / B 22.0% (gap widened to −15pp in B's favor)
+- login_abandoned: A 42.0% / B 45.8% (gap CLOSED from +19 to +4)
+- login_failed: B 21.7% (A=0 due to legacy version data quality issue)
 
-**Per-exposure barber signup rate NEW:**
-- flowA barber/signup_link: 27/375 = 7.2%
-- flowB barber/email_not_found: 36/367 = 9.8%
+**Per-exposure barber signup rate NEW (FLIPPED this week):**
+- flowA barber/signup_link: 58/716 = 8.1%
+- flowB barber/email_not_found: 55/697 = 7.9%
+- Flow A barely higher now (was A 7.2 / B 9.8 last week)
 
 **Email_entry abandoner followup NEW:**
-- Total: 46 unique
-- Came back & logged in: 16 (35%)
-- Came back & signed up: 9 (20%)
-- Came back no outcome: 9 (20%)
-- **Truly lost: 15 (33%)** — was 31% Tuesday, 24% last Monday. Stabilizing.
+- Total: 78 unique (was 46)
+- Came back & logged in: 36 (46%)
+- Came back & signed up: 13 (17%)
+- Came back no outcome: 15 (19%)
+- **Truly lost: 18 (23%)** — DROPPED from 33% last week. Trend improving.
 
 **Accidental indies weekly:**
-- 8-week pre-experiment baseline (Mar 9 - Apr 20): 13.0/wk avg, ~66% rate
-- Experiment (Apr 27 - May 13): 3.0/wk avg, ~45% rate
-- **−77% drop** (was -69% Tuesday — Apr 27 week settled at 0 accidentals)
+- 16-week pre-experiment baseline (Jan 5 - Apr 26): 11.7/wk avg, ~64% rate
+- Experiment (Apr 27 - May 18): 4.3/wk avg over 3 full weeks
+- **−63% drop** on the wider baseline (was -75% last week with partial data — May 11 settled higher at 7)
 
 **Total indies weekly:**
-- Pre-experiment: 19.6/wk
-- Experiment: 10.4/wk
-- **−47% drop**
+- Pre-experiment 16wk: 19.4/wk
+- Experiment: 8.7/wk
+- **−55% drop**
 
 **Duplicate email rate weekly:**
-- Pre-experiment 8wk: 15.9% avg
-- Experiment: 14.1% avg
-- **−11% (inside noise)**
+- Pre-experiment 8wk: 15.8% avg
+- Experiment: 15.1% avg
+- **−4% (inside noise)**
+
+**Scope leak (signup_link_tapped, Flow B):**
+- May 13: 1 event / 1 device
+- May 18: 3 events / 3 devices — GREW
+- PR #4143 was merged for 3.23.1 release. Either it hasn't fully shipped or the fix didn't cover all firing paths. **Worth checking with iOS team.**
 
 **CS data (McChesney Matro · pulled 2026-05-11):**
 - April 2026: 3 accidental indy self-signup cancellations
-- May 2026: 0 (through May 11)
+- May 2026: 0 (through May 11; consider asking McChesney for a refresh through May 18)
+
+**Clarity status:**
+- Deployed on iOS (per Yurii/Santi sync). First sessions available.
+- Action: review recordings with Tristan, focus on email-step abandons and forgot_password Flow A.
 
 ---
 
@@ -360,12 +370,12 @@ These are the values currently in `data/2026-05-08.json`. Next refresh should up
 - **Eric** — answered his "how do we identify accidental indies" question. Awaiting any follow-up.
 - **Yurii** — closed the estimation thread with "fair, will go with weeks". Active conversation about Tristan design pace ongoing.
 
-**Action items:**
-1. **Today's weekly sync** — Santi covers experiment metrics, Tristan covers Courses/timeline/RN release planning.
-2. **Clarity install on iOS** — Yurii deploys today. Prompt is at `docs/CLARITY_IOS_PROMPT.md`.
-3. **PR #4143 (scope leak fix)** — merged, awaiting 3.23.1 deploy. Once live, future weeks should show 0 leaked Flow B signup_link_tapped events.
-4. **Per-exposure barber-via-signup gap** — +3.2 pp Flow B over A on NEW devices. Worth watching, re-check after 2 more weeks.
-5. **Truly lost in email_entry** — 24% → 31% week-over-week. Cohort effect likely (recent abandoners haven't had time to return). Watch on next refresh.
+**Action items (May 18 onwards):**
+1. **Review Clarity sessions with Tristan** — Clarity is deployed on iOS. Need a quick sync to look at email-step abandons and Flow A forgot-password recordings.
+2. **Verify scope-leak fix shipped** — PR #4143 merged for 3.23.1 but leak grew from 1 (May 13) to 3 (May 18). Worth a ping to the iOS team.
+3. **Per-exposure flip** — A 8.1% vs B 7.9% this week (was A 7.2 / B 9.8 last week). Direction shifted; watch over the next 2 weeks.
+4. **Truly lost in email_entry** — DROPPED to 23% (was 33% last week, 24% the week before). Trend is now improving. Cohort maturation working in our favor.
+5. **Next weekly sync** — decide if we do a fresh deck this week or just walk through tracker on the call.
 
 **Investigations done, not need to redo:**
 - ✅ SRM root cause (sticky LD bucketing + gradual rollout)
