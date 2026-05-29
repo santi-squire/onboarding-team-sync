@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Onboarding Sync · May 27</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --bg-base: #07091a;
+      --bg-deep: #050714;
+      --bg-surface: #0f1328;
+      --bg-elevated: #181c34;
+      --border: rgba(255,255,255,0.06);
+      --border-strong: rgba(255,255,255,0.14);
+      --text: #f5f7ff;
+      --text-muted: #9aa3c2;
+      --text-dim: #5b6486;
+      --accent: #f97316;
+      --accent-bright: #fb923c;
+      --flow-a: #60a5fa;
+      --flow-b: #f97316;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --info: #38bdf8;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-display: "Instrument Serif", Georgia, serif;
+      --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      background: var(--bg-base);
+      color: var(--text);
+      letter-spacing: -0.011em;
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+      opacity: 0.5;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 4rem 2rem 6rem;
+      position: relative;
+      z-index: 1;
+    }
+    section.slide {
+      padding: 3.5rem 0 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+    section.slide:first-of-type { padding-top: 1rem; }
+    section.slide:last-of-type { border-bottom: 0; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.9rem;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 700;
+      letter-spacing: -0.028em;
+      line-height: 1.05;
+      margin: 0;
+    }
+    h1 em {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+    }
+    h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin: 0 0 1rem;
+    }
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0 0 0.6rem;
+      color: var(--text);
+    }
+    p {
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin: 0 0 1rem;
+    }
+    p.lede { font-size: 1.15rem; color: var(--text); }
+
+    .cover {
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+    }
+    .cover-meta {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2.5rem;
+      font-size: 0.82rem;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+    }
+    .cover-meta strong { color: var(--text); font-weight: 600; }
+
+    /* Decision section · the call */
+    .recommend-banner {
+      background: linear-gradient(135deg, rgba(74, 222, 128, 0.12), rgba(74, 222, 128, 0.04));
+      border: 1px solid rgba(74, 222, 128, 0.35);
+      border-radius: 12px;
+      padding: 2rem 2.4rem;
+      margin: 1.4rem 0 2rem;
+    }
+    .recommend-banner .label {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--success);
+      margin-bottom: 0.6rem;
+    }
+    .recommend-banner h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 0.6rem;
+    }
+    .recommend-banner h2 em {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--success);
+    }
+    .recommend-banner p {
+      margin: 0;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    /* The three big numbers for the decision */
+    .pillars {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+    }
+    .pillar {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem 1.6rem;
+    }
+    .pillar .label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.6rem;
+    }
+    .pillar .stat {
+      font-family: var(--font-display);
+      font-size: 2.6rem;
+      font-weight: 600;
+      line-height: 1.05;
+      color: var(--success);
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.01em;
+    }
+    .pillar .stat.warn { color: var(--accent-bright); }
+    .pillar .desc {
+      font-size: 0.92rem;
+      color: var(--text);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* For-all-hands callout */
+    .allhands-frame {
+      background: var(--bg-surface);
+      border: 2px dashed rgba(249, 115, 22, 0.45);
+      border-radius: 12px;
+      padding: 2rem 2.2rem 2.4rem;
+      margin: 1.2rem 0;
+    }
+    .allhands-frame-tag {
+      display: inline-block;
+      background: rgba(249, 115, 22, 0.16);
+      color: var(--accent-bright);
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      border-radius: 999px;
+      padding: 0.3rem 0.8rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+    }
+    .allhands-frame h3 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text);
+      margin: 0 0 0.4rem;
+    }
+    .allhands-frame .slogan {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.25rem;
+      color: var(--accent-bright);
+      margin: 0 0 1.4rem;
+      line-height: 1.4;
+    }
+
+    /* Mini bar chart */
+    .mini-chart {
+      margin: 1.2rem 0 1.4rem;
+    }
+    .mini-chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.5rem;
+    }
+    .mini-chart-title {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .mini-chart-range {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+    .chart-row {
+      display: flex;
+      gap: 0.6rem;
+    }
+    .yaxis {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 130px;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      text-align: right;
+      padding-right: 0.3rem;
+      border-right: 1px solid var(--border);
+    }
+    .bars-area {
+      flex: 1;
+      position: relative;
+    }
+    .gridlines {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 130px;
+      pointer-events: none;
+    }
+    .gridlines > div {
+      position: absolute;
+      left: 0; right: 0;
+      border-top: 1px dashed var(--border);
+    }
+    .deploy-marker {
+      position: absolute;
+      top: -8px;
+      bottom: 16px;
+      width: 2px;
+      background: var(--accent);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .deploy-label {
+      position: absolute;
+      top: -22px;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-weight: 600;
+      white-space: nowrap;
+      z-index: 2;
+    }
+    .bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 130px;
+    }
+    .bar {
+      flex: 1;
+      border-radius: 2px 2px 0 0;
+    }
+    .bar.pre { background: var(--danger); opacity: 0.85; }
+    .bar.post { background: var(--success); }
+    .bar.post.partial { opacity: 0.65; }
+    .xaxis {
+      display: flex;
+      gap: 4px;
+      margin-top: 0.4rem;
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+    }
+    .xaxis > div { flex: 1; text-align: center; }
+    .chart-legend {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.9rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.84rem;
+      color: var(--text);
+    }
+    .legend-dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 2px;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+    .legend-dot.pre { background: var(--danger); }
+    .legend-dot.post { background: var(--success); }
+    .chart-footnote {
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+      margin: 0.8rem 0 0;
+    }
+
+    /* Wins strip · for the all-hands */
+    .wins-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.4rem;
+    }
+    .win-card {
+      background: var(--bg-elevated);
+      border-left: 3px solid var(--success);
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.2rem;
+    }
+    .win-card .win-stat {
+      font-family: var(--font-display);
+      font-size: 2.6rem;
+      font-weight: 600;
+      color: var(--success);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+    }
+    .win-card .win-label {
+      font-size: 0.84rem;
+      color: var(--text);
+      margin-top: 0.4rem;
+      line-height: 1.5;
+    }
+
+    ul.bullets {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    ul.bullets li {
+      position: relative;
+      padding: 0.3rem 0 0.3rem 1.2rem;
+      font-size: 0.96rem;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    ul.bullets li::before {
+      content: "›";
+      position: absolute;
+      left: 0;
+      top: 0.3rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    ul.bullets.check li::before {
+      content: "✓";
+      color: var(--success);
+    }
+
+    .tracker-link {
+      display: inline-block;
+      margin-top: 1.2rem;
+      padding: 0.7rem 1.2rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+    }
+    .tracker-link:hover { background: var(--bg-surface); }
+
+    @media (max-width: 760px) {
+      .container { padding: 2rem 1.2rem 4rem; }
+      .pillars, .wins-strip { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- COVER -->
+    <section class="slide cover">
+      <span class="eyebrow">Weekly Sync · May 27</span>
+      <h1>Onboarding <em>Sync</em></h1>
+      <p class="lede">Three weeks of data. The call holds, on clearer grounds.</p>
+      <div class="cover-meta">
+        <div><span style="color: var(--text-dim);">Date</span> · <strong>May 27, 2026</strong></div>
+        <div><span style="color: var(--text-dim);">Presenter</span> · <strong>Santiago Anaya</strong></div>
+        <div><span style="color: var(--text-dim);">Sample</span> · <strong>2,662 new devices</strong></div>
+      </div>
+    </section>
+
+    <!-- THE CALL -->
+    <section class="slide">
+      <span class="eyebrow">The call</span>
+      <h2>We recommend shipping Flow B.</h2>
+
+      <div class="recommend-banner">
+        <div class="label">★ Decision</div>
+        <h2>Configure Descope as <em>Flow B</em>.</h2>
+        <p>20 days of clean data. Completion converged as cohorts matured, but Flow B keeps a real edge on friction and duplicates, with no hit to conversion.</p>
+
+        <div style="display: flex; gap: 0.8rem; margin-top: 1.2rem; align-items: flex-start;">
+          <div style="flex: 0 0 auto; max-width: 130px;">
+            <div style="font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.3rem;">Descope · step 1</div>
+            <img src="./assets/descope-flowB-email.png" alt="Descope email step" style="width: 100%; border-radius: 6px; border: 1px solid var(--border); display: block;" />
+          </div>
+          <div style="flex: 0 0 auto; max-width: 130px;">
+            <div style="font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.3rem;">Descope · step 2</div>
+            <img src="./assets/descope-flowB-password.png" alt="Descope password step" style="width: 100%; border-radius: 6px; border: 1px solid var(--border); display: block;" />
+          </div>
+          <div style="flex: 1; font-size: 0.84rem; color: var(--text-muted); line-height: 1.55; padding-top: 0.6rem;">
+            Descope can match Flow B exactly: email-first sheet, then password. Same flow we tested in production.
+          </div>
+        </div>
+      </div>
+
+      <div class="pillars">
+        <div class="pillar">
+          <div class="label">Forgot-password friction</div>
+          <div class="stat">−19%</div>
+          <p class="desc">Flow A taps it almost <strong>2x</strong> more (45% vs 26% per device). B's most durable win.</p>
+        </div>
+        <div class="pillar">
+          <div class="label">Welcome screen reach</div>
+          <div class="stat">+7%</div>
+          <p class="desc">Email-first sheet auto-loads, so more users reach it. Source of B's completion edge.</p>
+        </div>
+        <div class="pillar">
+          <div class="label">Accidental signups</div>
+          <div class="stat">3 → 0</div>
+          <p class="desc">Support tickets tagged "accidental signup": <strong>3 in April, 0 in May</strong>. Our cleanest signal.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.2rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.4rem 1.6rem;">
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.5rem;">Why A taps it more · the misclick read</div>
+        <p style="margin: 0 0 1.1rem; font-size: 0.92rem; color: var(--text); line-height: 1.55;">Most of Flow A's extra taps aren't real password recovery. They're <strong>misclicks</strong> — users hit "forgot password" thinking it's sign-in, then log in fine seconds later. We tracked what forgot-password tappers did next:</p>
+
+        <div style="display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; font-size: 0.88rem;">
+          <div style="padding: 0.55rem 0.9rem; background: var(--bg-elevated); color: var(--text-dim); font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;">After tapping forgot-password</div>
+          <div style="padding: 0.55rem 0.9rem; background: var(--bg-elevated); color: var(--text-dim); font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; text-align: center;">Flow A</div>
+          <div style="padding: 0.55rem 0.9rem; background: var(--bg-elevated); color: var(--text-dim); font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; text-align: center;">Flow B</div>
+
+          <div style="padding: 0.6rem 0.9rem; color: var(--text); border-top: 1px solid var(--border);">Logged in within 5 min <span style="color: var(--text-dim);">(knew password → misclick)</span></div>
+          <div style="padding: 0.6rem 0.9rem; text-align: center; border-top: 1px solid var(--border); color: var(--warning); font-weight: 600;">36%</div>
+          <div style="padding: 0.6rem 0.9rem; text-align: center; border-top: 1px solid var(--border); color: var(--success); font-weight: 600;">10%</div>
+
+          <div style="padding: 0.6rem 0.9rem; color: var(--text); border-top: 1px solid var(--border);">Logged in eventually</div>
+          <div style="padding: 0.6rem 0.9rem; text-align: center; border-top: 1px solid var(--border); color: var(--text-muted);">57%</div>
+          <div style="padding: 0.6rem 0.9rem; text-align: center; border-top: 1px solid var(--border); color: var(--text-muted);">20%</div>
+
+          <div style="padding: 0.6rem 0.9rem; color: var(--text); border-top: 1px solid var(--border);">Avg taps per affected user <span style="color: var(--text-dim);">(max)</span></div>
+          <div style="padding: 0.6rem 0.9rem; text-align: center; border-top: 1px solid var(--border); color: var(--text-muted);">2.4 <span style="color: var(--text-dim);">(28)</span></div>
+          <div style="padding: 0.6rem 0.9rem; text-align: center; border-top: 1px solid var(--border); color: var(--text-muted);">1.6 <span style="color: var(--text-dim);">(8)</span></div>
+        </div>
+
+        <p style="margin: 1rem 0 0; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55;">1 in 3 Flow A forgot-password taps is a user who knew their password. Email-first removes the confusion: B's misclick rate drops to 1 in 10, and tap counts collapse.</p>
+      </div>
+
+      <div style="margin-top: 1rem; padding: 0.8rem 1.1rem; background: var(--bg-surface); border: 1px dashed var(--border-strong); border-radius: 8px;">
+        <p style="margin: 0; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55;"><strong style="color: var(--accent-bright);">Next on forgot-password:</strong> making the login button always tappable, so users stop hitting "forgot password" by mistake. The misclick data above is why we're testing it.</p>
+      </div>
+
+      <div style="margin-top: 1rem; padding: 0.9rem 1.1rem; background: var(--bg-elevated); border-left: 3px solid var(--text-dim); border-radius: 0 8px 8px 0;">
+        <p style="margin: 0; font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;"><strong style="color: var(--text);">Honest read on completion:</strong> the week-1 +14pp gap converged to +2.9pp, login success now tied. Flow B isn't a conversion silver bullet. It's a friction + duplicate win at conversion parity. Still worth shipping.</p>
+      </div>
+    </section>
+
+    <!-- FOR THE ALL-HANDS -->
+    <section class="slide">
+      <span class="eyebrow">For the next all-hands</span>
+      <h2>One slide to share company-wide.</h2>
+      <p>One frame for the all-hands deck. New flow vs old, in a single story.</p>
+
+      <div class="allhands-frame">
+        <span class="allhands-frame-tag">Slide · Onboarding team's first milestone</span>
+        <h3>We fixed accidental signups.</h3>
+
+        <!-- mini bar chart -->
+        <div class="mini-chart">
+          <div class="mini-chart-header">
+            <div class="mini-chart-title">Accidental signups per week</div>
+            <div class="mini-chart-range">Jan 5 → May 27</div>
+          </div>
+
+          <div class="chart-row">
+            <div class="yaxis">
+              <span>26</span>
+              <span>17</span>
+              <span>9</span>
+              <span>0</span>
+            </div>
+            <div class="bars-area">
+              <div class="gridlines">
+                <div style="top: 0%;"></div>
+                <div style="top: 33%;"></div>
+                <div style="top: 66%;"></div>
+                <div style="top: 100%; border-top-color: var(--border-strong); border-top-style: solid;"></div>
+              </div>
+              <div class="deploy-marker" style="left: 80%;"></div>
+              <div class="deploy-label" style="left: 80%;">↓ Apr 30 deploy</div>
+
+              <div class="bars">
+                <div class="bar pre" title="Jan 5 · 26" style="height: 100%;"></div>
+                <div class="bar pre" title="Jan 12 · 16" style="height: 62%;"></div>
+                <div class="bar pre" title="Jan 19 · 14" style="height: 54%;"></div>
+                <div class="bar pre" title="Jan 26 · 12" style="height: 46%;"></div>
+                <div class="bar pre" title="Feb 2 · 8" style="height: 31%;"></div>
+                <div class="bar pre" title="Feb 9 · 7" style="height: 27%;"></div>
+                <div class="bar pre" title="Feb 16 · 11" style="height: 42%;"></div>
+                <div class="bar pre" title="Feb 23 · 9" style="height: 35%;"></div>
+                <div class="bar pre" title="Mar 2 · 7" style="height: 27%;"></div>
+                <div class="bar pre" title="Mar 9 · 8" style="height: 31%;"></div>
+                <div class="bar pre" title="Mar 16 · 14" style="height: 54%;"></div>
+                <div class="bar pre" title="Mar 23 · 12" style="height: 46%;"></div>
+                <div class="bar pre" title="Mar 30 · 12" style="height: 46%;"></div>
+                <div class="bar pre" title="Apr 6 · 13" style="height: 50%;"></div>
+                <div class="bar pre" title="Apr 13 · 12" style="height: 46%;"></div>
+                <div class="bar pre" title="Apr 20 · 13" style="height: 50%;"></div>
+                <div class="bar post" title="Apr 27 · 0 · experiment starts mid-week" style="height: 2%;"></div>
+                <div class="bar post" title="May 4 · 0" style="height: 2%;"></div>
+                <div class="bar post" title="May 11 · 0" style="height: 2%;"></div>
+                <div class="bar post" title="May 18 · 0" style="height: 2%;"></div>
+              </div>
+
+              <div class="xaxis">
+                <div>Jan</div><div></div><div></div><div></div>
+                <div>Feb</div><div></div><div></div><div></div>
+                <div>Mar</div><div></div><div></div><div></div><div></div>
+                <div>Apr</div><div></div><div></div><div></div>
+                <div>May</div><div></div><div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-legend">
+            <div><span class="legend-dot pre"></span> <strong>Before deploy:</strong> 7 to 26 accidental signups per week, steady for 16 weeks.</div>
+            <div><span class="legend-dot post"></span> <strong>After deploy:</strong> 0 accidental cancellations confirmed by support tickets across May.</div>
+          </div>
+        </div>
+
+        <!-- The downstream improvements -->
+        <h3 style="margin-top: 1.6rem;">What this unlocked</h3>
+        <div class="wins-strip">
+          <div class="win-card">
+            <div class="win-stat">3 → 0</div>
+            <div class="win-label">Support cancellations tagged "accidental signup". April vs all May. Ground truth.</div>
+          </div>
+          <div class="win-card">
+            <div class="win-stat">−45%</div>
+            <div class="win-label">Fewer login-failure events per week app-wide (~1,600 → ~870). Users retry less.</div>
+          </div>
+          <div class="win-card">
+            <div class="win-stat">−40%</div>
+            <div class="win-label">Fewer likely-duplicate signups per week in our own data.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COURSES SCOPE -->
+    <section class="slide">
+      <span class="eyebrow">Up next · Onboarding Courses</span>
+      <h2>Where the courses stand.</h2>
+      <p>What's buildable now vs out of scope for the React Native MVP. Discussion point.</p>
+
+      <!-- Out of V1 scope · title section with status grid -->
+      <h3 style="margin-top: 2.4rem; font-size: 1.5rem;">⚠ Out of V1 scope · mobile rebuild</h3>
+      <p style="font-size: 0.92rem;"><strong>Not</strong> in the RN rebuild MVP. Do any of these jump into scope?</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 1rem;">
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--warning); border-radius: 8px; padding: 1.1rem 1.2rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <strong style="color: var(--text); font-size: 1.05rem;">CSV imports</strong>
+            <span style="font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; color: var(--warning); background: rgba(251,191,36,0.16); border: 1px solid rgba(251,191,36,0.35); border-radius: 999px; padding: 0.2rem 0.55rem; white-space: nowrap;">PARTIAL</span>
+          </div>
+          <p style="margin: 0; font-size: 0.86rem; color: var(--text-muted); line-height: 1.5;">Manual file upload for clients/services. Backend can't scope it per-barber yet. (Credential imports below are different.)</p>
+        </div>
+
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--danger); border-radius: 8px; padding: 1.1rem 1.2rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <strong style="color: var(--text); font-size: 1.05rem;">Reviews import</strong>
+            <span style="font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; color: var(--danger); background: rgba(248,113,113,0.16); border: 1px solid rgba(248,113,113,0.35); border-radius: 999px; padding: 0.2rem 0.55rem; white-space: nowrap;">BLOCKED</span>
+          </div>
+          <p style="margin: 0; font-size: 0.86rem; color: var(--text-muted); line-height: 1.5;">Triple-blocked: backend, no mobile surface, no iOS reference.</p>
+        </div>
+
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--info); border-radius: 8px; padding: 1.1rem 1.2rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <strong style="color: var(--text); font-size: 1.05rem;">Step 4 · Operator / Engage / Flex</strong>
+            <span style="font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; color: var(--info); background: rgba(56,189,248,0.16); border: 1px solid rgba(56,189,248,0.35); border-radius: 999px; padding: 0.2rem 0.55rem; white-space: nowrap;">POST-MVP</span>
+          </div>
+          <p style="margin: 0; font-size: 0.86rem; color: var(--text-muted); line-height: 1.5;">Decided May 20: out of the MVP. Each becomes its own focused course later, not a checklist item.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 1rem; padding: 0.9rem 1.1rem; background: var(--bg-elevated); border-left: 3px solid var(--success); border-radius: 0 8px 8px 0;">
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--success); margin-bottom: 0.5rem;">🟢 Could still make V1</div>
+        <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.88rem; color: var(--text); line-height: 1.55;">
+          <li><strong>Course 1 · Getting bookable</strong> — already built in RN. Just wrap it as a course.</li>
+          <li><strong>Course 3 · Getting paid</strong> — built and ready, but deferred to after the first appointment (decided May 20: banking is high-friction up front).</li>
+          <li><strong>Credential-based imports</strong> — log in to Booksy / Vagaro / Square + 16 more, backend pulls the data. Already on iOS, mostly UX work for us.</li>
+        </ul>
+      </div>
+
+      <div style="margin-top: 1rem; padding: 0.9rem 1.1rem; background: var(--bg-elevated); border-left: 3px solid var(--warning); border-radius: 0 8px 8px 0;">
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--warning); margin-bottom: 0.5rem;">⏳ Pending decision</div>
+        <p style="margin: 0; font-size: 0.88rem; color: var(--text); line-height: 1.55;"><strong>Decide the analytics we track across the courses</strong>, so we measure every step from day one and don't retrofit events later (the login-experiment pain). Tristan to lead.</p>
+      </div>
+
+      <div style="margin-top: 1rem; padding: 0.9rem 1.1rem; background: var(--bg-elevated); border-left: 3px solid var(--info); border-radius: 0 8px 8px 0;">
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--info); margin-bottom: 0.5rem;">💬 Open for discussion · Tristan leads</div>
+        <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.88rem; color: var(--text); line-height: 1.55;">
+          <li><strong>Sequential, or free order?</strong> Leaning toward not forcing courses 2 and 3 in order.</li>
+          <li><strong>How courses get triggered</strong> — the big thing to nail down.</li>
+          <li><strong>When is an indie "onboarded"?</strong> Maybe after a set number of appointments.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- VERIFICATION GAP -->
+    <section class="slide">
+      <span class="eyebrow">Critical · raised by Yurii</span>
+      <h2>Verification gap on signup.</h2>
+      <p>An indie barber account can be created today without phone or email being verified. Proposal: gate account creation behind verification.</p>
+
+      <!-- Two screens row -->
+      <div style="display: flex; gap: 1.6rem; margin-top: 1.5rem; align-items: flex-start; justify-content: center;">
+        <!-- Login -->
+        <div style="flex: 0 0 auto; max-width: 220px;">
+          <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.5rem; text-align: center;">Today · login</div>
+          <img src="./assets/login-screen.png" alt="Current login" style="width: 100%; border-radius: 12px; border: 1px solid var(--border); display: block;" />
+        </div>
+        <!-- SMS verify (existing) -->
+        <div style="flex: 0 0 auto; max-width: 220px;">
+          <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; text-align: center;">SMS verify · exists</div>
+          <img src="./assets/verify-sms.png" alt="SMS verification" style="width: 100%; border-radius: 12px; border: 1px solid var(--border); display: block;" />
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.6rem;">
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--info); border-radius: 8px; padding: 1.1rem 1.3rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--info); margin-bottom: 0.5rem;">Shipped · stopgap</div>
+          <ul class="bullets" style="margin: 0;">
+            <li><strong>Login gate.</strong> Unverified barbers get sent to a verify-phone screen before they can use the app.</li>
+            <li>The account still gets created first, then blocked. Today the error is a generic "wrong credentials" and needs clearer copy.</li>
+          </ul>
+        </div>
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--success); border-radius: 8px; padding: 1.1rem 1.3rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--success); margin-bottom: 0.5rem;">Proposed · the target</div>
+          <ul class="bullets check" style="margin: 0;">
+            <li><strong>Don't create the account until the phone is verified.</strong> Nothing to log into until it's real.</li>
+            <li><strong>Everyone verifies on login</strong>, phone first (if they have neither, they add one). Works across devices.</li>
+            <li>Runs through <strong>Descope</strong> once it owns signup (in progress).</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- FigJam flow -->
+      <h3 style="margin-top: 2rem;">The flow</h3>
+      <p style="font-size: 0.92rem;">FigJam mapping the verification flow that handles this.</p>
+      <div style="margin-top: 1rem; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-surface);">
+        <iframe
+          src="https://embed.figma.com/board/wwEiY53MIasNSEA4AfPkx2/Onboarding?node-id=686-4839&embed-host=share"
+          style="width: 100%; height: 460px; border: 0; display: block;"
+          allowfullscreen
+        ></iframe>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 0.5rem;">If the embed doesn't load on the shared screen, <a href="https://www.figma.com/board/wwEiY53MIasNSEA4AfPkx2/Onboarding?node-id=686-4839" style="color: var(--accent);">open the board directly</a>.</p>
+
+      <!-- The framing -->
+      <p style="font-size: 0.95rem; color: var(--text); margin-top: 1.5rem; line-height: 1.65;"><strong>Why it's the right fix, framed for the room:</strong> not "plug each hole one by one" but <strong>"remove the half-made account, so there's no hole to plug."</strong> Middleware covers us now; deferring barber creation closes it for good.</p>
+
+      <!-- Open questions -->
+      <div style="margin-top: 1.5rem; padding: 1rem 1.2rem; background: var(--bg-elevated); border-left: 3px solid var(--warning); border-radius: 0 8px 8px 0;">
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--warning); margin-bottom: 0.5rem;">⏳ Open questions</div>
+        <p style="margin: 0 0 0.6rem; font-size: 0.9rem; color: var(--text); line-height: 1.55;"><strong>Remember this device?</strong> If everyone verifies on login, trusted devices shouldn't have to re-verify every time. Worth checking what Descope offers.</p>
+        <p style="margin: 0; font-size: 0.9rem; color: var(--text); line-height: 1.55;"><strong>RN-only, or iOS / Android too?</strong> Leaning RN-only for now — flagging it, not proposing cross-platform scope.</p>
+      </div>
+
+      <p style="font-size: 0.82rem; color: var(--text-dim); margin-top: 1rem;">Follow-up (out of scope): managing MFA devices after this lands.</p>
+    </section>
+
+    <!-- DECISIONS NEEDED TODAY -->
+    <section class="slide">
+      <span class="eyebrow">Decisions needed today</span>
+      <h2>Three calls that need owners.</h2>
+      <p>These have external owners and block scope. Everything else lives in the FigJam.</p>
+
+      <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1.4rem;">
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--danger); border-radius: 8px; padding: 1.2rem 1.4rem;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+            <h3 style="margin: 0; font-size: 1.1rem;">Indies-only, or all users?</h3>
+            <span style="font-size: 0.66rem; font-weight: 700; color: var(--danger); background: rgba(248,113,113,0.16); border: 1px solid rgba(248,113,113,0.35); border-radius: 999px; padding: 0.2rem 0.6rem; white-space: nowrap;">OWNER · ERIC</span>
+          </div>
+          <p style="margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.55;">The biggest scope blocker. Mandatory verification for indie barbers only, or every user? Everything downstream depends on it.</p>
+        </div>
+
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--warning); border-radius: 8px; padding: 1.2rem 1.4rem;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+            <h3 style="margin: 0; font-size: 1.1rem;">Email verification — when & how?</h3>
+            <span style="font-size: 0.66rem; font-weight: 700; color: var(--warning); background: rgba(251,191,36,0.16); border: 1px solid rgba(251,191,36,0.35); border-radius: 999px; padding: 0.2rem 0.6rem; white-space: nowrap;">OWNER · YURII</span>
+          </div>
+          <p style="margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.55;">Now or later? Magic-link or OTP? How it fits with Descope. Phone is the floor today, email is the open piece.</p>
+        </div>
+
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-left: 3px solid var(--info); border-radius: 8px; padding: 1.2rem 1.4rem;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+            <h3 style="margin: 0; font-size: 1.1rem;">Stop creating accounts before verifying — when?</h3>
+            <span style="font-size: 0.66rem; font-weight: 700; color: var(--info); background: rgba(56,189,248,0.16); border: 1px solid rgba(56,189,248,0.35); border-radius: 999px; padding: 0.2rem 0.6rem; white-space: nowrap;">OWNER · YURII</span>
+          </div>
+          <p style="margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.55;">Already mapped in the FigJam (the long-term fix). The open call: do we commit, by when, and who owns the ticket? Not ticketed yet.</p>
+        </div>
+      </div>
+
+      <p style="font-size: 0.82rem; color: var(--text-dim); margin-top: 1.2rem;">Smaller calls (edit-phone-mid-verify, how long an unverified signup lasts) I'll decide and document. Technical design lives in the FigJam.</p>
+    </section>
+
+    <!-- TRACKER LINK -->
+    <section class="slide">
+      <span class="eyebrow">For the deep dive</span>
+      <h2>Everything else is on the tracker.</h2>
+      <p>Full history, all metrics per course, weekly comparisons, methodology.</p>
+      <a class="tracker-link" href="https://santi-squire.github.io/onboarding-team-sync/tracker/" target="_blank">santi-squire.github.io/onboarding-team-sync/tracker/</a>
+    </section>
+
+  </div>
+</body>
+</html>

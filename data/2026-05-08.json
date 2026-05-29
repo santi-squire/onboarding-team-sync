@@ -6,9 +6,9 @@
 
   "rolloutContext": {
     "fullRolloutDate": "2026-05-07",
-    "today": "2026-05-22",
-    "daysAtFullRollout": 15,
-    "note": "100% rollout went live 2026-05-07. Refreshed 2026-05-22 (Friday afternoon). SRM stable at 50.6/49.4 on NEW devices. Sample 2,513 devices on the clean slice. Completion gap narrowed to +3.6pp B (was +6.7pp on May 20); forgot-password gap still −20pp B."
+    "today": "2026-05-27",
+    "daysAtFullRollout": 20,
+    "note": "100% rollout went live 2026-05-07. Refreshed 2026-05-27 (Wednesday). SRM stable at 50.8/49.2 on NEW devices. Sample 2,662 devices on the clean slice. Completion gap down to +2.9pp B (trend: +14 → +8.7 → +6.7 → +3.6 → +2.9). Login success rate now tied/slightly A. B's durable wins: welcome reach (+7pp) and forgot-password friction (−19pp)."
   },
 
   "abandonFollowup": {
@@ -16,22 +16,22 @@
     "subtitle": "Original concern was Flow B's high login_abandoned rate vs Flow A's. We traced each abandoner's anonymous_id to see if they returned.",
     "method": "Took all distinct ANONYMOUS_IDs that fired login_abandoned with last_step_reached='email_entry' in Flow B (NEW devices, post-100%). For each, checked whether they had any LOGIN_SUCCEEDED, ACCOUNT_CREATED, or IDENTIFIES event AFTER their first abandon timestamp.",
     "results": {
-      "total_email_abandoners": 129,
-      "later_logged_in": { "count": 58, "pct": 45 },
-      "later_signed_up": { "count": 17, "pct": 13 },
-      "came_back_no_outcome": { "count": 37, "pct": 29 },
-      "truly_lost": { "count": 23, "pct": 18 }
+      "total_email_abandoners": 137,
+      "later_logged_in": { "count": 61, "pct": 45 },
+      "later_signed_up": { "count": 18, "pct": 13 },
+      "came_back_no_outcome": { "count": 38, "pct": 28 },
+      "truly_lost": { "count": 26, "pct": 19 }
     },
-    "implicationHeadline": "Most 'abandonment' is users retrying. Truly-lost share keeps shrinking.",
+    "implicationHeadline": "Most 'abandonment' is users retrying. Truly-lost share holds around 1 in 5.",
     "implicationBullets": [
-      "58% (75/129) completed login or signup after abandoning.",
-      "29% (37/129) returned but haven't finished yet.",
-      "18% (23/129) are truly lost (trend: 33% → 23% → 19% → 19% → 18% over the last 5 refreshes).",
-      "Return rate now 82% — the email-step concern is essentially resolved."
+      "58% (79/137) completed login or signup after abandoning.",
+      "28% (38/137) returned but haven't finished yet.",
+      "19% (26/137) are truly lost (trend: 33% → 23% → 19% → 19% → 18% → 19% — stable).",
+      "Return rate 81% — the email-step concern is essentially resolved."
     ],
     "implicationWhy": "Flow B has more measurable abandon surfaces than Flow A, which inflates the raw rate.",
-    "verdict": "Concern essentially resolved. 82% of abandoners return. Session recordings (Clarity is deployed) should clarify what the rest do — check with Tristan.",
-    "caveat": "Sample 129 abandoners (was 83 on May 20). Refresh weekly. The 37 'came back but no outcome' bucket may complete later."
+    "verdict": "Concern essentially resolved. 81% of abandoners return. Session recordings (Clarity is deployed) should clarify what the rest do — check with Tristan.",
+    "caveat": "Sample 137 abandoners. Refresh weekly. The 38 'came back but no outcome' bucket may complete later."
   },
 
   "indieClassification": {
@@ -277,89 +277,89 @@
     "postRolloutNew": {
       "label": "Post-100% NEW devices only · cleanest experiment read",
       "windowStart": "2026-05-07",
-      "windowEnd": "2026-05-22",
-      "approxDays": 15,
+      "windowEnd": "2026-05-27",
+      "approxDays": 20,
       "filterDescription": "Devices whose first IDENTIFIES event is on or after 2026-05-07 — i.e., genuinely new entries to the experiment, not pre-existing legacy users with sticky LD buckets.",
-      "refreshNote": "Refreshed 2026-05-22 (Friday afternoon). Sample 2,513 devices on the clean slice (+50% vs May 20). SRM stable at 50.6/49.4. Completion gap softened to +3.6pp B (trend: +14 → +8.7 → +6.7 → +3.6). Forgot-password gap holds at -20pp. Login abandons flipped back to B +4pp. Per-exposure flip holds (A 6.8 vs B 6.3).",
+      "refreshNote": "Refreshed 2026-05-27 (Wednesday). Sample 2,662 devices on the clean slice. SRM stable at 50.8/49.2. Completion gap down to +2.9pp B (trend: +14 → +8.7 → +6.7 → +3.6 → +2.9). Login success rate now tied/slightly A (50.1% A vs 49.5% B). B's durable wins are welcome reach (+7pp) and forgot-password (−19pp). Login abandons B higher +5pp. Per-exposure flip holds (A 6.9 vs B 6.1).",
 
       "variantBalance": {
         "expected": { "flowA": 50, "flowB": 50 },
         "snowflake": {
-          "flowA": 1271,
-          "flowB": 1242,
-          "actorsFlowA": 661,
-          "actorsFlowB": 569,
-          "loggedInFlowA": 279,
+          "flowA": 1353,
+          "flowB": 1309,
+          "actorsFlowA": 715,
+          "actorsFlowB": 609,
+          "loggedInFlowA": 307,
           "loggedInFlowB": 16,
-          "totalEventsFlowA": 2436,
-          "totalEventsFlowB": 1684,
+          "totalEventsFlowA": 2632,
+          "totalEventsFlowB": 1779,
           "unit": "distinct devices"
         },
-        "splitPct": { "flowA": 50.6, "flowB": 49.4 },
-        "srmStatus": "50.6/49.4 — effectively 50/50. SRM stable across the refresh."
+        "splitPct": { "flowA": 50.8, "flowB": 49.2 },
+        "srmStatus": "50.8/49.2 — effectively 50/50. SRM stable across the refresh."
       },
 
       "funnel": {
         "steps": ["Assigned", "Welcome viewed", "Login succeeded"],
-        "flowA": [1271, 1191, 598],
-        "flowB": [1242, 1258, 630],
+        "flowA": [1353, 1275, 639],
+        "flowB": [1309, 1325, 656],
         "rates": {
-          "flowA": { "welcome": 93.7, "conversion": 50.2, "overall": 47.1 },
-          "flowB": { "welcome": 101.3, "conversion": 50.1, "overall": 50.7 }
+          "flowA": { "welcome": 94.2, "conversion": 50.1, "overall": 47.2 },
+          "flowB": { "welcome": 101.2, "conversion": 49.5, "overall": 50.1 }
         },
-        "note": "Flow B welcome > assigned because some devices were assigned during the ramp but their first IDENTIFIES event is May 7+. Trivial data-quirk."
+        "note": "Flow B welcome > assigned because some devices were assigned during the ramp but their first IDENTIFIES event is May 7+. Trivial data-quirk. Conversion rate (succeeded ÷ welcome) is now slightly higher in A — the cohort has fully matured. B's overall edge now comes entirely from welcome reach."
       },
 
       "northStarData": {
         "categories": ["barber/signup_link", "barber/email_not_found", "shop/signup_link", "shop/email_not_found", "indie/signup_link"],
-        "flowA": [87, 0, 1, 0, 0],
-        "flowB": [3, 78, 0, 3, 0],
-        "note": "On clean sample, 0 indie account_created. Conclusion that indies don't pass through this channel holds. Flow B scope leak (barber/signup_link) flat at 3 devices for 7 days running — 3.23.1 fix may not have reached all paths or last legacy 3.23.0 devices haven't updated."
+        "flowA": [94, 0, 1, 0, 0],
+        "flowB": [3, 80, 0, 3, 0],
+        "note": "On clean sample, 0 indie account_created. Conclusion that indies don't pass through this channel holds. Flow B scope leak (barber/signup_link) flat at 3 devices — 3.23.1 fix may not have reached all paths or last legacy 3.23.0 devices haven't updated."
       },
 
       "emailCheck": {
         "events": {
-          "returning_email": 890,
-          "temp_password_email": 347,
-          "new_user_email": 241,
-          "new_user_username": 55,
-          "returning_username": 35,
+          "returning_email": 930,
+          "temp_password_email": 364,
+          "new_user_email": 247,
+          "new_user_username": 57,
+          "returning_username": 37,
           "temp_password_username": 2
         },
         "totals": {
-          "totalEvents": 1570,
-          "returning_email_pct": 56.7,
-          "temp_password_email_pct": 22.1,
-          "new_user_email_pct": 15.4,
-          "temp_password_total_pct": 22.2,
-          "username_total_pct": 5.8
+          "totalEvents": 1637,
+          "returning_email_pct": 56.8,
+          "temp_password_email_pct": 22.2,
+          "new_user_email_pct": 15.1,
+          "temp_password_total_pct": 22.3,
+          "username_total_pct": 5.9
         }
       },
 
       "loginFailed": {
         "flowA": { "total": 0, "byReason": {} },
-        "flowB": { "total": 294, "byReason": {} }
+        "flowB": { "total": 295, "byReason": {} }
       },
 
       "forgotPassword": {
-        "flowA": { "total": 577, "byState": {} },
-        "flowB": { "total": 311, "byState": {} }
+        "flowA": { "total": 609, "byState": {} },
+        "flowB": { "total": 336, "byState": {} }
       },
 
       "loginAbandoned": {
-        "flowA": { "total": 620, "byStep": {} },
-        "flowB": { "total": 656, "byStep": {} }
+        "flowA": { "total": 660, "byStep": {} },
+        "flowB": { "total": 710, "byStep": {} }
       },
 
       "friction": {
         "events": ["Login attempt failed", "Forgot password", "Login abandoned"],
-        "flowA": [0, 577, 620],
-        "flowB": [294, 311, 656]
+        "flowA": [0, 609, 660],
+        "flowB": [295, 336, 710]
       },
 
       "perExposure": {
-        "flowA": { "rate": 6.8, "numerator": 87, "denominator": 1271, "label": "Flow A · barber via signup_link" },
-        "flowB": { "rate": 6.3, "numerator": 78, "denominator": 1242, "label": "Flow B · barber via email_not_found" }
+        "flowA": { "rate": 6.9, "numerator": 94, "denominator": 1353, "label": "Flow A · barber via signup_link" },
+        "flowB": { "rate": 6.1, "numerator": 80, "denominator": 1309, "label": "Flow B · barber via email_not_found" }
       },
 
       "scopeLeak": {
@@ -725,16 +725,16 @@
   ],
 
   "scorecard": {
-    "headline": "Refreshed 2026-05-22 afternoon. SRM steady at 50.6/49.4. Flow B still wins overall completion at +3.6pp (softening from +6.7pp Tuesday). Forgot-password gap holds at -20pp. Login abandons flipped back to B +4pp.",
-    "sourceWindow": "post-100% NEW devices only · May 7-22",
+    "headline": "Refreshed 2026-05-27 (weekly). SRM steady at 50.8/49.2. Completion gap down to +2.9pp B (was +14pp three weeks ago). Login success rate now slightly A. B's durable wins are welcome reach (+7pp) and forgot-password (−19pp).",
+    "sourceWindow": "post-100% NEW devices only · May 7-27",
     "rows": [
       {
         "metric": "Traffic split",
         "definition": "Share of users assigned to each flow. Should be even.",
         "direction": "should be 50/50",
-        "flowA": "50.6%",
-        "flowB": "49.4%",
-        "deltaPct": "0.6 pp from even",
+        "flowA": "50.8%",
+        "flowB": "49.2%",
+        "deltaPct": "0.8 pp from even",
         "winner": "tied",
         "note": "★ Steady on the clean sample. Comparison is fair."
       },
@@ -742,71 +742,71 @@
         "metric": "Welcome screen reach rate †",
         "definition": "Share of assigned users who reached the welcome screen, per flow.",
         "direction": "higher better",
-        "flowA": "93.7%",
-        "flowB": "101.3%",
-        "deltaPct": "+7.6 pp",
+        "flowA": "94.2%",
+        "flowB": "101.2%",
+        "deltaPct": "+7.0 pp",
         "winner": "flowB",
-        "note": "† Flow B shows >100% from an innocuous ramp-window quirk. Email-first sheet auto-loads, B still wins."
+        "note": "† Flow B shows >100% from an innocuous ramp-window quirk. Email-first sheet auto-loads — this is B's most durable advantage and the source of its remaining completion edge."
       },
       {
         "metric": "Login success rate (of users who saw welcome)",
         "definition": "Share of welcome-viewers who completed login, per flow.",
         "direction": "higher better",
-        "flowA": "50.2%",
-        "flowB": "50.1%",
-        "deltaPct": "−0.1 pp",
-        "winner": "tied",
-        "note": "Essentially tied now. Trend: +10pp → +4pp → +3pp → +2pp → ~0pp. Most of the completion gap now comes from the welcome-reach delta, not the success rate."
+        "flowA": "50.1%",
+        "flowB": "49.5%",
+        "deltaPct": "−0.6 pp",
+        "winner": "flowA",
+        "note": "Flipped — Flow A now slightly higher. Trend: +10 → +4 → +3 → 0 → −0.6pp. Once at the welcome screen, both flows convert the same. B's overall edge is entirely the welcome-reach delta now."
       },
       {
         "metric": "Completion rate (of all users assigned)",
         "definition": "End-to-end conversion through the whole funnel, per flow.",
         "direction": "higher better",
-        "flowA": "47.1%",
-        "flowB": "50.7%",
-        "deltaPct": "+3.6 pp",
+        "flowA": "47.2%",
+        "flowB": "50.1%",
+        "deltaPct": "+2.9 pp",
         "winner": "flowB",
-        "note": "Trend: +14pp → +8.7pp → +6.7pp → +3.6pp. Story softening fast as cohort matures. B still ahead but margin keeps shrinking."
+        "note": "Trend: +14 → +8.7 → +6.7 → +3.6 → +2.9pp. The conversion advantage has largely converged as cohorts matured. B still ahead but the margin is now small and driven by welcome reach."
       },
       {
         "metric": "Forgot-password taps / device",
         "definition": "Forgot-password tap events per device, per flow.",
         "direction": "lower better",
-        "flowA": "45.4%",
-        "flowB": "25.0%",
-        "deltaPct": "−20.4 pp",
+        "flowA": "45.0%",
+        "flowB": "25.7%",
+        "deltaPct": "−19.3 pp",
         "winner": "flowB",
-        "note": "Gap holding around -20pp. Flow A's frustration tapping is the persistent UX issue (non-dismissible sheet)."
+        "note": "B's strongest and most durable win. Flow A's non-dismissible sheet drives frustration tapping. Holding around -19 to -23pp across all refreshes."
       },
       {
         "metric": "Abandon events per 100 devices *",
         "definition": "Login-abandon events ÷ devices × 100, per flow. Each device can fire multiple.",
         "direction": "lower better",
         "flowA": "48.8",
-        "flowB": "52.8",
-        "deltaPct": "+4 events / 100",
+        "flowB": "54.2",
+        "deltaPct": "+5.4 events / 100",
         "winner": "flowA",
-        "note": "* Flow B now higher again. Trend: +19 → +4 → -1 → +4. Flow B has 2 abandon surfaces, A has 1. Followup: 82% of B abandoners return."
+        "note": "* Flow B higher. B has 2 abandon surfaces (email + password), A has 1 — mechanical. Followup: 81% of B abandoners return later anyway."
       },
       {
         "metric": "New barber signups / device *",
         "definition": "New barber accounts created via signup path ÷ devices, per flow.",
         "direction": "lower better (we'd rather existing barbers log in than create duplicates)",
-        "flowA": "6.8%",
-        "flowB": "6.3%",
-        "deltaPct": "−0.5 pp",
+        "flowA": "6.9%",
+        "flowB": "6.1%",
+        "deltaPct": "−0.8 pp",
         "winner": "flowA",
-        "note": "* Gap holding (A 6.8 vs B 6.3). Story still holds because accidental rate inside these signups is down on the new flow."
+        "note": "* Gap holding (A 6.9 vs B 6.1). Story still holds because accidental rate inside these signups is down on the new flow."
       },
       {
         "metric": "Caught invited barbers before duplicate signup (B only)",
         "definition": "Share of email checks that match an existing invited barber, caught before they create a duplicate.",
         "direction": "higher = more duplicates prevented",
         "flowA": "n/a",
-        "flowB": "22.1%",
+        "flowB": "22.2%",
         "deltaPct": "n/a",
         "winner": "na",
-        "note": "Steady around 22-24%. Flow B catches ~1 in 4 invited barbers."
+        "note": "Steady around 22%. Flow B catches ~1 in 5 invited barbers — a capability Flow A doesn't have at all."
       },
       {
         "metric": "★ Accidental indies / week (sharpest signal)",
@@ -814,36 +814,36 @@
         "direction": "lower better",
         "flowA": "see note",
         "flowB": "see note",
-        "deltaPct": "−42%",
+        "deltaPct": "−36%",
         "winner": "flowB",
-        "note": "Pre-experiment 16-wk baseline ~12.0/wk → experiment ~7.0/wk on 4 full weeks (1+6+9+12). Drop softened from -54% to -42% as May 18 week reclassified up (was 7 on May 20, now 12). CS confirmed 0 accidental cancellations in May as of 20 days in — re-pull pending for May 22."
+        "note": "Pre-experiment 16-wk baseline ~12.1/wk → experiment ~7.75/wk on 4 full weeks (0+6+10+15). Drop has eroded over time (-75% → -63% → -54% → -42% → -36%) as later weeks reclassify up. The Snowflake proxy is noisy; CS ground-truth is the cleaner signal (0 cancellations in May)."
       }
     ],
     "verdict": {
-      "headline": "Flow B still wins, but story softening. Watch closely — completion gap halved in 5 days.",
+      "headline": "Flow B still the call, but on narrower grounds: welcome reach + forgot-password friction + duplicate-catch. Conversion has converged.",
       "bullets": [
-        "CS: 0 accidental indy self-signup cancellations in May as of 20-day pull (vs 3 in April). Worth a fresh pull for May 22.",
-        "Snowflake: accidental indies down ~42% on the 16-week baseline (was -54% on May 20; softens as May weeks reclassified).",
-        "Flow B beats A on welcome rate (+7.6pp) and forgot-password (−20pp). Completion gap narrowed to +3.6pp."
+        "CS: 0 accidental indy self-signup cancellations in May (vs 3 in April). Strongest single signal, ground-truth. Re-pull through May 27 pending.",
+        "Flow B's durable wins: welcome reach (+7pp), forgot-password friction (−19pp), and it catches ~1 in 5 invited barbers before a duplicate (Flow A can't).",
+        "Completion gap has converged to +2.9pp (from +14pp) — be honest about this. Login success rate is now tied/slightly A."
       ],
       "caveats": [
-        "Login success rate now essentially tied. Most of B's remaining advantage is welcome-reach.",
-        "Per-exposure signup rate still favors A by 0.5pp. Accidental rate inside those signups is what matters and is down on the new flow.",
-        "Login abandons flipped back to B higher (+4pp). Within noise but the story isn't as clean as a week ago.",
-        "Scope leak flat at 3 devices for 7+ days running — 3.23.1 may not have reached all firing paths. Worth pinging iOS team."
+        "The conversion-win narrative from week 1 has largely evaporated. Lead with friction reduction + duplicate prevention, not completion.",
+        "Snowflake accidental-indies proxy eroded to -36% as weeks matured. CS data (0 in May) is the cleaner read.",
+        "Login abandons run higher on B (mechanical, 2 surfaces). 81% of abandoners return.",
+        "Duplicate-email rate ran 19-21% the last two weeks vs ~15% baseline — worth a look, could be incident-related signup spike."
       ]
     }
   },
 
   "historicalComparison": {
-    "headline": "CS-confirmed 0 accidental cancellations in May (as of 20 days in). Snowflake shows accidental indies down ~42% on a 16-week baseline (softened from -54% as weeks reclassified). Signals still agree.",
+    "headline": "CS-confirmed 0 accidental cancellations in May. Snowflake proxy shows accidental indies down ~36% on a 16-week baseline (eroded from -75% at first read as later weeks reclassify). CS ground-truth is the cleaner signal.",
     "status": "partial",
     "statusNote": {
-      "headline": "Baseline 16 weeks (Jan 5 → Apr 26). Drop is real but softening as cohort matures.",
+      "headline": "Baseline 16 weeks (Jan 5 → Apr 26). Snowflake proxy is noisy and keeps softening; lean on CS data.",
       "bullets": [
         "Pre-experiment baseline covers full year-to-date (16 weeks).",
-        "Accidental-indies block is the closest in-data proxy for duplicates. Support tickets are the ground-truth.",
-        "All historical blocks refreshed 2026-05-22. Re-pull CS data through May 22 pending."
+        "Accidental-indies block is the in-data proxy for duplicates, but it reclassifies upward as weeks mature. Support tickets are the ground-truth.",
+        "All historical blocks refreshed 2026-05-27. Re-pull CS data through May 27 pending."
       ]
     },
     "blocks": [
@@ -853,47 +853,47 @@
         "status": "ready",
         "highlight": true,
         "comparison": {
-          "preBaseline": { "label": "Pre-experiment (Jan 5 - Apr 26, 16 full weeks)", "value": "12.0/wk avg · 64% rate" },
-          "experiment": { "label": "Experiment (Apr 27 - May 22)", "value": "7.0/wk avg on 4 full weeks · CS = 0 cancellations as of 20 days in" },
-          "deltaPct": -42,
+          "preBaseline": { "label": "Pre-experiment (Jan 5 - Apr 26, 16 full weeks)", "value": "12.1/wk avg · 64% rate" },
+          "experiment": { "label": "Experiment (Apr 27 - May 27)", "value": "7.75/wk avg on 4 full weeks · CS = 0 cancellations in May" },
+          "deltaPct": -36,
           "winner": "flowB",
           "verdict": {
-            "headline": "Accidental signups dropped ~42% on a 16-week baseline. CS-confirmed 0 cancellations in May as of 20 days in.",
+            "headline": "Snowflake proxy now shows ~36% drop (eroded from -75% as weeks matured). CS ground-truth still 0 cancellations in May — that's the cleaner signal.",
             "bullets": [
-              "12.0/wk pre vs 7.0/wk in the 4 full experiment weeks (1 + 6 + 9 + 12).",
-              "Drop softened progressively: -75% → -63% → -54% → -42% as later weeks reclassified up.",
-              "May 18 week (now complete) shows 12 accidentals — 8 concentrated on Mon May 18 (day of abuse incident).",
-              "Support tickets remain the ground truth: 3 accidental cancellations in April, 0 in May (as of 20-day pull).",
-              "Pre-experiment baseline was stable over 16 weeks (range 7-23), so this isn't an underlying trend.",
-              "The new flow's signups are still happening — but in support's eyes, none of them are accidents."
+              "12.1/wk pre vs 7.75/wk in the 4 full experiment weeks (0 + 6 + 10 + 15).",
+              "Proxy has eroded each week: -75% → -63% → -54% → -42% → -36% as later weeks reclassify upward.",
+              "May 18 week kept growing (7 → 12 → 15) — 8 of those concentrated on Mon May 18 (abuse-incident day).",
+              "Lean on CS ground-truth: 3 accidental cancellations in April, 0 in May. Independent of the proxy noise.",
+              "Pre-experiment baseline stable over 16 weeks (range 7-23), so the early drop wasn't an underlying trend.",
+              "Honest read: the dramatic -75% headline doesn't hold; the real, defensible signal is CS's 0 in May."
             ],
-            "why": "Sharpest in-data signal that the new flow reduces accidental duplicate signups. CS-confirmed."
+            "why": "The Snowflake proxy overstated the drop early; CS data is the signal to present. Both still point the same direction (down)."
           }
         },
         "weeks": [
-          { "week": "2026-01-05", "total_indies": 43, "accidental": 23, "accidental_pct": 53.5 },
-          { "week": "2026-01-12", "total_indies": 24, "accidental": 15, "accidental_pct": 62.5 },
+          { "week": "2026-01-05", "total_indies": 46, "accidental": 26, "accidental_pct": 56.5 },
+          { "week": "2026-01-12", "total_indies": 25, "accidental": 16, "accidental_pct": 64.0 },
           { "week": "2026-01-19", "total_indies": 24, "accidental": 14, "accidental_pct": 58.3 },
           { "week": "2026-01-26", "total_indies": 18, "accidental": 12, "accidental_pct": 66.7 },
           { "week": "2026-02-02", "total_indies": 14, "accidental": 8,  "accidental_pct": 57.1 },
           { "week": "2026-02-09", "total_indies": 11, "accidental": 7,  "accidental_pct": 63.6 },
           { "week": "2026-02-16", "total_indies": 22, "accidental": 11, "accidental_pct": 50.0 },
-          { "week": "2026-02-23", "total_indies": 17, "accidental": 10, "accidental_pct": 58.8 },
+          { "week": "2026-02-23", "total_indies": 16, "accidental": 9,  "accidental_pct": 56.3 },
           { "week": "2026-03-02", "total_indies": 22, "accidental": 7,  "accidental_pct": 31.8 },
           { "week": "2026-03-09", "total_indies": 18, "accidental": 8,  "accidental_pct": 44.4 },
           { "week": "2026-03-16", "total_indies": 17, "accidental": 14, "accidental_pct": 82.4 },
           { "week": "2026-03-23", "total_indies": 21, "accidental": 12, "accidental_pct": 57.1 },
-          { "week": "2026-03-30", "total_indies": 19, "accidental": 14, "accidental_pct": 73.7 },
+          { "week": "2026-03-30", "total_indies": 17, "accidental": 12, "accidental_pct": 70.6 },
           { "week": "2026-04-06", "total_indies": 14, "accidental": 13, "accidental_pct": 92.9 },
-          { "week": "2026-04-13", "total_indies": 14, "accidental": 11, "accidental_pct": 78.6 },
+          { "week": "2026-04-13", "total_indies": 15, "accidental": 12, "accidental_pct": 80.0 },
           { "week": "2026-04-20", "total_indies": 16, "accidental": 13, "accidental_pct": 81.3 },
-          { "week": "2026-04-27", "total_indies": 7,  "accidental": 1,  "accidental_pct": 14.3, "isExperiment": true, "rolloutEvent": "Experiment start" },
+          { "week": "2026-04-27", "total_indies": 6,  "accidental": 0,  "accidental_pct": 0.0,  "isExperiment": true, "rolloutEvent": "Experiment start" },
           { "week": "2026-05-04", "total_indies": 8,  "accidental": 6,  "accidental_pct": 75.0, "isExperiment": true, "rolloutEvent": "100% rollout" },
-          { "week": "2026-05-11", "total_indies": 11, "accidental": 9,  "accidental_pct": 81.8, "isExperiment": true },
-          { "week": "2026-05-18", "total_indies": 23, "accidental": 12, "accidental_pct": 52.2, "isExperiment": true, "note": "full week now; 8 of 12 accidentals concentrated on Mon May 18 (day of abuse incident)" },
-          { "week": "2026-05-25", "total_indies": 3,  "accidental": 2,  "accidental_pct": 66.7, "isExperiment": true, "note": "partial week (1 day)" }
+          { "week": "2026-05-11", "total_indies": 12, "accidental": 10, "accidental_pct": 83.3, "isExperiment": true },
+          { "week": "2026-05-18", "total_indies": 26, "accidental": 15, "accidental_pct": 57.7, "isExperiment": true, "note": "full week; grew from 7 → 12 → 15 across refreshes. 8 concentrated on Mon May 18 (abuse-incident day)" },
+          { "week": "2026-05-25", "total_indies": 4,  "accidental": 4,  "accidental_pct": 100.0, "isExperiment": true, "note": "partial week (2 days)" }
         ],
-        "caveat": "Refreshed 2026-05-22 afternoon. Baseline: Jan 5 - Apr 26 (16 weeks). Method: take all 'new indies' (role='barber', final user_type stayed null), cross-check whether their email also exists for any Rental/Commission user_id. Match = likely accidental. Support-ticket data is the ground-truth and confirmed 0 accidental cancellations in May as of 20-day pull.",
+        "caveat": "Refreshed 2026-05-27. Baseline: Jan 5 - Apr 26 (16 weeks). Method: take all 'new indies' (role='barber', final user_type stayed null), cross-check whether their email also exists for any Rental/Commission user_id. Match = likely accidental. NOTE: this proxy reclassifies upward as weeks mature, so early drops overstate. CS ticket data (0 accidental cancellations in May) is the ground-truth and the number to present.",
         "shopTenureBreakdown": {
           "title": "Refinement · shop tenure of accidental indies (90d cohort)",
           "rows": [
