@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Onboarding Sync · Jun 3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --bg-base: #07091a;
+      --bg-deep: #050714;
+      --bg-surface: #0f1328;
+      --bg-elevated: #181c34;
+      --border: rgba(255,255,255,0.06);
+      --border-strong: rgba(255,255,255,0.14);
+      --text: #f5f7ff;
+      --text-muted: #9aa3c2;
+      --text-dim: #5b6486;
+      --accent: #f97316;
+      --accent-bright: #fb923c;
+      --flow-a: #60a5fa;
+      --flow-b: #f97316;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --info: #38bdf8;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-display: "Instrument Serif", Georgia, serif;
+      --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      background: var(--bg-base);
+      color: var(--text);
+      letter-spacing: -0.011em;
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+      opacity: 0.5;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 4rem 2rem 6rem;
+      position: relative;
+      z-index: 1;
+    }
+    section.slide {
+      padding: 3.5rem 0 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+    section.slide:first-of-type { padding-top: 1rem; }
+    section.slide:last-of-type { border-bottom: 0; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.9rem;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 700;
+      letter-spacing: -0.028em;
+      line-height: 1.05;
+      margin: 0;
+    }
+    h1 em {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+    }
+    h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin: 0 0 1rem;
+    }
+    h2 em { font-family: var(--font-display); font-style: italic; font-weight: 400; color: var(--success); }
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0 0 0.6rem;
+      color: var(--text);
+    }
+    p {
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin: 0 0 1rem;
+    }
+    p.lede { font-size: 1.15rem; color: var(--text); }
+
+    .cover { padding-top: 4rem; padding-bottom: 4rem; }
+    .cover-meta {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2.5rem;
+      font-size: 0.82rem;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+    }
+    .cover-meta strong { color: var(--text); font-weight: 600; }
+
+    .wins-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.2rem;
+    }
+    .win-card {
+      background: var(--bg-elevated);
+      border-left: 3px solid var(--success);
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.2rem;
+    }
+    .win-card .win-stat {
+      font-family: var(--font-display);
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: var(--success);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+    }
+    .win-card .win-label {
+      font-size: 0.82rem;
+      color: var(--text);
+      margin-top: 0.4rem;
+      line-height: 1.5;
+    }
+
+    ul.bullets { margin: 0.6rem 0 0; padding: 0; list-style: none; }
+    ul.bullets li {
+      position: relative;
+      padding: 0.35rem 0 0.35rem 1.2rem;
+      font-size: 1rem;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    ul.bullets li::before {
+      content: "›";
+      position: absolute;
+      left: 0; top: 0.35rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    ul.bullets.check li::before { content: "✓"; color: var(--success); }
+    ul.bullets li strong { color: var(--text); }
+
+    .note-box {
+      margin: 1.1rem 0 0;
+      padding: 0.9rem 1.2rem;
+      background: var(--bg-elevated);
+      border-left: 3px solid var(--warning);
+      border-radius: 0 8px 8px 0;
+    }
+    .note-box .note-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--warning);
+      margin-bottom: 0.4rem;
+    }
+    .note-box p { margin: 0; font-size: 0.88rem; color: var(--text); line-height: 1.5; }
+    .note-box.info { border-left-color: var(--info); }
+    .note-box.info .note-tag { color: var(--info); }
+
+    .trend-line {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin: 0.4rem 0 0;
+    }
+    .trend-line .num { color: var(--accent-bright); }
+    .trend-line .now { color: var(--success); font-weight: 700; }
+
+    /* compact signup-week mini chart */
+    .mini { margin: 1rem 0 0.4rem; }
+    .mini .bars { display: flex; align-items: flex-end; gap: 6px; height: 90px; }
+    .mini .bar { flex: 1; background: var(--success); border-radius: 2px 2px 0 0; opacity: 0.85; position: relative; }
+    .mini .bar.hl { background: var(--warning); }
+    .mini .bar .v { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-muted); }
+    .mini .xaxis { display: flex; gap: 6px; margin-top: 0.35rem; font-size: 0.6rem; color: var(--text-dim); font-family: var(--font-mono); }
+    .mini .xaxis > div { flex: 1; text-align: center; }
+
+    .followups { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+    .followup-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--info);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+    }
+    .followup-card strong { color: var(--text); font-size: 1rem; }
+    .followup-card .owner {
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-top: 0.45rem;
+    }
+    .followup-card p { margin: 0.35rem 0 0; font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; }
+
+    .tracker-link {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.7rem 1.2rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+    }
+    .tracker-link:hover { background: var(--bg-surface); }
+
+    @media (max-width: 760px) {
+      .container { padding: 2rem 1.2rem 4rem; }
+      .wins-strip, .followups { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- COVER -->
+    <section class="slide cover">
+      <span class="eyebrow">Weekly Sync · Jun 3</span>
+      <h1>Onboarding <em>Sync</em></h1>
+      <p class="lede">Talking points for today — updates, then follow-ups.</p>
+      <div class="cover-meta">
+        <div><span style="color: var(--text-dim);">Date</span> · <strong>June 3, 2026</strong></div>
+        <div><span style="color: var(--text-dim);">Presenter</span> · <strong>Santiago Anaya</strong></div>
+        <div><span style="color: var(--text-dim);">Sample</span> · <strong>3,698 new devices</strong></div>
+      </div>
+    </section>
+
+    <!-- 1 · FLOW A vs B -->
+    <section class="slide">
+      <span class="eyebrow">Update · Flow A vs B</span>
+      <h2>How we decide which flow wins.</h2>
+      <p class="lede">New users, on a funnel + friction scorecard — <strong>not</strong> raw completion.</p>
+
+      <p class="trend-line">Completion gap, week by week: <span class="num">+14</span> → <span class="num">+8.7</span> → <span class="num">+6.7</span> → <span class="num">+3.6</span> → <span class="num">+2.9</span> → <span class="num">+3.1</span> → <span class="num">+2.8</span> → <span class="now">+2.6pp</span> &nbsp;(converged · basically tied)</p>
+
+      <div class="wins-strip">
+        <div class="win-card">
+          <div class="win-stat">+6.5pp</div>
+          <div class="win-label">More users reach the welcome screen in B (email-first sheet auto-loads).</div>
+        </div>
+        <div class="win-card">
+          <div class="win-stat">−25pp</div>
+          <div class="win-label">Less forgot-password friction. In A, 36% who tap "forgot" knew their password; in B, 10%.</div>
+        </div>
+        <div class="win-card">
+          <div class="win-stat">1 in 5</div>
+          <div class="win-label">Invited barbers B catches before a duplicate. A can't do this at all.</div>
+        </div>
+      </div>
+
+      <ul class="bullets">
+        <li>Once people hit the welcome screen, both flows convert the same — so the call is <strong>friction + duplicate-prevention, not completion</strong>.</li>
+      </ul>
+
+      <div class="note-box">
+        <div class="note-tag">⚠ Read rates, not raw counts</div>
+        <p>The 53/46 split is a measurement artifact (how we define "new device," a sliding 90-day window) — not a bucketing problem. We compare rates within each flow. Fix: anchor the cohort.</p>
+      </div>
+    </section>
+
+    <!-- 2 · ACCIDENTAL INDIES -->
+    <section class="slide">
+      <span class="eyebrow">Update · Accidental indie signups</span>
+      <h2>Stayed about the same — ~3-5 a week.</h2>
+      <p>Yes, real accidental signups still happen (not zero) — they just held flat, with <strong>no spike</strong> the week of May 18. Source: fresh CS pull, cancellations tagged "Accidental Indy Self-Signup", by <strong>signup date</strong> (the real ground truth).</p>
+
+      <div class="mini">
+        <div class="bars">
+          <div class="bar" style="height: 100%;"><span class="v">5</span></div>
+          <div class="bar" style="height: 80%;"><span class="v">4</span></div>
+          <div class="bar" style="height: 60%;"><span class="v">3</span></div>
+          <div class="bar" style="height: 4%;"><span class="v">0</span></div>
+          <div class="bar" style="height: 60%;"><span class="v">3</span></div>
+          <div class="bar" style="height: 60%;"><span class="v">3</span></div>
+          <div class="bar hl" style="height: 80%;"><span class="v">4</span></div>
+          <div class="bar" style="height: 20%;"><span class="v">1</span></div>
+        </div>
+        <div class="xaxis">
+          <div>Apr 6</div><div>Apr 13</div><div>Apr 20</div><div>Apr 27</div><div>May 4</div><div>May 11</div><div>May 18</div><div>May 25*</div>
+        </div>
+      </div>
+
+      <ul class="bullets">
+        <li><strong>Steady ~3-5/week.</strong> The week of <strong>May 18 is just 4</strong> — in line with every other week. No spike in the real data.</li>
+        <li>The spike we saw earlier was our internal proxy catching the <strong>inc-264 abuse accounts</strong> (fraudulent indie free-trials used for phishing, ~May 15). That's fraud, not real signups — and it's resolved.</li>
+      </ul>
+
+      <div class="note-box">
+        <div class="note-tag">⚠ * Caveat</div>
+        <p>Late-May / June weeks undercount — those signups haven't had time to be flagged and cancelled yet. Too early to call a trend either way.</p>
+      </div>
+    </section>
+
+    <!-- 3 · VERIFICATION -->
+    <section class="slide">
+      <span class="eyebrow">Update · Verification</span>
+      <h2>Still planning, in a good spot.</h2>
+      <ul class="bullets check">
+        <li>Pulled the spec + phased plan into one doc and <strong>cross-checked it against the actual code</strong> this week — solid now.</li>
+        <li>A couple of decisions to lock, then we start with a small first piece.</li>
+        <li>Phased rollout across backend + app — it lands in steps, not one big drop.</li>
+      </ul>
+    </section>
+
+    <!-- 4 · MIGRATION TOOL -->
+    <section class="slide">
+      <span class="eyebrow">Follow-up · Migration tool</span>
+      <h2>Will it scale for beauty?</h2>
+      <p class="lede">Not yet — today it's <strong>"credential handoff,"</strong> not full self-serve migration.</p>
+      <ul class="bullets">
+        <li>4 platforms have API import (Booksy, Square, theCut, Setmore). The rest are CSV / manual.</li>
+        <li><strong>Booksy is automated, but the token is still grabbed by hand</strong> — OBS logs in, copies the token, feeds the worker. The app just stores the barber's creds; nothing auto-triggers.</li>
+        <li><strong>The 1-day spike</strong> tests if the backend can auto-login → get the token → fire the worker on its own (self-serve). Risk: if Booksy uses captcha / device verification, it's "not feasible without a headless browser" and we stay manual.</li>
+        <li><strong>Beauty has no API integration yet</strong> (GlossGenius, Vagaro, Fresha, MyTime) — auto-login alone won't unblock it; we'd build per-platform clients first.</li>
+      </ul>
+      <div class="note-box">
+        <div class="note-tag">⚠ The real GA blocker</div>
+        <p>OBS turnaround — haven't checked it. If they answer in ~24h that buys time; if it stretches, that's the blocker, not the automation.</p>
+      </div>
+    </section>
+
+    <!-- 5 · FOLLOW-UPS -->
+    <section class="slide">
+      <span class="eyebrow">Follow-ups · for discussion</span>
+      <h2>Beauty P0s — aligning the flow.</h2>
+      <div class="followups">
+        <div class="followup-card">
+          <strong>Hardware selection</strong>
+          <div class="owner">New P0 · beauty</div>
+          <p>Investigate the process today and how we make it a PLG motion.</p>
+        </div>
+        <div class="followup-card">
+          <strong>Slot beauty P0s into indie onboarding</strong>
+          <div class="owner">Revisit proposed flow</div>
+          <p>Revisit the indie flow and how the new beauty P0s slot in — e.g. hardware selection &amp; subscription payment (the latter already in discussion w/ Raymond &amp; Poni).</p>
+        </div>
+        <div class="followup-card" style="grid-column: 1 / -1;">
+          <strong>Align on what truly belongs in onboarding</strong>
+          <div class="owner">w/ Raymond &amp; Poni</div>
+          <p>Which P0s belong in onboarding vs activated by the customer later in the app — e.g. commission splits.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · UX / DEV QUESTIONS -->
+    <section class="slide">
+      <span class="eyebrow">Open · UX / dev questions</span>
+      <h2>Courses — three calls to make together.</h2>
+      <p>No hard data here — discussion to align on direction.</p>
+      <div class="followups" style="grid-template-columns: 1fr 1fr 1fr;">
+        <div class="followup-card" style="border-left-color: var(--accent);">
+          <div class="owner" style="color: var(--accent); margin-top: 0; margin-bottom: 0.5rem;">Course UI</div>
+          <strong>Reuse RN, or purpose-built?</strong>
+          <p>Onboarding-specific UI for the courses, or a 1:1 of what's already built in React Native?</p>
+        </div>
+        <div class="followup-card" style="border-left-color: var(--accent);">
+          <div class="owner" style="color: var(--accent); margin-top: 0; margin-bottom: 0.5rem;">KYC</div>
+          <strong>Prep before the KYC course</strong>
+          <p>KYC can't be short-circuited — is there a way to better prep someone before they hit it, so they don't stall?</p>
+        </div>
+        <div class="followup-card" style="border-left-color: var(--accent);">
+          <div class="owner" style="color: var(--accent); margin-top: 0; margin-bottom: 0.5rem;">Course scope</div>
+          <strong>"Round out your business" — where?</strong>
+          <p>Inside the onboarding experience, or gently guide them to add services / products / memberships in the app?</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · TRACKER -->
+    <section class="slide">
+      <span class="eyebrow">For the deep dive</span>
+      <h2>Everything else is on the tracker.</h2>
+      <p>Full funnel, friction and history — refreshed to June 3.</p>
+      <a class="tracker-link" href="https://santi-squire.github.io/onboarding-team-sync/tracker/" target="_blank">→ Open the live tracker</a>
+    </section>
+
+  </div>
+</body>
+</html>
