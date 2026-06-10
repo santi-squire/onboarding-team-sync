@@ -1084,12 +1084,46 @@
     function fmtPct(n) { return (n == null || isNaN(n)) ? '—' : n.toFixed(1) + '%'; }
     function fmtInt(n) { return (n == null || isNaN(n)) ? '—' : Math.round(n).toLocaleString(); }
 
+    // === Chief (executive) view helpers ===
+    function chiefVerdictHero(v) {
+      if (!v) return '';
+      const bullets = (v.bullets || []).map(b => `<li style="position: relative; font-size: 0.98rem; color: var(--text); line-height: 1.55; margin-bottom: 0.5rem; padding-left: 0.4rem;"><span style="position: absolute; left: -1rem; color: var(--flow-b); font-weight: 700;">✓</span>${b}</li>`).join('');
+      return `
+        <section class="metric-section">
+          <div class="verdict-box" style="border-left: 4px solid var(--flow-b);">
+            <div class="verdict-eyebrow">⚖ The call</div>
+            <h2 class="verdict-headline">${v.headline}</h2>
+            ${bullets ? `<ul style="margin: 0.9rem 0 0; padding-left: 1.2rem; list-style: none;">${bullets}</ul>` : ''}
+          </div>
+        </section>
+      `;
+    }
+    function chiefAppendixNote() {
+      return `
+        <section class="metric-section">
+          <div class="section-header">
+            <div class="section-eyebrow" style="color: var(--info);">↪ Full detail</div>
+            <h2 class="section-title">Want the deep-dive?</h2>
+            <p class="section-sub">This is the executive cut. The full tracker has the window-by-window metric comparisons and the early-experiment root-cause investigations (SRM, temp_password, forgot-password, indie classification).</p>
+          </div>
+          <a href="./" style="display: inline-block; padding: 0.7rem 1.2rem; background: var(--info); color: #fff; border-radius: 8px; font-weight: 600; text-decoration: none;">Open the full tracker →</a>
+        </section>
+      `;
+    }
+
     function render(snapshots) {
       const week1 = snapshots.find(s => s.date === '2026-05-06').json;
       const week2 = snapshots.find(s => s.date === '2026-05-08').json;
       const cum = week2.windows.cumulative;
       const post = week2.windows.postRollout;
       const postNew = week2.windows.postRolloutNew;
+      const CHIEF = new URLSearchParams(location.search).get('view') === 'chief';
+      if (CHIEF) {
+        document.body.classList.add('chief-view');
+        const eb = document.querySelector('.header-eyebrow'); if (eb) eb.textContent = 'Executive summary · for leadership';
+        const tt = document.querySelector('.tracker-title'); if (tt) tt.innerHTML = 'Login A/B · <em>the call</em>';
+        const ts = document.querySelector('.tracker-sub'); if (ts) ts.textContent = 'Verdict first, then the evidence that matters. The full deep-dive tracker (windows, SRM root-cause, investigations) is linked at the bottom.';
+      }
 
       // Last-updated badge — show the refresh date (today) rather than the snapshot file date
       const refreshDate = week2.rolloutContext && week2.rolloutContext.today
@@ -1100,7 +1134,13 @@
 
       // Meta strip — 4 windows
       const metaEl = document.getElementById('meta');
-      metaEl.innerHTML = `
+      metaEl.innerHTML = CHIEF ? `
+        <div class="meta-cell is-latest" style="grid-column: 1 / -1;">
+          <div class="meta-cell-eyebrow">★ Source</div>
+          <h3 class="meta-cell-title">Post-100% NEW devices · May 7 → Jun 8</h3>
+          <p class="meta-cell-detail">Cleanest experiment slice (devices first seen May 7+, no legacy contamination). This view leads with the verdict and the metrics that matter; the full tracker has the window-by-window detail and root-cause deep-dives (linked at the bottom).</p>
+        </div>
+      ` : `
         <div class="meta-cell">
           <div class="meta-cell-eyebrow">Week 1 · ramp</div>
           <h3 class="meta-cell-title">Apr 30 → May 6</h3>
@@ -1124,6 +1164,20 @@
       `;
 
       const sections = [];
+
+      if (CHIEF) {
+        // Executive view: bottom-line first, then the evidence that matters. Deep-dives omitted (linked at the end).
+        sections.push(chiefVerdictHero(week2.scorecard && week2.scorecard.verdict));
+        if (week2.scorecard) sections.push(renderScorecard(week2.scorecard));
+        if (week2.historicalComparison) sections.push(renderHistoricalComparison(week2.historicalComparison));
+        if (week2.abandonFollowup) sections.push(renderAbandonFollowup(week2.abandonFollowup));
+        if (week2.nextSteps || week2.actionItems || week2.openQuestions) sections.push(renderNextSteps(week2.nextSteps || { now: week2.actionItems, later: [] }, week2.openQuestions));
+        sections.push(chiefAppendixNote());
+        const contentEl = document.getElementById('content');
+        contentEl.classList.remove('loading');
+        contentEl.innerHTML = sections.join('');
+        return;
+      }
 
       // === 0.5 Abandon followup — answers the Flow B login_abandoned concern ===
       if (week2.abandonFollowup) sections.push(renderAbandonFollowup(week2.abandonFollowup));
