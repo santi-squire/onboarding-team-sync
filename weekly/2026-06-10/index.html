@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Onboarding Sync · Jun 10</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --bg-base: #07091a;
+      --bg-deep: #050714;
+      --bg-surface: #0f1328;
+      --bg-elevated: #181c34;
+      --border: rgba(255,255,255,0.06);
+      --border-strong: rgba(255,255,255,0.14);
+      --text: #f5f7ff;
+      --text-muted: #9aa3c2;
+      --text-dim: #5b6486;
+      --accent: #f97316;
+      --accent-bright: #fb923c;
+      --flow-a: #60a5fa;
+      --flow-b: #f97316;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --info: #38bdf8;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-display: "Instrument Serif", Georgia, serif;
+      --font-mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      background: var(--bg-base);
+      color: var(--text);
+      letter-spacing: -0.011em;
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+      opacity: 0.5;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 4rem 2rem 6rem;
+      position: relative;
+      z-index: 1;
+    }
+    section.slide {
+      padding: 3.5rem 0 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+    section.slide:first-of-type { padding-top: 1rem; }
+    section.slide:last-of-type { border-bottom: 0; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.9rem;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 700;
+      letter-spacing: -0.028em;
+      line-height: 1.05;
+      margin: 0;
+    }
+    h1 em {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+    }
+    h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin: 0 0 1rem;
+    }
+    h2 em { font-family: var(--font-display); font-style: italic; font-weight: 400; color: var(--success); }
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0 0 0.6rem;
+      color: var(--text);
+    }
+    p {
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+      margin: 0 0 1rem;
+    }
+    p.lede { font-size: 1.15rem; color: var(--text); }
+
+    .cover { padding-top: 4rem; padding-bottom: 4rem; }
+    .cover-meta {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2.5rem;
+      font-size: 0.82rem;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+    }
+    .cover-meta strong { color: var(--text); font-weight: 600; }
+
+    .wins-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.2rem;
+    }
+    .win-card {
+      background: var(--bg-elevated);
+      border-left: 3px solid var(--success);
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.2rem;
+    }
+    .win-card .win-stat {
+      font-family: var(--font-display);
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: var(--success);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+    }
+    .win-card .win-label {
+      font-size: 0.82rem;
+      color: var(--text);
+      margin-top: 0.4rem;
+      line-height: 1.5;
+    }
+
+    ul.bullets { margin: 0.6rem 0 0; padding: 0; list-style: none; }
+    ul.bullets li {
+      position: relative;
+      padding: 0.35rem 0 0.35rem 1.2rem;
+      font-size: 1rem;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    ul.bullets li::before {
+      content: "›";
+      position: absolute;
+      left: 0; top: 0.35rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    ul.bullets.check li::before { content: "✓"; color: var(--success); }
+    ul.bullets li strong { color: var(--text); }
+
+    .note-box {
+      margin: 1.1rem 0 0;
+      padding: 0.9rem 1.2rem;
+      background: var(--bg-elevated);
+      border-left: 3px solid var(--warning);
+      border-radius: 0 8px 8px 0;
+    }
+    .note-box .note-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--warning);
+      margin-bottom: 0.4rem;
+    }
+    .note-box p { margin: 0; font-size: 0.88rem; color: var(--text); line-height: 1.5; }
+    .note-box.info { border-left-color: var(--info); }
+    .note-box.info .note-tag { color: var(--info); }
+
+    .trend-line {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin: 0.4rem 0 0;
+    }
+    .trend-line .num { color: var(--accent-bright); }
+    .trend-line .now { color: var(--success); font-weight: 700; }
+
+    /* compact signup-week mini chart */
+    .mini { margin: 1rem 0 0.4rem; }
+    .mini .bars { display: flex; align-items: flex-end; gap: 6px; height: 90px; }
+    .mini .bar { flex: 1; background: var(--success); border-radius: 2px 2px 0 0; opacity: 0.85; position: relative; }
+    .mini .bar.hl { background: var(--warning); }
+    .mini .bar .v { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-muted); }
+    .mini .xaxis { display: flex; gap: 6px; margin-top: 0.35rem; font-size: 0.6rem; color: var(--text-dim); font-family: var(--font-mono); }
+    .mini .xaxis > div { flex: 1; text-align: center; }
+
+    /* duplicate-by-flow comparison bars */
+    .dupchart { margin: 1.4rem 0 0.6rem; }
+    .dupchart .bars { display: flex; align-items: flex-end; gap: 1.4rem; height: 170px; padding-top: 1.4rem; }
+    .dupchart .col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+    .dupchart .bar { width: 100%; border-radius: 4px 4px 0 0; position: relative; }
+    .dupchart .pct { position: absolute; top: -1.5rem; left: 50%; transform: translateX(-50%); font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; white-space: nowrap; }
+    .dupchart .lab { margin-top: 0.5rem; font-size: 0.82rem; color: var(--text); text-align: center; font-weight: 600; }
+    .dupchart .sub { font-size: 0.68rem; color: var(--text-dim); font-family: var(--font-mono); text-align: center; margin-top: 0.15rem; }
+
+    .followups { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+    .followup-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--info);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+    }
+    .followup-card strong { color: var(--text); font-size: 1rem; }
+    .followup-card .owner {
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-top: 0.45rem;
+    }
+    .followup-card p { margin: 0.35rem 0 0; font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; }
+
+    .tracker-link {
+      display: inline-block;
+      margin-top: 1rem;
+      margin-right: 0.8rem;
+      padding: 0.7rem 1.2rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+    }
+    .tracker-link:hover { background: var(--bg-surface); }
+
+    @media (max-width: 760px) {
+      .container { padding: 2rem 1.2rem 4rem; }
+      .wins-strip, .followups { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- COVER -->
+    <section class="slide cover">
+      <span class="eyebrow">Weekly Sync · Jun 10</span>
+      <h1>Onboarding <em>Sync</em></h1>
+      <p class="lede">Talking points — the login experiment, and a call to make.</p>
+      <div class="cover-meta">
+        <div><span style="color: var(--text-dim);">Date</span> · <strong>June 10, 2026</strong></div>
+        <div><span style="color: var(--text-dim);">Presenter</span> · <strong>Santiago Anaya</strong></div>
+        <div><span style="color: var(--text-dim);">Sample</span> · <strong>4,819 new devices</strong></div>
+      </div>
+    </section>
+
+    <!-- 1 · THE DECISION -->
+    <section class="slide">
+      <span class="eyebrow">Decision · LaunchDarkly</span>
+      <h2>We're in shape to start moving traffic to <em>Flow B</em>.</h2>
+      <p class="lede">34 days post-100%, 4,819 new devices. Flow B is at worst neutral and clearly better on friction + duplicate-prevention. No regressions on anything material.</p>
+      <ul class="bullets check">
+        <li><strong>Proposal:</strong> ramp B to 75% for a week, watch the scope-leak + completion, then go 100%.</li>
+        <li>The win is <strong>less friction + fewer duplicate accounts</strong>, not raw completion — that converged to a tie.</li>
+      </ul>
+      <div class="note-box info">
+        <div class="note-tag">Why now</div>
+        <p>The metrics have been flat for 5 straight refreshes. More waiting won't change the call — it just delays the friction win.</p>
+      </div>
+    </section>
+
+    <!-- 2 · SCORECARD -->
+    <section class="slide">
+      <span class="eyebrow">Update · Flow A vs B</span>
+      <h2>Where each flow wins.</h2>
+      <p class="trend-line">Completion gap, week by week: <span class="num">+14</span> → <span class="num">+8.7</span> → <span class="num">+6.7</span> → <span class="num">+3.6</span> → <span class="num">+2.9</span> → <span class="num">+3.1</span> → <span class="num">+2.8</span> → <span class="num">+2.6</span> → <span class="num">+2.7</span> → <span class="now">+2.4pp</span> &nbsp;(converged · basically tied)</p>
+
+      <div class="wins-strip">
+        <div class="win-card">
+          <div class="win-stat">+6.2pp</div>
+          <div class="win-label">More users reach the welcome screen in B (email-first sheet auto-loads). B's most durable win.</div>
+        </div>
+        <div class="win-card">
+          <div class="win-stat">−26pp</div>
+          <div class="win-label">Less forgot-password friction. A's non-dismissible sheet drives frustration tapping; B doesn't.</div>
+        </div>
+        <div class="win-card">
+          <div class="win-stat">1 in 5</div>
+          <div class="win-label">Invited barbers B catches at the email step before a duplicate. A can't do this at all.</div>
+        </div>
+      </div>
+
+      <ul class="bullets">
+        <li>Once people reach the welcome screen, both flows convert the same — login success is <strong>tied</strong>.</li>
+        <li>Login-abandon gap <strong>closed and flipped</strong> — B is now lower (51.3 vs 54.4 per 100), and 82% of B abandoners come back anyway.</li>
+      </ul>
+
+      <div class="note-box">
+        <div class="note-tag">⚠ Read rates, not raw counts</div>
+        <p>The 55.3/44.7 split is a measurement artifact (how we define "new device" over a sliding 90-day window) — not a bucketing problem. We compare rates within each flow. Fix: anchor the cohort.</p>
+      </div>
+    </section>
+
+    <!-- 3 · DUPLICATES BY FLOW (hero) -->
+    <section class="slide">
+      <span class="eyebrow">New this week · duplicate prevention</span>
+      <h2>Flow B cuts duplicate accounts to <em>5.6%</em>.</h2>
+      <p class="lede">Of new barbers, the share whose email already belongs to another account — split by which flow they went through.</p>
+
+      <div class="dupchart">
+        <div class="bars">
+          <div class="col">
+            <div class="bar" style="height: 75%; background: var(--flow-a);"><span class="pct" style="color: var(--flow-a);">19.4%</span></div>
+            <div class="lab">Flow A</div>
+            <div class="sub">330 / 1,698</div>
+          </div>
+          <div class="col">
+            <div class="bar" style="height: 22%; background: var(--success);"><span class="pct" style="color: var(--success);">5.6%</span></div>
+            <div class="lab">Flow B</div>
+            <div class="sub">31 / 554</div>
+          </div>
+          <div class="col">
+            <div class="bar" style="height: 100%; background: var(--text-dim);"><span class="pct" style="color: var(--text-muted);">25.7%</span></div>
+            <div class="lab">Off-experiment</div>
+            <div class="sub">77 / 300 · separate signup</div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="bullets">
+        <li>B recognizes the email and <strong>routes to login instead of a new account</strong> — so far fewer duplicates get created.</li>
+        <li>The "duplicate rate is running hot" thing we kept flagging (~16-20% overall) is a <strong>Flow A + off-experiment</strong> problem. <strong>Flow B is the fix.</strong></li>
+        <li>This is the strongest single reason to ramp B.</li>
+      </ul>
+
+      <div class="note-box">
+        <div class="note-tag">⚠ Honest caveats</div>
+        <p>Flow attributed by the barber's device assignment (minor noise possible). A skews to established users, B to new devices — but the redirect mechanism is flow-specific, so the gap is plausibly causal. Lines up with the email-step "temp_password" catch (~21%).</p>
+      </div>
+    </section>
+
+    <!-- 4 · ACCIDENTAL SIGNUPS (two channels) -->
+    <section class="slide">
+      <span class="eyebrow">Clarified · accidental indie signups</span>
+      <h2>Not ours to move — they come through a <em>different door</em>.</h2>
+      <p>Last week, reading the CS excel, accidental signups looked flat at ~3-5/week. Looking closer this week: they don't go through our login experiment at all.</p>
+      <ul class="bullets">
+        <li><strong>0</strong> indie accounts were created carrying an experiment variant — indies sign up via a <strong>separate onboarding surface</strong>, not Flow A/B.</li>
+        <li>By signup date they're steady <strong>~3-5/week</strong> (CS). The May 18 "spike" was the <strong>inc-264 fraud accounts</strong> caught by our internal proxy — not real signups, and resolved.</li>
+      </ul>
+      <ul class="bullets check">
+        <li>What <strong>is</strong> ours: Flow B preventing duplicate <strong>shop-barber</strong> accounts (the 5.6% vs 19.4% above). Don't conflate the two.</li>
+      </ul>
+      <div class="note-box info">
+        <div class="note-tag">Pending · after today</div>
+        <p>Asking CS for the next report with email/platform per row, so we can confirm none of the accidental signups actually came through Flow A/B. Expected: ~0.</p>
+      </div>
+    </section>
+
+    <!-- 5 · VERIFICATION -->
+    <section class="slide">
+      <span class="eyebrow">Update · Verification</span>
+      <h2>Still planning, in a good spot.</h2>
+      <ul class="bullets check">
+        <li>Spec + phased plan in one doc, cross-checked against the actual code — solid.</li>
+        <li>A couple of decisions to lock (phone-first vs email-first gate), then we start with a small first piece.</li>
+        <li>Phased rollout across backend + app — it lands in steps, not one big drop.</li>
+      </ul>
+      <div class="note-box info">
+        <div class="note-tag">Tristan leads this</div>
+        <p>Talking points only — the detail lives with Tristan + the verification doc (SQR-12354, login-gate PRs).</p>
+      </div>
+    </section>
+
+    <!-- 6 · WATCH-ITEMS + NEXT -->
+    <section class="slide">
+      <span class="eyebrow">Watch-items + next</span>
+      <h2>On the radar.</h2>
+      <ul class="bullets">
+        <li><strong>Scope leak crept 8 → 10</strong> (Flow B barber/signup_link). Ask iOS: stale 3.23.0 installs vs a 3.23.1 regression?</li>
+        <li><strong>Anchor the new-device cohort</strong> (first-ever identify ≥ May 7) — kills the split drift so we stop caveating it.</li>
+        <li><strong>Duplicate rate softening</strong> (20.3 → 18.7 → 16.4%). Ramping B should pull it down further.</li>
+        <li><strong>CS report</strong> with email/platform queued — confirms the accidental signups aren't ours.</li>
+      </ul>
+    </section>
+
+    <!-- 7 · TRACKER -->
+    <section class="slide">
+      <span class="eyebrow">For the deep dive</span>
+      <h2>Everything else is on the tracker.</h2>
+      <p>Full funnel, friction, duplicate-prevention and history — refreshed to June 10. The chief view is the exec cut.</p>
+      <a class="tracker-link" href="https://santi-squire.github.io/onboarding-team-sync/tracker/" target="_blank">→ Live tracker</a>
+      <a class="tracker-link" href="https://santi-squire.github.io/onboarding-team-sync/tracker/?view=chief" target="_blank">→ Chief view</a>
+    </section>
+
+  </div>
+</body>
+</html>
