@@ -223,7 +223,12 @@
   <div class="card next">
     <h2>What we found along the way</h2>
     <p class="why">Flow B's email check only looks at user accounts. It never looks at barber records. So a barber already working at someone else's shop comes back as "we don't know this email", and gets sent to create a new account.</p>
-    <p class="takeaway">Fixing that lookup closes most of what Flow B still misses. <em>Small, well-scoped change.</em></p>
+    <div class="status">
+      <div class="stat"><div class="n">3,134</div><div class="l">barbers the check cannot see today</div></div>
+      <div class="stat"><div class="n">4.2%</div><div class="l">of all barbers with an email</div></div>
+      <div class="stat"><div class="n">160</div><div class="l">new cases in the last 90 days</div></div>
+    </div>
+    <p class="takeaway">Teaching that lookup to also read barber records closes it. <em>Small, well-scoped change.</em></p>
   </div>
 
   <footer>
