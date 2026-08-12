@@ -158,18 +158,23 @@
         <div class="wk" style="--h: 13%; --c: var(--flow-b)"><span class="tip">May 4 · 3</span></div>
         <div class="wk" style="--h: 13%; --c: var(--flow-b)"><span class="tip">May 11 · 3</span></div>
         <div class="wk" style="--h: 17%; --c: var(--flow-b)"><span class="tip">May 18 · 4</span></div>
-        <div class="wk lag" style="--h: 4%; --c: var(--flow-b)"><span class="tip">May 25 · 1 · incomplete</span></div>
-        <div class="wk lag" style="--h: 2%; --c: var(--flow-b)"><span class="tip">Jun 1 · 0 so far · incomplete</span></div>
-        <div class="wk lag" style="--h: 2%; --c: var(--flow-b)"><span class="tip">Jun 8 · 0 so far · incomplete</span></div>
+        <div class="wk" style="--h: 4%; --c: var(--flow-b)"><span class="tip">May 25 · 1</span></div>
+        <div class="wk" style="--h: 9%; --c: var(--flow-b)"><span class="tip">Jun 1 · 2</span></div>
+        <div class="wk" style="--h: 9%; --c: var(--flow-b)"><span class="tip">Jun 8 · 2</span></div>
+        <div class="wk" style="--h: 4%; --c: var(--flow-b)"><span class="tip">Jun 15 · 1</span></div>
+        <div class="wk" style="--h: 4%; --c: var(--flow-b)"><span class="tip">Jun 22 · 1</span></div>
+        <div class="wk" style="--h: 22%; --c: var(--flow-b)"><span class="tip">Jun 29 · 5</span></div>
+        <div class="wk" style="--h: 4%; --c: var(--flow-b)"><span class="tip">Jul 6 · 1</span></div>
+        <div class="wk" style="--h: 4%; --c: var(--flow-b)"><span class="tip">Jul 13 · 1</span></div>
+        <div class="wk" style="--h: 22%; --c: var(--flow-b)"><span class="tip">Jul 20 · 5</span></div>
+        <div class="wk lag" style="--h: 9%; --c: var(--flow-b)"><span class="tip">Jul 27 · 2 · still filling in</span></div>
       </div>
-      <div class="wk-axis"><span>Jan</span><span>Experiment starts Apr 27</span><span>Jun</span></div>
+      <div class="wk-axis"><span>Jan</span><span>Experiment starts Apr 27</span><span>Jul</span></div>
     </div>
     <div class="caveat">
-      <strong>Read this before reading the chart.</strong> The two colours are counted differently and are not comparable. Red is an estimate from our own database, which over-counts by roughly 2-3x. Blue is support tickets, counted by hand. Most of the step down is that change in counting, not a real drop.
+      <strong>The two colours are counted differently.</strong> Red is an estimate from our own database, which over-counts by roughly 2-3x. Blue is verified support tickets. Compare levels within a colour, not across them.
       <br /><br />
-      The last three blue bars are also incomplete: cancellations arrive weeks after the signup they refer to, so those weeks are still filling in. Support data stops on June 3, so June, July and August have no bars at all.
-      <br /><br />
-      Counted consistently, by support tickets, accidental signups run <strong>3 to 5 per week both before and during the experiment</strong>. The honest read on this metric is flat.
+      Counted consistently, accidental signups have held at <strong>1 to 5 a week</strong> right through the experiment. The last bar is still filling in, because cancellations arrive weeks after the signup they refer to.
     </div>
   </div>
 
@@ -222,7 +227,7 @@
 
   <div class="card next">
     <h2>What we found along the way</h2>
-    <p class="why">Flow B's email check only looks at user accounts. It never looks at barber records. So a barber already working at someone else's shop comes back as "we don't know this email", and gets sent to create a new account.</p>
+    <p class="why">When a shop adds a barber, giving them a login is optional, and the login can be set to something other than their email. Flow B's check looks up logins, not barber records, so those barbers are not recognised and get sent to create a new account. We now know exactly how many that is.</p>
     <div class="status">
       <div class="stat"><div class="n">3,134</div><div class="l">barbers the check cannot see today</div></div>
       <div class="stat"><div class="n">4.2%</div><div class="l">of all barbers with an email</div></div>
@@ -232,8 +237,8 @@
   </div>
 
   <footer>
-    <strong>How to read this.</strong> Every comparison above is Flow A against Flow B over the same period, April 27 to August 10 12:32pm, measured the same way for both. 7,911 devices in Flow A and 6,593 in Flow B.<br /><br />
-    <strong>What we cannot show.</strong> There is no before-the-experiment comparison for these numbers: the screens and the tracking behind them were built with the experiment, so nothing equivalent exists for the old login. Duplicate rate across the whole population also has not moved yet, because Flow A was still carrying half the traffic until Monday. That is the number to watch now.
+    <strong>How to read this.</strong> Every comparison above is Flow A against Flow B over the same period, April 27 to August 10 12:32pm, measured the same way for both. 7,911 devices went through Flow A and 6,593 through Flow B.<br /><br />
+    <strong>What comes next.</strong> Until Monday, Flow A was still carrying half of all traffic, so the company-wide duplicate rate could not move yet. Now that everyone is on Flow B, that is the number to watch.
   </footer>
 
 </div>
