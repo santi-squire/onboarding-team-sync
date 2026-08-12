@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login Experiment · Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #07091a;
+    --surface: #0f1328;
+    --border: rgba(255,255,255,0.08);
+    --text: #f5f7ff;
+    --muted: #9aa3c2;
+    --dim: #5b6486;
+    --flow-a: #f04438;
+    --flow-b: #2e96ff;
+    --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    letter-spacing: -0.011em;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 4rem 1.5rem 6rem; }
+
+  header { margin-bottom: 4rem; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--flow-b); margin-bottom: 1rem;
+  }
+  h1 { font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.08; margin: 0 0 1rem; font-weight: 800; }
+  .sub { font-size: 1.05rem; color: var(--muted); line-height: 1.6; margin: 0; max-width: 60ch; }
+
+  .legend { display: flex; gap: 1.75rem; margin: 2.5rem 0 0; flex-wrap: wrap; }
+  .legend span { display: flex; align-items: center; gap: 0.55rem; font-size: 0.9rem; color: var(--muted); }
+  .dot { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2.25rem 2rem; margin-bottom: 1.5rem;
+  }
+  .card h2 { font-size: 1.35rem; margin: 0 0 0.5rem; font-weight: 700; line-height: 1.25; }
+  .card .why { font-size: 0.95rem; color: var(--muted); margin: 0 0 2rem; line-height: 1.6; max-width: 62ch; }
+
+  .bars { display: flex; flex-direction: column; gap: 1.1rem; }
+  .row { display: grid; grid-template-columns: 5.5rem 1fr auto; align-items: center; gap: 1rem; }
+  .row .name { font-size: 0.9rem; color: var(--muted); font-weight: 500; }
+  .track { background: rgba(255,255,255,0.05); border-radius: 6px; height: 34px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 6px; }
+  .val { font-family: var(--mono); font-size: 1.15rem; font-weight: 500; min-width: 4.5rem; text-align: right; }
+
+  .takeaway {
+    margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+    font-size: 1.05rem; font-weight: 600; line-height: 1.5;
+  }
+  .takeaway em { font-style: normal; color: var(--flow-b); }
+
+  .status {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem; margin-top: 0.5rem;
+  }
+  .stat .n { font-family: var(--mono); font-size: 1.9rem; font-weight: 500; }
+  .stat .l { font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem; line-height: 1.4; }
+
+  .next { border-left: 3px solid var(--flow-b); }
+  .next h2 { color: var(--flow-b); }
+
+  footer {
+    margin-top: 3rem; padding-top: 1.75rem; border-top: 1px solid var(--border);
+    font-size: 0.82rem; color: var(--dim); line-height: 1.65;
+  }
+  footer strong { color: var(--muted); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Onboarding · Login experiment</div>
+    <h1>What we got from Flow B</h1>
+    <p class="sub">We tested two login flows side by side from April 27 to August 10. Flow B asks for your email first. As of Monday it is live for everyone.</p>
+    <div class="legend">
+      <span><i class="dot" style="background: var(--flow-a)"></i> Flow A · the old flow</span>
+      <span><i class="dot" style="background: var(--flow-b)"></i> Flow B · asks for email first</span>
+    </div>
+  </header>
+
+  <div class="card">
+    <h2>Four times fewer duplicate accounts</h2>
+    <p class="why">A duplicate is someone who already had an account and ended up creating a second one. Flow B recognises the email before it lets you sign up, so most people get sent to log in instead.</p>
+    <div class="bars">
+      <div class="row">
+        <span class="name">Flow A</span>
+        <div class="track"><div class="fill" style="width: 100%; background: var(--flow-a)"></div></div>
+        <span class="val">20.7%</span>
+      </div>
+      <div class="row">
+        <span class="name">Flow B</span>
+        <div class="track"><div class="fill" style="width: 25%; background: var(--flow-b)"></div></div>
+        <span class="val">5.2%</span>
+      </div>
+    </div>
+    <p class="takeaway">1 in 5 signups was a duplicate. Now it is <em>1 in 20</em>.</p>
+  </div>
+
+  <div class="card">
+    <h2>Half as many people stuck on their password</h2>
+    <p class="why">How often people tap "forgot password" while trying to get in. It is the clearest sign someone is locked out of an account they already have.</p>
+    <div class="bars">
+      <div class="row">
+        <span class="name">Flow A</span>
+        <div class="track"><div class="fill" style="width: 100%; background: var(--flow-a)"></div></div>
+        <span class="val">61.6%</span>
+      </div>
+      <div class="row">
+        <span class="name">Flow B</span>
+        <div class="track"><div class="fill" style="width: 49%; background: var(--flow-b)"></div></div>
+        <span class="val">30.3%</span>
+      </div>
+    </div>
+    <p class="takeaway">Taps per 100 devices. Flow B cuts it <em>roughly in half</em>.</p>
+  </div>
+
+  <div class="card">
+    <h2>Fewer people give up on logging in</h2>
+    <p class="why">How often someone starts logging in and drops out before finishing.</p>
+    <div class="bars">
+      <div class="row">
+        <span class="name">Flow A</span>
+        <div class="track"><div class="fill" style="width: 100%; background: var(--flow-a)"></div></div>
+        <span class="val">70.4</span>
+      </div>
+      <div class="row">
+        <span class="name">Flow B</span>
+        <div class="track"><div class="fill" style="width: 90%; background: var(--flow-b)"></div></div>
+        <span class="val">63.3</span>
+      </div>
+    </div>
+    <p class="takeaway">Drop-offs per 100 devices. <em>7 fewer</em> people give up.</p>
+  </div>
+
+  <div class="card">
+    <h2>Live for everyone since Monday</h2>
+    <p class="why">The flag went to 100% Flow B on Monday August 10 at 12:32pm. First 46 hours:</p>
+    <div class="status">
+      <div class="stat"><div class="n">718</div><div class="l">devices through Flow B</div></div>
+      <div class="stat"><div class="n">89%</div><div class="l">reached the welcome screen</div></div>
+      <div class="stat"><div class="n">69%</div><div class="l">logged in successfully</div></div>
+    </div>
+    <p class="takeaway">The rollout took hold. <em>Too early</em> for rates, we check again next week.</p>
+  </div>
+
+  <div class="card next">
+    <h2>What we found along the way</h2>
+    <p class="why">Flow B's email check only looks at user accounts. It never looks at barber records. So a barber already working at someone else's shop comes back as "we don't know this email", and gets sent to create a new account.</p>
+    <p class="takeaway">Fixing that lookup closes most of what Flow B still misses. <em>Small, well-scoped change.</em></p>
+  </div>
+
+  <footer>
+    <strong>How to read this.</strong> Every comparison above is Flow A against Flow B over the same period, April 27 to August 10 12:32pm, measured the same way for both. 7,911 devices in Flow A and 6,593 in Flow B.<br /><br />
+    <strong>What we cannot show.</strong> There is no before-the-experiment comparison for these numbers: the screens and the tracking behind them were built with the experiment, so nothing equivalent exists for the old login. Duplicate rate across the whole population also has not moved yet, because Flow A was still carrying half the traffic until Monday. That is the number to watch now.
+  </footer>
+
+</div>
+</body>
+</html>
