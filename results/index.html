@@ -56,6 +56,29 @@
   .fill { height: 100%; border-radius: 6px; }
   .val { font-family: var(--mono); font-size: 1.15rem; font-weight: 500; min-width: 4.5rem; text-align: right; }
 
+  .weekly { margin-bottom: 1.5rem; }
+  .wk-bars { display: flex; align-items: flex-end; gap: 3px; height: 150px; }
+  .wk { flex: 1; height: var(--h); background: var(--c); border-radius: 3px 3px 0 0; position: relative; min-height: 3px; }
+  .wk.lag { opacity: 0.4; }
+  .wk.divider { box-shadow: -2px 0 0 rgba(255,255,255,0.25); }
+  .wk .tip {
+    display: none; position: absolute; bottom: calc(100% + 8px); left: 50%;
+    transform: translateX(-50%); white-space: nowrap; background: #000;
+    border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.6rem;
+    font-family: var(--mono); font-size: 0.72rem; color: var(--text); z-index: 5;
+  }
+  .wk:hover .tip { display: block; }
+  .wk-axis {
+    display: flex; justify-content: space-between; margin-top: 0.6rem;
+    font-family: var(--mono); font-size: 0.7rem; color: var(--dim);
+  }
+  .caveat {
+    background: rgba(240,68,56,0.07); border: 1px solid rgba(240,68,56,0.28);
+    border-radius: 10px; padding: 1.1rem 1.25rem;
+    font-size: 0.88rem; color: var(--muted); line-height: 1.6;
+  }
+  .caveat strong { color: var(--text); font-weight: 600; }
+
   .takeaway {
     margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
     font-size: 1.05rem; font-weight: 600; line-height: 1.5;
@@ -108,6 +131,46 @@
       </div>
     </div>
     <p class="takeaway">1 in 5 signups was a duplicate. Now it is <em>1 in 20</em>.</p>
+  </div>
+
+  <div class="card">
+    <h2>Accidental signups per week</h2>
+    <p class="why">An accidental signup is a barber who creates their own account by mistake when they already belong to a shop. Each bar is one week.</p>
+    <div class="weekly">
+      <div class="wk-bars">
+        <div class="wk" style="--h: 100%; --c: var(--flow-a)"><span class="tip">Jan 5 · 23</span></div>
+        <div class="wk" style="--h: 65%; --c: var(--flow-a)"><span class="tip">Jan 12 · 15</span></div>
+        <div class="wk" style="--h: 52%; --c: var(--flow-a)"><span class="tip">Jan 19 · 12</span></div>
+        <div class="wk" style="--h: 52%; --c: var(--flow-a)"><span class="tip">Jan 26 · 12</span></div>
+        <div class="wk" style="--h: 35%; --c: var(--flow-a)"><span class="tip">Feb 2 · 8</span></div>
+        <div class="wk" style="--h: 35%; --c: var(--flow-a)"><span class="tip">Feb 9 · 8</span></div>
+        <div class="wk" style="--h: 48%; --c: var(--flow-a)"><span class="tip">Feb 16 · 11</span></div>
+        <div class="wk" style="--h: 39%; --c: var(--flow-a)"><span class="tip">Feb 23 · 9</span></div>
+        <div class="wk" style="--h: 26%; --c: var(--flow-a)"><span class="tip">Mar 2 · 6</span></div>
+        <div class="wk" style="--h: 35%; --c: var(--flow-a)"><span class="tip">Mar 9 · 8</span></div>
+        <div class="wk" style="--h: 61%; --c: var(--flow-a)"><span class="tip">Mar 16 · 14</span></div>
+        <div class="wk" style="--h: 52%; --c: var(--flow-a)"><span class="tip">Mar 23 · 12</span></div>
+        <div class="wk" style="--h: 57%; --c: var(--flow-a)"><span class="tip">Mar 30 · 13</span></div>
+        <div class="wk" style="--h: 57%; --c: var(--flow-a)"><span class="tip">Apr 6 · 13</span></div>
+        <div class="wk" style="--h: 43%; --c: var(--flow-a)"><span class="tip">Apr 13 · 10</span></div>
+        <div class="wk" style="--h: 52%; --c: var(--flow-a)"><span class="tip">Apr 20 · 12</span></div>
+        <div class="wk divider" style="--h: 2%; --c: var(--flow-b)"><span class="tip">Apr 27 · 0 · experiment starts mid-week</span></div>
+        <div class="wk" style="--h: 13%; --c: var(--flow-b)"><span class="tip">May 4 · 3</span></div>
+        <div class="wk" style="--h: 13%; --c: var(--flow-b)"><span class="tip">May 11 · 3</span></div>
+        <div class="wk" style="--h: 17%; --c: var(--flow-b)"><span class="tip">May 18 · 4</span></div>
+        <div class="wk lag" style="--h: 4%; --c: var(--flow-b)"><span class="tip">May 25 · 1 · incomplete</span></div>
+        <div class="wk lag" style="--h: 2%; --c: var(--flow-b)"><span class="tip">Jun 1 · 0 so far · incomplete</span></div>
+        <div class="wk lag" style="--h: 2%; --c: var(--flow-b)"><span class="tip">Jun 8 · 0 so far · incomplete</span></div>
+      </div>
+      <div class="wk-axis"><span>Jan</span><span>Experiment starts Apr 27</span><span>Jun</span></div>
+    </div>
+    <div class="caveat">
+      <strong>Read this before reading the chart.</strong> The two colours are counted differently and are not comparable. Red is an estimate from our own database, which over-counts by roughly 2-3x. Blue is support tickets, counted by hand. Most of the step down is that change in counting, not a real drop.
+      <br /><br />
+      The last three blue bars are also incomplete: cancellations arrive weeks after the signup they refer to, so those weeks are still filling in. Support data stops on June 3, so June, July and August have no bars at all.
+      <br /><br />
+      Counted consistently, by support tickets, accidental signups run <strong>3 to 5 per week both before and during the experiment</strong>. The honest read on this metric is flat.
+    </div>
   </div>
 
   <div class="card">
