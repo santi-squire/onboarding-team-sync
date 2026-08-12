@@ -130,7 +130,7 @@
         <span class="val">5.2%</span>
       </div>
     </div>
-    <p class="takeaway">1 in 5 signups was a duplicate. Now it is <em>1 in 20</em>.</p>
+    <p class="takeaway">1 in 5 signups was a duplicate in Flow A. In Flow B it was <em>1 in 20</em>.</p>
   </div>
 
   <div class="card">
@@ -180,25 +180,25 @@
 
   <div class="card">
     <h2>Half as many people stuck on their password</h2>
-    <p class="why">How often people tap "forgot password" while trying to get in. It is the clearest sign someone is locked out of an account they already have.</p>
+    <p class="why">"Forgot password" taps for every 100 devices that reached the login. It is the clearest sign someone is locked out of an account they already have. One person can tap it more than once, so this counts taps, not people.</p>
     <div class="bars">
       <div class="row">
         <span class="name">Flow A</span>
         <div class="track"><div class="fill" style="width: 100%; background: var(--flow-a)"></div></div>
-        <span class="val">61.6%</span>
+        <span class="val">61.6</span>
       </div>
       <div class="row">
         <span class="name">Flow B</span>
         <div class="track"><div class="fill" style="width: 49%; background: var(--flow-b)"></div></div>
-        <span class="val">30.3%</span>
+        <span class="val">30.3</span>
       </div>
     </div>
-    <p class="takeaway">Taps per 100 devices. Flow B cuts it <em>roughly in half</em>.</p>
+    <p class="takeaway">Flow B cuts password trouble <em>roughly in half</em>.</p>
   </div>
 
   <div class="card">
     <h2>Fewer people give up on logging in</h2>
-    <p class="why">How often someone starts logging in and drops out before finishing.</p>
+    <p class="why">Drop-outs for every 100 devices that reached the login. Someone who comes back and drops out again is counted twice, so this counts drop-outs, not people.</p>
     <div class="bars">
       <div class="row">
         <span class="name">Flow A</span>
@@ -220,14 +220,14 @@
     <div class="status">
       <div class="stat"><div class="n">718</div><div class="l">devices through Flow B</div></div>
       <div class="stat"><div class="n">89%</div><div class="l">reached the welcome screen</div></div>
-      <div class="stat"><div class="n">69%</div><div class="l">logged in successfully</div></div>
+      <div class="stat"><div class="n">444</div><div class="l">logged in</div></div>
     </div>
-    <p class="takeaway">The rollout took hold. <em>Too early</em> for rates, we check again next week.</p>
+    <p class="takeaway">The rollout landed and the funnel looks normal. <em>Full week of numbers</em> at the next weekly.</p>
   </div>
 
   <div class="card next">
-    <h2>What we found along the way</h2>
-    <p class="why">When a shop adds a barber, giving them a login is optional, and the login can be set to something other than their email. Flow B's check looks up logins, not barber records, so those barbers are not recognised and get sent to create a new account. We now know exactly how many that is.</p>
+    <h2>A long-standing gap the experiment surfaced</h2>
+    <p class="why">When a shop adds a barber, giving them a login is optional, and the login can be set to something other than their email. Our "does this email exist" lookup has always searched logins only, never barber records. Nothing used to ask it that question, so nobody noticed. Flow B asks it on every sign-in, which is how we found it and how we could finally measure it.</p>
     <div class="status">
       <div class="stat"><div class="n">3,134</div><div class="l">barbers the check cannot see today</div></div>
       <div class="stat"><div class="n">4.2%</div><div class="l">of all barbers with an email</div></div>
@@ -238,7 +238,8 @@
 
   <footer>
     <strong>How to read this.</strong> Every comparison above is Flow A against Flow B over the same period, April 27 to August 10 12:32pm, measured the same way for both. 7,911 devices went through Flow A and 6,593 through Flow B.<br /><br />
-    <strong>What comes next.</strong> Until Monday, Flow A was still carrying half of all traffic, so the company-wide duplicate rate could not move yet. Now that everyone is on Flow B, that is the number to watch.
+    <strong>What comes next.</strong> Until Monday, Flow A was still carrying half of all traffic, so the company-wide duplicate rate could not move yet. Now that everyone is on Flow B, that is the number to watch.<br /><br />
+    <strong>Onboarding team · data through August 12, 2026.</strong> The experiment ran April 27 to August 10. If you are reading this later than a couple of weeks, ask us for a refresh rather than quoting these figures.
   </footer>
 
 </div>
